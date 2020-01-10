@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/activity_background">
+    <EditText
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="placeholder, 16sp textsize"
+        android:textSize="16sp"
+        android:background="@color/bar_background"/>
+    <com.mapbox.mapboxsdk.maps.MapView
+        android:id="@+id/mapbox"
+        android:layout_below="@id/top_bar"
+        android:layout_centerInParent="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <LinearLayout
+        android:id="@+id/btnBar_bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="100sp"
+        android:orientation="horizontal"
+        android:background="@color/bar_background"
+        android:paddingHorizontal="2dp"
+        android:paddingBottom="3dp"
+        android:scrollbars="horizontal">
+        <ImageButton
+            android:id="@+id/btn_toLists"
+            android:src="@drawable/ic_launcher_foreground"
+            android:onClick="onClickStartListActivity"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:padding="3dp"/>
+        <ImageButton
+            android:id="@+id/btn_toSongs"
+            android:src="@drawable/ic_launcher_foreground"
+            android:onClick="onClickStartSongsActivity"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:padding="3dp"/>
+        <ImageButton
+            android:id="@+id/btn_ZoomExtents"
+            android:src="@drawable/ic_launcher_foreground"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:padding="3dp"/>
+    </LinearLayout>
+</RelativeLayout>

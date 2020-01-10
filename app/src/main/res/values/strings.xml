@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Playcelist</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoid3VnYXd1Z2EiLCJhIjoiY2pxMTgyZGl3MHNiNDQycHByNzFwMmNhMCJ9.eMnZdDzj9CojxQ8e_YAhYQ</string>
+
+    <string-array name="list_values">
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+        <item>TU Munich</item>
+        <item>TU Wien</item>
+        <item>TU Dresden</item>
+        <item>ITC</item>
+    </string-array>
+</resources>

@@ -48,3 +48,7 @@ The implemented applications shall be presented by each group within approximate
 minutes on 3rd February 2020 (13:00 – 14:30, HÜL/S590). . All the apps will be available on
 the emulator of the lecturer’s PC. If required, you can use PowerPoint-slides (please send by
 email at least one hour before the presentations starts).
+
+
+//----Other Links of Interest-----
+{BSerrao} Creating and Using Fragments (https://guides.codepath.com/android/creating-and-using-fragments)

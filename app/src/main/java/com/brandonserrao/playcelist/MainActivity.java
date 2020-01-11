@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.brandonserrao.playcelist.R;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -51,14 +52,16 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
+
         MainActivity.this.mapboxMap = mapboxMap;
-        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+
+/*        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
-/*                mapboxMap.getStyle().addImage("red-marker",
+*//*                mapboxMap.getStyle().addImage("red-marker",
                         BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker));*/
+                                R.drawable.red_marker));*//*
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.create(new SymbolOptions()
@@ -67,8 +70,101 @@ public class MainActivity extends AppCompatActivity implements
                         .withIconAnchor("bottom")
                 );
             }
+        });*/
+
+        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull Style style) {
+                enableLocationComponent(style);
+                //add red marker image
+                mapboxMap.getStyle().addImage("red-marker",
+                        BitmapFactory.decodeResource(getResources(),
+                                R.drawable.red_marker));
+                SymbolManager symbolManager =
+                        new SymbolManager(mapView, mapboxMap, style);
+                symbolManager.create(new SymbolOptions()
+                        .withLatLng(new LatLng(0,0))
+                        .withIconImage("red-marker")
+                        .withIconAnchor("bottom")
+                );
+                //shift camera
+                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                        new CameraPosition.Builder()
+                                .target(new LatLng(51.051877, 13.741517))
+                                .zoom(12)
+                                .build()));
+                //add star marker image
+                mapboxMap.getStyle().addImage("my-star-marker",
+                        BitmapFactory.decodeResource(getResources(), R.drawable.star_marker));
+                symbolManager.create(new SymbolOptions()
+                        .withLatLng(new LatLng(51.02855, 13.723903))
+                        .withIconImage("my-star-marker")
+                        .withIconAnchor("bottom"));
+                symbolManager.addClickListener(new OnSymbolClickListener() {
+                    @Override
+                    public void onAnnotationClick(Symbol symbol) {
+                        Toast.makeText(MainActivity.this, "HÜL/S590: Computer Pool",
+                                Toast.LENGTH_LONG).show();
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                                new CameraPosition.Builder()
+                                        .target(symbol.getLatLng())
+                                        .build()));
+                    }
+                });
+            }
         });
+        //-----------testing map listeners; taken from mapbox sdk documentation---------
+
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public boolean onMapClick(@NonNull LatLng point) {
+                Toast.makeText(MainActivity.this, "onClick: longclick to place marker", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        });
+
+        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
+            @Override
+            public boolean onMapLongClick(@NonNull LatLng point) {
+                Style style = mapboxMap.getStyle();
+                SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style);
+                symbolManager.setIconAllowOverlap(true);
+                symbolManager.setIconIgnorePlacement(true);
+                // Add symbol at specified lat/lon
+                double lat = point.getLatitude(), lng = point.getLongitude();
+                Symbol symbol = symbolManager.create(new SymbolOptions()
+                        .withLatLng(new LatLng(lat,lng))
+                        .withIconImage("red-marker"));
+
+                return true;
+            }
+        });
+
+/*        mapboxMap.addOnMoveListener(new MapboxMap.OnMoveListener() {
+            @Override
+            public void onMoveBegin(MoveGestureDetector detector) {
+                Toast.makeText(MainActivity.this, "onMoveBegin", Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onMove(MoveGestureDetector detector) {
+                Toast.makeText(MainActivity.this, "onMove", Toast.LENGTH_LONG).show();
+            }
+            @Override
+            public void onMoveEnd(MoveGestureDetector detector) {
+                Toast.makeText(MainActivity.this, "onMoveEnd", Toast.LENGTH_LONG).show();
+            }
+        });*/
+
+
+        mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
+            @Override
+            public void onFling() {
+                Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_LONG).show();
+            }
+        });
+//--------listener testing end----------
     }
+
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {

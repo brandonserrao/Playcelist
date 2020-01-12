@@ -7,10 +7,9 @@
     <color name="colorSecondaryLight">#fd558f</color>
     <color name="colorSecondaryDark">#8e0038</color>
 
-    <color name="colorAccent">#00c853</color>
+    <color name="colorSpot">#00c853</color>
 
     <color name="white">#ffffff</color>
 
-    <color name="bar_background">#263238</color>
-    <color name="activity_background">#334d1b</color>
+    <color name="activity_background">#58a5f0</color>
 </resources>

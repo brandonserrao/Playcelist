@@ -1,6 +1,16 @@
 # Playcelist
 Mobile Cartography Assignment
 
+//Tasks:
+1)Icons+UI graphics - creation, implementation
+2)Spotify integration - 
+  a) local SQLite db creation, 
+  b) understanding spotify api, getting song uri's or otherwise for storage
+3)Interactvity
+  a)song playcement and corresponding storage
+  b)filling of List and Song activities
+  c)geoprocessing - querying map (see mapbox/mapbox annotations sdk querying map features)
+
 //{BSerrao} used to link AndroidStudio to GitHub
 //https://medium.com/@apeapius/git-and-github-with-android-studio-gui-tool-3af48b663da2
 

@@ -11,7 +11,7 @@
         android:roundIcon="@drawable/playcelist_launcher_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SongsActivity"></activity>
+        <activity android:name=".SongsActivity" />
         <activity android:name=".ListActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

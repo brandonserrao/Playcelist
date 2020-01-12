@@ -4,3 +4,4 @@ Read playlist INPUT Playlist ID OUTPUT Songs list
 Play playlist INPUT Playlist ID OUTPUT Success msg 
 Play  playlist from definded song INPUT Playlist ID, Song ID OUTPUT -
 Autorization INPUT : - OUTPUT : userID, photo, Displayname 
+LogOUT

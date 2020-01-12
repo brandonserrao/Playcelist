@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         MainActivity.this.mapboxMap = mapboxMap;
-        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);

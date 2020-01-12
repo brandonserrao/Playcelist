@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/activity_background">
     <com.mapbox.mapboxsdk.maps.MapView
@@ -21,40 +22,14 @@
         android:layout_alignEnd="@id/mapbox"
         android:layout_width="75sp"
         android:layout_height="75sp"/>
-    <LinearLayout
-        android:id="@+id/navbar"
-        android:layout_alignParentBottom="true"
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="75sp"
-        android:orientation="horizontal"
-        android:background="@color/bar_background"
-        android:padding="5sp"
-        android:scrollbars="horizontal">
-        <ImageButton
-            android:id="@+id/btn_toLists"
-            android:src="@drawable/ic_launcher_foreground"
-            android:onClick="onClickStartListActivity"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:padding="3dp"/>
-        <ImageButton
-            android:id="@+id/btn_home"
-            android:src="@drawable/ic_launcher_foreground"
-            android:onClick="onClickStartSongsActivity"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:padding="3dp"/>
-        <ImageButton
-            android:id="@+id/btn_toSongs"
-            android:src="@drawable/ic_launcher_foreground"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:scaleType="fitCenter"
-            android:padding="3dp"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemIconTint="@color/white"
+        app:itemTextColor="@color/white"
+        app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

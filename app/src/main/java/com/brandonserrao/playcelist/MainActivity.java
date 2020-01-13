@@ -121,12 +121,16 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //Button Click Handlers
-    public void onClickStartListActivity(View view) {
+    public void onClickStartListsActivity(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
     public void onClickStartSongsActivity(View view) {
         Intent intent = new Intent(this, SongsActivity.class);
+        startActivity(intent);
+    }
+    public void onClickStartPlayground(View view) {
+        Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);
     }
 

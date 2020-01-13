@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Playcelist</string>
-    <string name="mapbox_access_token">pk.eyJ1Ijoid3VnYXd1Z2EiLCJhIjoiY2pxMTgyZGl3MHNiNDQycHByNzFwMmNhMCJ9.eMnZdDzj9CojxQ8e_YAhYQ</string>
+    <string name="mapbox_access_token">pk.eyJ1Ijoia2xhdmVyZSIsImEiOiJjazViOGtqbDAxNTllM2RtdWFvaHp1a2VkIn0.SYh-5pFh71BxDRTqxaVDsQ</string>
+    <string name="darkstyleURL">mapbox://styles/klavere/ck5b8g25u0edc1clf1ugsi1mn</string>
+    <string name="darkstyleAccessoken">pk.eyJ1Ijoia2xhdmVyZSIsImEiOiJjand4a2pjYnIwaGM4M3ltemU1aDg0a3Y3In0.sqw8y8wPlnHXIzlA3rI7cA</string>
 
     <string-array name="list_values">
         <item>TU Munich</item>
@@ -32,4 +34,5 @@
         <item>TU Dresden</item>
         <item>ITC</item>
     </string-array>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

@@ -52,34 +52,15 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-
         MainActivity.this.mapboxMap = mapboxMap;
-
-/*        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+        mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
-*//*                mapboxMap.getStyle().addImage("red-marker",
+/*                mapboxMap.getStyle().addImage("red-marker",
                         BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker));*//*
-                SymbolManager symbolManager =
-                        new SymbolManager(mapView, mapboxMap, style);
-                symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(0,0))
-                        .withIconImage("red-marker")
-                        .withIconAnchor("bottom")
-                );
-            }
-        });*/
-
-        mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
-            @Override
-            public void onStyleLoaded(@NonNull Style style) {
-                enableLocationComponent(style);
-                //add red marker image
-                mapboxMap.getStyle().addImage("red-marker",
-                        BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker));
+                                R.drawable.red_marker));*/
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.create(new SymbolOptions()
@@ -164,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 //--------listener testing end----------
     }
-
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
         if (PermissionsManager.areLocationPermissionsGranted(this)) {

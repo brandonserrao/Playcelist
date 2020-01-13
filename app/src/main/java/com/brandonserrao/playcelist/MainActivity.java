@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +33,12 @@ import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -40,16 +47,56 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+    //database implementation variables
+    String db_name = "testdb1.sqlite";
+    SongDAO songdao;
+    List<Song> song_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //database intialization
+        final File dbFile = this.getDatabasePath(db_name);
+        if (!dbFile.exists()) {
+            try {
+                copyDatabaseFile(dbFile.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        AppDatabase database =
+                Room.databaseBuilder(this, AppDatabase.class,db_name)
+                        .allowMainThreadQueries()
+                        .build();
+        songdao = database.getSongDAO();
+        //song_list = songdao.getAllSongs();
+
+        //mapbox map creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapbox);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
+
+    private void copyDatabaseFile(String destinationPath) throws IOException {
+        InputStream assetsDB = this.getAssets().open(db_name);
+        OutputStream dbOut = new FileOutputStream(destinationPath);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = assetsDB.read(buffer)) > 0) {
+            dbOut.write(buffer, 0, length);
+        }
+        dbOut.flush();
+        dbOut.close();
+    }
+    public void onClickAddDataRecord(View view) {
+    }
+    public void onClickSearch(View view) {
+    }
+
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {

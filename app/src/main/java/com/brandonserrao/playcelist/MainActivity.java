@@ -2,26 +2,16 @@ package com.brandonserrao.playcelist;
 //?? package com.google.android.material.navigation;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import com.brandonserrao.playcelist.R;
-import com.google.android.material.internal.ScrimInsetsFrameLayout;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
@@ -30,12 +20,10 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleManager;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions;
-import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+
+import java.util.List;
 
 // import com.google.android.material.R;
 // import com.google.android.material.internal.NavigationMenu;
@@ -46,8 +34,6 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 // import com.google.android.material.shape.MaterialShapeDrawable;
 // import com.google.android.material.shape.MaterialShapeUtils;
 // import com.google.android.material.shape.ShapeAppearanceModel;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
@@ -151,5 +137,4 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);
     }
-
 }

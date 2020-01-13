@@ -1,17 +1,22 @@
 package com.brandonserrao.playcelist;
+//?? package com.google.android.material.navigation;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.brandonserrao.playcelist.R;
+import com.google.android.material.internal.ScrimInsetsFrameLayout;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -31,6 +36,17 @@ import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+
+// import com.google.android.material.R;
+// import com.google.android.material.internal.NavigationMenu;
+// import com.google.android.material.internal.NavigationMenuPresenter;
+// import com.google.android.material.internal.ScrimInsetsFrameLayout;
+// import com.google.android.material.internal.ThemeEnforcement;
+// import com.google.android.material.resources.MaterialResources;
+// import com.google.android.material.shape.MaterialShapeDrawable;
+// import com.google.android.material.shape.MaterialShapeUtils;
+// import com.google.android.material.shape.ShapeAppearanceModel;
+
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
@@ -64,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(0,0))
+                        .withLatLng(new LatLng(0, 0))
                         .withIconImage("red-marker")
                         .withIconAnchor("bottom")
                 );
@@ -88,8 +104,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-
     //HANDLERS
 
     @Override
@@ -98,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements
         permissionsManager.onRequestPermissionsResult(requestCode,
                 permissions, grantResults);
     }
+
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Toast.makeText(this, "user_location_permission_explanation",
@@ -126,10 +141,12 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
+
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
+
     public void onClickStartPlayground(MenuItem item) {
         Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);

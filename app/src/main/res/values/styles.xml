@@ -9,9 +9,19 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryDark</item>
         <item name="colorAccent">@color/colorSecondaryLight</item>
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/colorPrimaryDark</item>
     </style>
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <!--This line changes the color of text -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <!--This line changes the color of icons in toolbar (back, overflow menu icons)-->
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <style name="NavDrawerStyle" parent="Widget.Design.NavigationView">
+        <item name="android:background">@color/activity_background</item>
         <!--This line changes the color of text -->
         <item name="android:textColorPrimary">@color/white</item>
         <!--This line changes the color of icons in toolbar (back, overflow menu icons)-->

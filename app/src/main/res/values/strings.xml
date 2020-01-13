@@ -37,8 +37,10 @@
 
     <string name="title_activity_main2">Main2Activity</string>
 
+    //strings to get from Spotify
     <string name="now_playing">_song_\n_artist_</string>
     <string name="np_song">_songfromSpotifyAPI_</string>
     <string name="np_artist">_artistfromSpotifyAPI_</string>
+    <string name="SAccountName">_Account Name_</string>
 
 </resources>

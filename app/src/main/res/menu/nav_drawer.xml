@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Title"/>
     <group>
-        <item android:title="item1"/>
-        <item android:title="item2"/>
-        <item android:title="item3"/>
+        <item
+            android:id="@+id/nd01"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="item1" />
+        <item
+            android:id="@+id/nd02"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="item2" />
+        <item
+            android:id="@+id/nd03"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="item3" />
     </group>
     <group>
-        <item android:title="item4"/>
-        <item android:title="item5"/>
-        <item android:title="item6"/>
+        <item
+            android:id="@+id/nd04"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="playced songs" />
+        <item
+            android:id="@+id/nd05"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="playcelists" />
+        <item
+            android:id="@+id/nd06"
+            android:icon="@drawable/playcelist_launcher_icon"
+            android:title="item6" />
     </group>
-
 </menu>

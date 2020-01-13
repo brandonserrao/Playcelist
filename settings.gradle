@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':spotify-auth-release-1.1.0'
 rootProject.name='Playcelist'

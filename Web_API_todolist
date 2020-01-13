@@ -5,3 +5,4 @@ Play playlist INPUT Playlist ID OUTPUT Success msg
 Play  playlist from definded song INPUT Playlist ID, Song ID OUTPUT -
 Autorization INPUT : - OUTPUT : userID, photo, Displayname 
 LogOUT
+ SHA1: 58:89:53:D1:11:57:26:BC:C9:BF:C1:33:88:0F:52:08:90:5F:15:35

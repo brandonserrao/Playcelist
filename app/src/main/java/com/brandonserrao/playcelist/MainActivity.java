@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -121,15 +122,15 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //Button Click Handlers
-    public void onClickStartListsActivity(View view) {
+    public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
-    public void onClickStartSongsActivity(View view) {
+    public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
-    public void onClickStartPlayground(View view) {
+    public void onClickStartPlayground(MenuItem item) {
         Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);
     }

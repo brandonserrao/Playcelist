@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Songs"
+        android:id="@+id/btn_toSongs"
+        android:icon="@drawable/playcelist_launcher_icon"
+        android:onClick="onClickStartSongsActivity"/>
+    <item android:title="Map"
+        android:id="@+id/btn_home"
+        android:icon="@drawable/playcelist_launcher_icon"
+        android:onClick="onClickStartPlayground"/>
+    <item android:title="Lists"
+        android:id="@+id/btn_toLists"
+        android:icon="@drawable/playcelist_launcher_icon"
+        android:onClick="onClickStartListsActivity"/>
+</menu>

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -53,19 +54,20 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         MainActivity.this.mapboxMap = mapboxMap;
-        //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
         mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
+        //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
-/*                mapboxMap.getStyle().addImage("red-marker",
+                mapboxMap.getStyle().addImage("red_marker",
                         BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker));*/
+                                R.drawable.red_marker));
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.create(new SymbolOptions()
                         .withLatLng(new LatLng(0,0))
-                        .withIconImage("red-marker")
+                        .withIconImage("red_marker")
                         .withIconAnchor("bottom")
                 );
                 //shift camera
@@ -113,28 +115,15 @@ public class MainActivity extends AppCompatActivity implements
                 symbolManager.setIconIgnorePlacement(true);
                 // Add symbol at specified lat/lon
                 double lat = point.getLatitude(), lng = point.getLongitude();
-                Symbol symbol = symbolManager.create(new SymbolOptions()
+                symbolManager.create(new SymbolOptions()
                         .withLatLng(new LatLng(lat,lng))
-                        .withIconImage("red-marker"));
-
+                        .withIconImage("red_marker")
+                        .withIconAnchor("bottom")
+                );
+                Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
                 return true;
             }
         });
-
-/*        mapboxMap.addOnMoveListener(new MapboxMap.OnMoveListener() {
-            @Override
-            public void onMoveBegin(MoveGestureDetector detector) {
-                Toast.makeText(MainActivity.this, "onMoveBegin", Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onMove(MoveGestureDetector detector) {
-                Toast.makeText(MainActivity.this, "onMove", Toast.LENGTH_LONG).show();
-            }
-            @Override
-            public void onMoveEnd(MoveGestureDetector detector) {
-                Toast.makeText(MainActivity.this, "onMoveEnd", Toast.LENGTH_LONG).show();
-            }
-        });*/
 
 
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
@@ -143,7 +132,6 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_LONG).show();
             }
         });
-//--------listener testing end----------
     }
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {
@@ -196,12 +184,16 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //Button Click Handlers
-    public void onClickStartListActivity(View view) {
+    public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
-    public void onClickStartSongsActivity(View view) {
+    public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
+        startActivity(intent);
+    }
+    public void onClickStartPlayground(MenuItem item) {
+        Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);
     }
 

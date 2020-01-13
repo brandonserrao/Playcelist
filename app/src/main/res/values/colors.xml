@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
-    <color name="bar_background">#ededed</color>
-    <color name="activity_background">#334d1b</color>
+    <color name="colorPrimary">#0277bd</color>
+    <color name="colorPrimaryLight">#58a5f0</color>
+    <color name="colorPrimaryDark">#004c8c</color>
+    <color name="colorSecondary">#c51162</color>
+    <color name="colorSecondaryLight">#fd558f</color>
+    <color name="colorSecondaryDark">#8e0038</color>
+
+    <color name="colorSpot">#00c853</color>
+
+    <color name="white">#ffffff</color>
+
+    <color name="activity_background">#444444</color>
 </resources>

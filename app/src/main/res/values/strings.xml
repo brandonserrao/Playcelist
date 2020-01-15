@@ -42,4 +42,7 @@
     <string name="np_song">_songfromSpotifyAPI_</string>
     <string name="np_artist">_artistfromSpotifyAPI_</string>
 
+
+    <string name="SAccountName">!placeholder_SAccountName</string>
+
 </resources>

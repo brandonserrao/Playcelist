@@ -36,4 +36,9 @@ dependencies {
 
     //material design dependency
     implementation 'com.google.android.material:material:1.2.0-alpha03'
+
+    implementation 'com.spotify.android:auth:1.1.0' // Maven dependency
+
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.3'
 }

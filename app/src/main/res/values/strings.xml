@@ -4,6 +4,12 @@
     <string name="darkstyleURL">mapbox://styles/klavere/ck5b8g25u0edc1clf1ugsi1mn</string>
     <string name="darkstyleAccessoken">pk.eyJ1Ijoia2xhdmVyZSIsImEiOiJjand4a2pjYnIwaGM4M3ltemU1aDg0a3Y3In0.sqw8y8wPlnHXIzlA3rI7cA</string>
 
+
+    <string name="warning_need_token">You need to request an access token first</string>
+    <string name="code">Code: %1$s</string>
+    <string name="token">Access Token: %1$s</string>
+
+
     <string-array name="list_values">
         <item>TU Munich</item>
         <item>TU Wien</item>

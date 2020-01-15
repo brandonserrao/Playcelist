@@ -6,28 +6,20 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "SONGS")
 public class Song {
-    @PrimaryKey
-    @NonNull
-    private int UID;
-    private String NAME;
-    private String SONG_ID;
-    private double LAT;
-    private double LNG;
 
-    public int getUID() {
+    @PrimaryKey//(autoGenerate = true)
+    @NonNull
+    private String UID;
+    private String SONG_ID;
+    private String LAT;
+    private String LNG;
+    private String NAME;
+
+    public String getUID() {
         return UID;
     }
-
-    public void setUID(int UID) {
+    public void setUID(@NonNull String UID) {
         this.UID = UID;
-    }
-
-    public String getNAME() {
-        return NAME;
-    }
-
-    public void setNAME(String NAME) {
-        this.NAME = NAME;
     }
 
     public String getSONG_ID() {
@@ -38,19 +30,28 @@ public class Song {
         this.SONG_ID = SONG_ID;
     }
 
-    public double getLAT() {
+    public String getLAT() {
         return LAT;
     }
 
-    public void setLAT(double LAT) {
+    public void setLAT(String LAT) {
         this.LAT = LAT;
     }
 
-    public double getLNG() {
+    public String getLNG() {
         return LNG;
     }
 
-    public void setLNG(double LNG) {
+    public void setLNG(String LNG) {
         this.LNG = LNG;
     }
+
+    public String getNAME() {
+        return NAME;
+    }
+
+    public void setNAME(String NAME) {
+        this.NAME = NAME;
+    }
+
 }

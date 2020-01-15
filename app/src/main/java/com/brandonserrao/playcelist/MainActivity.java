@@ -47,14 +47,19 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+
+
     //database implementation variables
-    String db_name = "testdb1.sqlite";
+    //String db_name = "playcelist_db.sqlite";
+    String db_name = "testdb_5.sqlite";
     SongDAO songdao;
     List<Song> song_list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         //database intialization
         final File dbFile = this.getDatabasePath(db_name);
@@ -70,8 +75,10 @@ public class MainActivity extends AppCompatActivity implements
                 Room.databaseBuilder(this, AppDatabase.class,db_name)
                         .allowMainThreadQueries()
                         .build();
+
         songdao = database.getSongDAO();
-        //song_list = songdao.getAllSongs();
+        song_list = songdao.getAllSongs();
+
 
         //mapbox map creation
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
@@ -80,23 +87,6 @@ public class MainActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
     }
-
-    private void copyDatabaseFile(String destinationPath) throws IOException {
-        InputStream assetsDB = this.getAssets().open(db_name);
-        OutputStream dbOut = new FileOutputStream(destinationPath);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = assetsDB.read(buffer)) > 0) {
-            dbOut.write(buffer, 0, length);
-        }
-        dbOut.flush();
-        dbOut.close();
-    }
-    public void onClickAddDataRecord(View view) {
-    }
-    public void onClickSearch(View view) {
-    }
-
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -168,6 +158,17 @@ public class MainActivity extends AppCompatActivity implements
                         .withIconAnchor("bottom")
                 );
                 Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
+
+                //creating new song entry and placing in database
+                Song song = new Song();
+                song.setUID(String.valueOf(lat)+String.valueOf(lng));//makeshift UID
+                song.setLAT(String.valueOf(lat));
+                song.setLNG(String.valueOf(lng));
+                song.setNAME("!placeholdername!");
+                songdao.insert(song);
+                Toast.makeText(MainActivity.this, "record successfully added,",Toast.LENGTH_LONG).show();
+
+
                 return true;
             }
         });
@@ -195,9 +196,6 @@ public class MainActivity extends AppCompatActivity implements
             permissionsManager.requestLocationPermissions(this);
         }
     }
-
-
-
 
     //HANDLERS
 
@@ -243,5 +241,19 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = new Intent(this, SpotifyPlayground.class);
         startActivity(intent);
     }
+
+
+    private void  copyDatabaseFile(String destinationPath) throws IOException {
+        InputStream assetsDB = this.getAssets().open(db_name);
+        OutputStream dbOut = new FileOutputStream(destinationPath);
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = assetsDB.read(buffer)) > 0) {
+            dbOut.write(buffer, 0, length);
+        }
+        dbOut.flush();
+        dbOut.close();
+    }
+
 
 }

@@ -5,9 +5,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> {
-    private String[] mDataset;
-    public ListAdapter(String[] myDataset) {
+
+    private List<Song> mDataset;
+    public ListAdapter(List<Song> myDataset) {
         mDataset = myDataset;
     }
 
@@ -29,11 +33,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     }
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.button.setText(mDataset[position]);
+        holder.button.setText(mDataset.get(position).getUID());
     }
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
     //---------------------testing------------------
 

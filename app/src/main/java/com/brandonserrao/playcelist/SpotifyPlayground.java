@@ -26,6 +26,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
+import com.squareup.moshi.Types;
+
 public class SpotifyPlayground extends AppCompatActivity {
     public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -69,7 +73,8 @@ public class SpotifyPlayground extends AppCompatActivity {
         }
 
         final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me")
+             //   .url("https://api.spotify.com/v1/me") //get user data
+                .url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
                 .addHeader("Authorization","Bearer " + mAccessToken)
                 .build();
 
@@ -98,7 +103,7 @@ public class SpotifyPlayground extends AppCompatActivity {
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
         return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email"})
+                .setScopes(new String[]{"user-read-email","user-read-playback-state","user-read-currently-playing"})
                 .setCampaign("your-campaign-token")
                 .build();
     }

@@ -1,6 +1,7 @@
 package com.brandonserrao.playcelist;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,52 +18,41 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
 
     //-------------------testing---------------
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public Button button;
-        public MyViewHolder(Button v) {
+        public TextView tv1;
+        public TextView tv2;
+        public TextView tv3;
+        public TextView tv4;
+        public TextView tv5;
+        public View layout;
+        public MyViewHolder(View v) {
             super(v);
-            button = v;
+            layout = v;
+            tv1 = v.findViewById(R.id.tv1);
+            tv2 = v.findViewById(R.id.tv2);
+            tv3 = v.findViewById(R.id.tv3);
+            tv4 = v.findViewById(R.id.tv4);
+            tv5 = v.findViewById(R.id.tv5);
         }
     }
     @Override
     public ListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {
-        Button v = (Button) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View v = inflater.inflate(R.layout.list_item, parent, false);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
     }
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.button.setText(mDataset.get(position).getUID());
+        holder.tv1.setText(String.valueOf(mDataset.get(position).getUID()));
+        holder.tv2.setText(mDataset.get(position).getNAME());
+        holder.tv5.setText(mDataset.get(position).getSONG_ID());
+        holder.tv3.setText(String.valueOf(mDataset.get(position).getLNG()));
+        holder.tv4.setText(String.valueOf(mDataset.get(position).getLAT()));
     }
     @Override
     public int getItemCount() {
         return mDataset.size();
     }
     //---------------------testing------------------
-
-/*    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public MyViewHolder(TextView v) {
-            super(v);
-            textView = v;
-        }
-    }
-    @Override
-    public ListAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                       int viewType) {
-        TextView v = (TextView) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item, parent, false);
-        MyViewHolder vh = new MyViewHolder(v);
-        return vh;
-    }
-    @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.textView.setText(mDataset[position]);
-    }
-    @Override
-    public int getItemCount() {
-        return mDataset.length;
-    }
-*/
 }

@@ -22,8 +22,4 @@ public interface SongDAO {
     @Query("SELECT * FROM SONGS")
     public List<Song> getAllSongs();
 
-/*
-    @Query("SELECT * FROM university_table WHERE name = :university_name")
-    public List<University> getUniversityInfoByName(String university_name);
-*/
 }

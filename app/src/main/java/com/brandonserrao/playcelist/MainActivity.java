@@ -41,6 +41,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static java.sql.Types.NULL;
+
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
 
@@ -50,8 +52,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //database implementation variables
-    //String db_name = "playcelist_db.sqlite";
-    String db_name = "testdb_5.sqlite";
+    String db_name = "sqlstudio_db2_v4.sqlite";
     SongDAO songdao;
     List<Song> song_list;
 
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
 
-        //database intialization
-        final File dbFile = this.getDatabasePath(db_name);
+      //database intialization from file from assets, as shown in tutorials
+/*        final File dbFile = this.getDatabasePath(db_name);
         if (!dbFile.exists()) {
             try {
                 copyDatabaseFile(dbFile.getAbsolutePath());
@@ -74,6 +75,11 @@ public class MainActivity extends AppCompatActivity implements
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class,db_name)
                         .allowMainThreadQueries()
+                        .build();*/
+        AppDatabase database =
+                Room.databaseBuilder(this, AppDatabase.class,db_name)
+                        .allowMainThreadQueries()
+                        .createFromAsset(db_name)
                         .build();
 
         songdao = database.getSongDAO();
@@ -97,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onStyleLoaded(@NonNull Style style) {
                 enableLocationComponent(style);
+
                 mapboxMap.getStyle().addImage("red_marker",
                         BitmapFactory.decodeResource(getResources(),
                                 R.drawable.red_marker));
@@ -161,9 +168,10 @@ public class MainActivity extends AppCompatActivity implements
 
                 //creating new song entry and placing in database
                 Song song = new Song();
-                song.setUID(String.valueOf(lat)+String.valueOf(lng));//makeshift UID
-                song.setLAT(String.valueOf(lat));
-                song.setLNG(String.valueOf(lng));
+                //song.setUID(String.valueOf(lat)+String.valueOf(lng));//makeshift UID
+                //song.setUID(NULL);//makeshift UID
+                song.setLNG((float)lng);song.setLAT((float)lat);//song.setLAT(String.valueOf(lat));
+                //song.setLNG(String.valueOf(lng));
                 song.setNAME("!placeholdername!");
                 songdao.insert(song);
                 Toast.makeText(MainActivity.this, "record successfully added,",Toast.LENGTH_LONG).show();

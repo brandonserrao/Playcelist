@@ -40,7 +40,12 @@ dependencies {
     implementation "com.google.code.gson:gson:2.6.1"
 
     //database dependencies
-    implementation 'androidx.room:room-runtime:2.2.0-beta01'
-    annotationProcessor 'androidx.room:room-compiler:2.2.0-beta01'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta03'
+/*    implementation 'androidx.room:room-runtime:2.2.0-beta01'
+    annotationProcessor 'androidx.room:room-compiler:2.2.0-beta01'*/
+
+    def room_version = "2.2.3"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
+
 }

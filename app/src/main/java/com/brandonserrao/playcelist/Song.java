@@ -1,5 +1,4 @@
 package com.brandonserrao.playcelist;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -7,20 +6,14 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "SONGS")
 public class Song {
 
-    @PrimaryKey//(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     @NonNull
-    private String UID;
-    private String SONG_ID;
-    private String LAT;
-    private String LNG;
-    private String NAME;
+    Integer UID;
+    String SONG_ID;
+    float LAT;
+    float LNG;
+    String NAME;
 
-    public String getUID() {
-        return UID;
-    }
-    public void setUID(@NonNull String UID) {
-        this.UID = UID;
-    }
 
     public String getSONG_ID() {
         return SONG_ID;
@@ -30,21 +23,57 @@ public class Song {
         this.SONG_ID = SONG_ID;
     }
 
-    public String getLAT() {
+
+    public void setUID(@NonNull Integer UID) {
+        this.UID = UID;
+    }
+
+    @NonNull
+    public Integer getUID() {
+        return UID;
+    }
+
+    public float getLAT() {
         return LAT;
     }
 
-    public void setLAT(String LAT) {
+    public void setLAT(float LAT) {
         this.LAT = LAT;
     }
 
-    public String getLNG() {
+    public float getLNG() {
         return LNG;
     }
 
-    public void setLNG(String LNG) {
+    public void setLNG(float LNG) {
         this.LNG = LNG;
     }
+
+/*
+    public int getUID() {
+        return UID;
+    }
+    public void setUID(int UID) {
+        this.UID = UID;
+    }
+*/
+
+
+/*    public double getLAT() {
+        return LAT;
+    }
+
+    public void setLAT(double LAT) {
+        this.LAT = LAT;
+    }
+
+    public double getLNG() {
+        return LNG;
+    }
+
+    public void setLNG(double LNG) {
+        this.LNG = LNG;
+    }*/
 
     public String getNAME() {
         return NAME;
@@ -53,5 +82,4 @@ public class Song {
     public void setNAME(String NAME) {
         this.NAME = NAME;
     }
-
 }

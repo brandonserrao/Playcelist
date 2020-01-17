@@ -19,8 +19,7 @@ import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
 
-    String db_name = "testdb_5.sqlite";
-    //String db_name = "playcelist_db.sqlite";
+    String db_name = "sqlstudio_db2_v4.sqlite";
     SongDAO songdao;
     List<Song> song_list;
 
@@ -28,8 +27,7 @@ public class ListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
-        //String[] list_values = {"TU Munich", "TU Vienna", "TU Dresden"};
-        //String[] list_values = getResources().getStringArray(R.array.list_values);
+
         //testing
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class,db_name)

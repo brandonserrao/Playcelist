@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -120,5 +121,14 @@ public class ListActivity extends AppCompatActivity {
     public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
+    }
+
+    public void viewListOnMap(View view) {
+        View contextView = findViewById(R.id.btn_showListOnMap);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        //send id for map to center on corresponding list circle
     }
 }

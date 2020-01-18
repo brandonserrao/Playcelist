@@ -16,7 +16,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         mDataset = myDataset;
     }
 
-    //-------------------testing---------------
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv1;
         public TextView tv2;
@@ -54,5 +53,4 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     public int getItemCount() {
         return mDataset.size();
     }
-    //---------------------testing------------------
 }

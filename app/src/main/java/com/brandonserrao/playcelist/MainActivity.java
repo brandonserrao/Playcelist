@@ -15,6 +15,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.android.gestures.MoveGestureDetector;
+import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -31,6 +33,9 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
+import org.json.JSONArray;
+
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,15 +50,16 @@ public class MainActivity extends AppCompatActivity implements
     private MapView mapView;
 
     //database implementation variables
-    String db_name = "sqlstudio_db2_v4.sqlite";
+    String db_name = "sqlstudio_db2_v5.sqlite";
     SongDAO songdao;
     List<Song> song_list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //database intialization from file from assets, as shown in tutorials
+        //-------obsolete; database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
         if (!dbFile.exists()) {
             try {
@@ -67,17 +73,19 @@ public class MainActivity extends AppCompatActivity implements
                 Room.databaseBuilder(this, AppDatabase.class,db_name)
                         .allowMainThreadQueries()
                         .build();*/
+        //-----------
+
+        //create db instance + interface for this activity
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class, db_name)
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
-
         songdao = database.getSongDAO();
         song_list = songdao.getAllSongs();
 
 
-        //mapbox map creation
+        //mapbox map creation + styling
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_main);
         mapView = findViewById(R.id.mapbox);
@@ -85,11 +93,13 @@ public class MainActivity extends AppCompatActivity implements
         mapView.getMapAsync(this);
     }
 
+
     @Override
-    public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-        MainActivity.this.mapboxMap = mapboxMap;
+    public void onMapReady(@NonNull final MapboxMap mapboxMap) { //started on successfuly map creation; main activities start here
+
+        MainActivity.this.mapboxMap = mapboxMap;//get the map java object
+        //set style and
         mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
-            //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
 
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -97,27 +107,41 @@ public class MainActivity extends AppCompatActivity implements
 
                 mapboxMap.getStyle().addImage("red_marker",
                         BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker));
+                                R.drawable.red_marker)); //add the symbol
+
                 SymbolManager symbolManager =
-                        new SymbolManager(mapView, mapboxMap, style);
-                symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(0, 0))
+                        new SymbolManager(mapView, mapboxMap, style); //init symbolmanager
+
+                //adding songs from database to the map
+                SymbolOptions song_symbol = new SymbolOptions() //settings for default song symbol; init'd without latlng
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom")
-                );
-                //shift camera
+                        ;
+                for (int i=0; i<song_list.size(); i++) { //loop to add db records to map
+                    Song song = song_list.get(i);
+                    double lat = (double) song.getLAT();
+                    double lng = (double) song.getLNG();
+                    symbolManager.create(song_symbol.withLatLng(new LatLng(lat,lng))
+                    );
+                }
+
+                //shift camera to desired focus
+                LatLng focus = new LatLng(51.051877,13.741517); //ideally current device location
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                         new CameraPosition.Builder()
-                                .target(new LatLng(51.051877, 13.741517))
+                                .target(focus)
                                 .zoom(12)
                                 .build()));
-                //add star marker image
+
+                //-------demonstration; add star marker image
                 mapboxMap.getStyle().addImage("my-star-marker",
                         BitmapFactory.decodeResource(getResources(), R.drawable.star_marker));
                 symbolManager.create(new SymbolOptions()
                         .withLatLng(new LatLng(51.02855, 13.723903))
                         .withIconImage("my-star-marker")
                         .withIconAnchor("bottom"));
+                //--------
+                //--------demonstration; adding behavior/listeners
                 symbolManager.addClickListener(new OnSymbolClickListener() {
                     @Override
                     public void onAnnotationClick(Symbol symbol) {
@@ -131,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements
                 });
             }
         });
-        //-----------testing map listeners; taken from mapbox sdk documentation---------
+        //-----------testing Map Listeners; taken from mapbox sdk documentation---------
 
         mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -159,11 +183,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 //creating new song entry and placing in database
                 Song song = new Song();
-                //song.setUID(String.valueOf(lat)+String.valueOf(lng));//makeshift UID
-                //song.setUID(NULL);//makeshift UID
-                song.setLNG((float) lng);
-                song.setLAT((float) lat);//song.setLAT(String.valueOf(lat));
-                //song.setLNG(String.valueOf(lng));
+                song.setLNG((float)lng);song.setLAT((float)lat);
                 song.setNAME("!placeholdername!");
                 songdao.insert(song);
                 Toast.makeText(MainActivity.this, "record successfully added,", Toast.LENGTH_LONG).show();
@@ -229,18 +249,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    private void copyDatabaseFile(String destinationPath) throws IOException {
-        InputStream assetsDB = this.getAssets().open(db_name);
-        OutputStream dbOut = new FileOutputStream(destinationPath);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = assetsDB.read(buffer)) > 0) {
-            dbOut.write(buffer, 0, length);
-        }
-        dbOut.flush();
-        dbOut.close();
-    }
-
     /*button IDs for reference
         btn_nd [top left in main activity] > opens nav drawer
         btn_playcer [bottom right in main activity] > playces current playing at current position
@@ -250,8 +258,7 @@ public class MainActivity extends AppCompatActivity implements
         btn_toLists [right in bottom nav bar] > navigates via intent to Lists Activity
     */
 
-
-    //Button Handlers
+    //Button Click Handlers
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
@@ -275,12 +282,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public void onClickOpenNavDrawer(View view) {
         View contextView = findViewById(R.id.btn_nd);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
-    }
-
-    public void onClickOpenAccountDialog(View view) {
-        View contextView = findViewById(R.id.nav_header_SProfilePicture);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
     }

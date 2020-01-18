@@ -33,6 +33,7 @@ public class Song {
         return UID;
     }
 
+
     public float getLAT() {
         return LAT;
     }
@@ -40,6 +41,7 @@ public class Song {
     public void setLAT(float LAT) {
         this.LAT = LAT;
     }
+
 
     public float getLNG() {
         return LNG;
@@ -49,31 +51,6 @@ public class Song {
         this.LNG = LNG;
     }
 
-/*
-    public int getUID() {
-        return UID;
-    }
-    public void setUID(int UID) {
-        this.UID = UID;
-    }
-*/
-
-
-/*    public double getLAT() {
-        return LAT;
-    }
-
-    public void setLAT(double LAT) {
-        this.LAT = LAT;
-    }
-
-    public double getLNG() {
-        return LNG;
-    }
-
-    public void setLNG(double LNG) {
-        this.LNG = LNG;
-    }*/
 
     public String getNAME() {
         return NAME;

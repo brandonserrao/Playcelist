@@ -22,4 +22,10 @@ public interface SongDAO {
     @Query("SELECT * FROM SONGS")
     public List<Song> getAllSongs();
 
+    @Query ("SELECT * FROM SONGS WHERE ( NAME LIKE '%' || :search_term || '%' ) ")
+    public List<Song> searchSongsByName(String search_term);
+
+    @Query("DELETE FROM SONGS WHERE (NAME LIKE '%' || :search_term || '%')")
+    public void deleteSearchResults(String search_term);
+
 }

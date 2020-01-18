@@ -15,11 +15,6 @@ public class SongsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_songs);
     }
 
-    public void onClickStartMainActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
     //Button Click Handlers
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);

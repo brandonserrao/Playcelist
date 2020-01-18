@@ -4,53 +4,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:theme="@style/AppTheme">
-<!--    <TextView
-        android:id="@+id/testview"
+
+    <EditText
+        android:id="@+id/edittext_searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="testtext: this is the List Activity"
+        android:layout_toLeftOf="@+id/search_button"
+        android:hint="@string/s_name" />
+    <Button
+        android:id="@+id/search_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />-->
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:onClick="searchSongsByName"
+        android:text="Search" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/bottom_navigation"/>
-    <EditText
-        android:id="@+id/edittext_searchbar"
-        android:layout_above="@id/buttonBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Enter Search Term by Name"/>
+        android:layout_above="@id/bottom_navigation"
+        android:layout_below="@+id/edittext_searchbar" />
+
+    <!--only while working on the app-->
     <LinearLayout
         android:id="@+id/buttonBar"
-        android:layout_above="@id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_horizontal">
+        android:layout_above="@id/bottom_navigation"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/deleteResults_button"
-            android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete Results"
-            android:onClick="onClickDeleteResults"/>
-        <Button
-            android:id="@+id/search_button"
             android:layout_alignParentBottom="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Search"
-            android:onClick="searchSongsByName"/>
+            android:onClick="onClickDeleteResults"
+            android:text="Delete Results" />
+
         <Button
             android:id="@+id/back_button"
-            android:layout_alignParentBottom="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Go Back"
-            android:onClick="onClickStartMainActivity"/>
+            android:layout_alignParentBottom="true"
+            android:onClick="onClickStartMainActivity"
+            android:text="Go Back" />
     </LinearLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"

@@ -8,7 +8,7 @@
         <item name="colorPrimarySurface">@color/colorPrimaryLight</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSecondaryVariant">@color/colorSecondaryDark</item>
-        <item name="colorAccent">@color/colorSecondaryLight</item>
+        <item name="colorAccent">@color/colorSpot</item>
     </style>
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">

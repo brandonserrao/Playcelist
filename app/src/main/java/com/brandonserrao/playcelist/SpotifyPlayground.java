@@ -1,13 +1,16 @@
 package com.brandonserrao.playcelist;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
 
 import com.google.android.material.snackbar.Snackbar;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -18,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Locale;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -26,9 +28,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import com.squareup.moshi.JsonAdapter;
-import com.squareup.moshi.Moshi;
-import com.squareup.moshi.Types;
+import com.google.gson.Gson;
+
+
+import com.brandonserrao.playcelist.Converter;
+
 
 public class SpotifyPlayground extends AppCompatActivity {
     public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
@@ -89,12 +93,26 @@ public class SpotifyPlayground extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                try {
+                try  {
+
                     final JSONObject jsonObject = new JSONObject(response.body().string());
-                    setResponse(jsonObject.toString(3));
-                } catch (JSONException e) {
+                    String JsonResponse = jsonObject.toString();
+                    setResponse("alel");
+                    Log.e("ff","pribet upiur");
+                    Gson gson = new Gson();
+
+                    CurrentTrack newT = gson.fromJson(JsonResponse, CurrentTrack.class);
+
+
+                    Log.e("ff","upiur");
+                    Log.e("Response",JsonResponse);
+                    setResponse(newT.getItem().getName());
+
+                }
+                    catch (JSONException e) {
                     setResponse("Failed to parse data: " + e);
                 }
+
             }
         });
     }
@@ -155,4 +173,6 @@ public class SpotifyPlayground extends AppCompatActivity {
             mCall.cancel();
         }
     }
+
+
 }

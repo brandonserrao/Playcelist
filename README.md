@@ -63,3 +63,4 @@ email at least one hour before the presentations starts).
 //----Other Links of Interest-----
 {BSerrao} Creating and Using Fragments (https://guides.codepath.com/android/creating-and-using-fragments)
 material dark theme guide https://material.io/design/color/dark-theme.html#states
+dark theme implementation https://material.io/develop/android/theming/dark/

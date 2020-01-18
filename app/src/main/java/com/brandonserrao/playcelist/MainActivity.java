@@ -1,18 +1,17 @@
 package com.brandonserrao.playcelist;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.brandonserrao.playcelist.R;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.android.gestures.MoveGestureDetector;
@@ -28,8 +27,6 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleManager;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions;
 import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
@@ -43,8 +40,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
-import static java.sql.Types.NULL;
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
@@ -253,18 +248,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+
+
     //Button Click Handlers
-    public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-    }
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
-    public void onClickStartPlayground(MenuItem item) {
-        Intent intent = new Intent(this, SpotifyPlayground.class);
+    public void onClickStartMainActivity(MenuItem item) {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+    public void onClickStartListsActivity(MenuItem item) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickPlayceCurrentHere(FloatingActionButton btn_playcer) {
+
     }
 
 

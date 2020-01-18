@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#0277bd</color>
-    <color name="colorPrimaryLight">#58a5f0</color>
-    <color name="colorPrimaryDark">#004c8c</color>
-    <color name="colorSecondary">#c51162</color>
-    <color name="colorSecondaryLight">#fd558f</color>
-    <color name="colorSecondaryDark">#8e0038</color>
-
-    <color name="colorSpot">#00c853</color>
+    <color name="Background">#000000</color>
+    <color name="OnBackground">#ffffff</color>
+    <color name="Surface">#121212</color>
+    <color name="OnSurface">#ffffff</color>
+    <color name="Primary">#EEEEEE</color>
+    <color name="PrimaryVariant">#616161</color>
+    <color name="OnPrimary">#000000</color>
+    <color name="Secondary">#FFEA00</color>
+    <color name="OnSecondary">#000000</color>
+    <color name="Error">#CF6679</color>
+    <color name="OnError">#000000</color>
 
     <color name="white">#ffffff</color>
-
-    <color name="activity_background">#444444</color>
 </resources>

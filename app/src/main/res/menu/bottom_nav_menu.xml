@@ -7,7 +7,7 @@
     <item android:title="Map"
         android:id="@+id/btn_home"
         android:icon="@drawable/playcelist_launcher_icon"
-        android:onClick="onClickStartPlayground"/>
+        android:onClick="onClickStartMainActivity"/>
     <item android:title="Lists"
         android:id="@+id/btn_toLists"
         android:icon="@drawable/playcelist_launcher_icon"

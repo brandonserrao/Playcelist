@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/activity_background">
+    android:layout_width="match_parent" android:layout_height="match_parent" android:theme="@style/AppTheme">
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapbox"
@@ -17,14 +16,15 @@
         android:layout_height="30dp"
         android:layout_alignParentStart="true"
         android:layout_alignTop="@id/mapbox"
-        android:layout_margin="10dp"/>
+        android:layout_margin="10dp"
+        app:theme="@style/AppTheme"/>
 
     <androidx.appcompat.widget.SearchView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/btn_account"
         android:layout_alignBottom="@id/btn_account"
-        app:theme="@style/SearchViewStyle"
+        app:theme="@style/AppTheme"
         />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,19 +41,15 @@
         android:layout_width="match_parent"
         android:layout_above="@id/bottom_navigation"
         android:layout_marginBottom="1dp"
-        android:background="@color/colorPrimaryDark"
         android:textAlignment="center"
-        android:textColor="@color/white"
         android:lines="2"
-        android:text="@string/now_playing"/>
+        android:text="@string/now_playing"
+        android:background="@color/Surface"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/colorPrimaryDark"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
         app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

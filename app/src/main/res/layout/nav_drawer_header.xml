@@ -3,14 +3,13 @@
 android:id="@+id/nav_header"
 android:layout_width="match_parent"
 android:layout_height="160dp"
-android:background="@color/colorPrimaryLight"
 android:clickable="true"
 android:focusable="true"
 android:foreground="?attr/selectableItemBackgroundBorderless"
 android:gravity="bottom"
 android:orientation="vertical"
 android:padding="16dp"
-android:theme="@style/ThemeOverlay.AppCompat.Dark">
+android:theme="@style/AppTheme">
 
 <ImageView
     android:id="@+id/nav_header_imageView"

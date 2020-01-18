@@ -7,24 +7,24 @@
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:gravity="bottom"
+    android:onClick="onClickOpenAccountDialog"
     android:orientation="vertical"
     android:padding="16dp"
-    android:theme="@style/AppTheme">
+    android:theme="@style/AppTheme"
+    android:background="@color/Secondary">
 
     <ImageView
         android:id="@+id/nav_header_SProfilePicture"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:longClickable="true"
-        android:onClick="onClickOpenAccountDialog"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/nav_header_SUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:longClickable="true"
-        android:onClick="onClickOpenAccountDialog"
         android:paddingTop="16dp"
-        android:text="@string/SAccountName" />
+        android:text="@string/SAccountName"
+        android:textColor="@color/OnSecondary"/>
+
 </LinearLayout>

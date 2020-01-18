@@ -1,31 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group
+        android:id="@+id/nd_g2"
+        android:checkableBehavior="all">
         <item
-            android:id="@+id/nd01"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="item1" />
+            android:id="@+id/check_SongsOnMap"
+            android:title="@string/nd_songs"
+            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox" />
         <item
-            android:id="@+id/nd02"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="item2" />
-        <item
-            android:id="@+id/nd03"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="item3" />
-    </group>
-    <group>
-        <item
-            android:id="@+id/nd04"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="playced songs" />
-        <item
-            android:id="@+id/nd05"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="playcelists" />
-        <item
-            android:id="@+id/nd06"
-            android:icon="@drawable/playcelist_launcher_icon"
-            android:title="item6" />
+            android:id="@+id/check_listsOnMap"
+            android:title="@string/nd_lists"
+            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox" />
     </group>
 </menu>

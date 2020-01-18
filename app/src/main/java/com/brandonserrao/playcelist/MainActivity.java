@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         //-------obsolete; database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
         if (!dbFile.exists()) {
@@ -286,10 +288,6 @@ public class MainActivity extends AppCompatActivity implements
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
     public void onClickOpenNavDrawer(View view) {
-        View contextView = findViewById(R.id.btn_nd);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
-        //code to open nav drawer
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
     }
@@ -302,6 +300,7 @@ public class MainActivity extends AppCompatActivity implements
         //code to open account dialog
     }
 
+    //somehow align checkboxes with menu items and map
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
@@ -314,4 +313,5 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.flush();
         dbOut.close();
     }
+
 }

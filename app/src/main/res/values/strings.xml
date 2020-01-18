@@ -38,6 +38,9 @@
 
     <string name="title_activity_main2">Main2Activity</string>
 
+    <string name="nd_songs">playced songs</string>
+    <string name="nd_lists">playcelists</string>
+
     <string name="now_playing">_song_\n_artist_</string>
     <string name="np_song">_songfromSpotifyAPI_</string>
     <string name="np_artist">_artistfromSpotifyAPI_</string>

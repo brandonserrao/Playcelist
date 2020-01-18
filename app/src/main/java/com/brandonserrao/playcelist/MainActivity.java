@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -43,9 +44,6 @@ public class MainActivity extends AppCompatActivity implements
     private MapboxMap mapboxMap;
     private MapView mapView;
 
-    /*FloatingActionButton btn_playcer =
-            (FloatingActionButton) findViewById(R.id.btn_playce_current_here);*/
-
     //database implementation variables
     String db_name = "sqlstudio_db2_v4.sqlite";
     SongDAO songdao;
@@ -55,15 +53,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /* btn_playcer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onClickPlayceCurrentHere();
-            }
-        });*/
-
-
-      //database intialization from file from assets, as shown in tutorials
+        //database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
         if (!dbFile.exists()) {
             try {
@@ -78,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
                         .allowMainThreadQueries()
                         .build();*/
         AppDatabase database =
-                Room.databaseBuilder(this, AppDatabase.class,db_name)
+                Room.databaseBuilder(this, AppDatabase.class, db_name)
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
@@ -99,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         MainActivity.this.mapboxMap = mapboxMap;
         mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
-        //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
+            //mapboxMap.setStyle(Style.MAPBOX_STREETS, new Style.OnStyleLoaded() {
 
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -111,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(0,0))
+                        .withLatLng(new LatLng(0, 0))
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom")
                 );
@@ -161,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Add symbol at specified lat/lon
                 double lat = point.getLatitude(), lng = point.getLongitude();
                 symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(lat,lng))
+                        .withLatLng(new LatLng(lat, lng))
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom")
                 );
@@ -171,11 +161,12 @@ public class MainActivity extends AppCompatActivity implements
                 Song song = new Song();
                 //song.setUID(String.valueOf(lat)+String.valueOf(lng));//makeshift UID
                 //song.setUID(NULL);//makeshift UID
-                song.setLNG((float)lng);song.setLAT((float)lat);//song.setLAT(String.valueOf(lat));
+                song.setLNG((float) lng);
+                song.setLAT((float) lat);//song.setLAT(String.valueOf(lat));
                 //song.setLNG(String.valueOf(lng));
                 song.setNAME("!placeholdername!");
                 songdao.insert(song);
-                Toast.makeText(MainActivity.this, "record successfully added,",Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "record successfully added,", Toast.LENGTH_LONG).show();
 
 
                 return true;
@@ -214,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements
         permissionsManager.onRequestPermissionsResult(requestCode,
                 permissions, grantResults);
     }
+
     @Override
     public void onExplanationNeeded(List<String> permissionsToExplain) {
         Toast.makeText(this, "user_location_permission_explanation",
@@ -237,28 +229,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-
-    //Button Click Handlers
-    public void onClickStartSongsActivity(MenuItem item) {
-        Intent intent = new Intent(this, SongsActivity.class);
-        startActivity(intent);
-    }
-    public void onClickStartMainActivity(MenuItem item) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-    public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-    }
-
-    public void onClickPlayceCurrentHere(FloatingActionButton btn_playcer) {
-
-    }
-
-
-    private void  copyDatabaseFile(String destinationPath) throws IOException {
+    private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
         OutputStream dbOut = new FileOutputStream(destinationPath);
         byte[] buffer = new byte[1024];
@@ -270,5 +241,41 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.close();
     }
 
+    /*button IDs for reference
+        btn_nd [top left in main activity] > opens nav drawer
+        btn_playcer [bottom right in main activity] > playces current playing at current position
 
+        btn_toSongs [left in bottom nav bar] > navigates via intent to Songs Activity
+        btn_toMap [middle in bottom nav bar] > navigates via intent to Main Activity
+        btn_toLists [right in bottom nav bar] > navigates via intent to Lists Activity
+    */
+
+
+    //Button Handlers
+    public void onClickStartSongsActivity(MenuItem item) {
+        Intent intent = new Intent(this, SongsActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickStartMainActivity(MenuItem item) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickStartListsActivity(MenuItem item) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickPlayceCurrentHere(View view) {
+        View contextView = findViewById(R.id.btn_playcer);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+    }
+
+    public void onClickOpenNavDrawer(View view) {
+        View contextView = findViewById(R.id.btn_nd);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+    }
 }

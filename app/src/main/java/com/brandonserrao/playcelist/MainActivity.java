@@ -278,4 +278,10 @@ public class MainActivity extends AppCompatActivity implements
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
     }
+
+    public void onClickOpenAccountDialog(View view) {
+        View contextView = findViewById(R.id.nav_header_SProfilePicture);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+    }
 }

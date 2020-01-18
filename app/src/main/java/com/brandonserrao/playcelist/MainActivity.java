@@ -1,21 +1,19 @@
 package com.brandonserrao.playcelist;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.Room;
-
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.brandonserrao.playcelist.R;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.android.gestures.MoveGestureDetector;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -27,21 +25,16 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleManager;
-import com.mapbox.mapboxsdk.plugins.annotation.CircleOptions;
 import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-
-import static java.sql.Types.NULL;
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
@@ -50,16 +43,24 @@ public class MainActivity extends AppCompatActivity implements
     private MapboxMap mapboxMap;
     private MapView mapView;
 
+    /*FloatingActionButton btn_playcer =
+            (FloatingActionButton) findViewById(R.id.btn_playce_current_here);*/
 
     //database implementation variables
     String db_name = "sqlstudio_db2_v4.sqlite";
     SongDAO songdao;
     List<Song> song_list;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /* btn_playcer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickPlayceCurrentHere();
+            }
+        });*/
 
 
       //database intialization from file from assets, as shown in tutorials
@@ -236,18 +237,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+
+
     //Button Click Handlers
-    public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-    }
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
-    public void onClickStartPlayground(MenuItem item) {
-        Intent intent = new Intent(this, SpotifyPlayground.class);
+    public void onClickStartMainActivity(MenuItem item) {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+    public void onClickStartListsActivity(MenuItem item) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickPlayceCurrentHere(FloatingActionButton btn_playcer) {
+
     }
 
 

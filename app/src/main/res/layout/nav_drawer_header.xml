@@ -15,6 +15,7 @@
         android:id="@+id/nav_header_SProfilePicture"
         android:layout_width="64dp"
         android:layout_height="64dp"
+        android:longClickable="true"
         android:onClick="onClickOpenAccountDialog"
         android:src="@mipmap/ic_launcher" />
 
@@ -22,7 +23,8 @@
         android:id="@+id/nav_header_SUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:longClickable="true"
         android:onClick="onClickOpenAccountDialog"
         android:paddingTop="16dp"
-        android:text="@string/SAccountName"/>
+        android:text="@string/SAccountName" />
 </LinearLayout>

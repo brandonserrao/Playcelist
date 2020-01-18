@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -53,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements
     String db_name = "sqlstudio_db2_v5.sqlite";
     SongDAO songdao;
     List<Song> song_list;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,18 +114,17 @@ public class MainActivity extends AppCompatActivity implements
                 //adding songs from database to the map
                 SymbolOptions song_symbol = new SymbolOptions() //settings for default song symbol; init'd without latlng
                         .withIconImage("red_marker")
-                        .withIconAnchor("bottom")
-                        ;
-                for (int i=0; i<song_list.size(); i++) { //loop to add db records to map
+                        .withIconAnchor("bottom");
+                for (int i = 0; i < song_list.size(); i++) { //loop to add db records to map
                     Song song = song_list.get(i);
                     double lat = (double) song.getLAT();
                     double lng = (double) song.getLNG();
-                    symbolManager.create(song_symbol.withLatLng(new LatLng(lat,lng))
+                    symbolManager.create(song_symbol.withLatLng(new LatLng(lat, lng))
                     );
                 }
 
                 //shift camera to desired focus
-                LatLng focus = new LatLng(51.051877,13.741517); //ideally current device location
+                LatLng focus = new LatLng(51.051877, 13.741517); //ideally current device location
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                         new CameraPosition.Builder()
                                 .target(focus)
@@ -182,7 +181,8 @@ public class MainActivity extends AppCompatActivity implements
 
                 //creating new song entry and placing in database
                 Song song = new Song();
-                song.setLNG((float)lng);song.setLAT((float)lat);
+                song.setLNG((float) lng);
+                song.setLAT((float) lat);
                 song.setNAME("!placeholdername!");
                 songdao.insert(song);
                 Toast.makeText(MainActivity.this, "record successfully added,", Toast.LENGTH_LONG).show();
@@ -256,37 +256,54 @@ public class MainActivity extends AppCompatActivity implements
         btn_toLists [right in bottom nav bar] > navigates via intent to Lists Activity
     */
 
+
     //Button Click Handlers
+    //opens Songs Activity which shows all playced songs in a recycler view
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
 
+    //navigates to main activity which shows now playing info and a map with all playced songs as colorful bubbles
     public void onClickStartMainActivity(MenuItem item) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
+    //opens Lists Activity which shows all playcelists in a recycler view
     public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
 
+    //creates new item in Songs DB using now playing info and GPS info
     public void onClickPlayceCurrentHere(View view) {
         View contextView = findViewById(R.id.btn_playcer);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
+        //code to add now playing to DB and map
     }
 
+    //slides in navigation drawer which handles account information (and what is displayed on the map)
     public void onClickOpenNavDrawer(View view) {
         View contextView = findViewById(R.id.btn_nd);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
+        //code to open nav drawer
+        DrawerLayout mDrawer = findViewById(R.id.mDrawer);
+        mDrawer.openDrawer(findViewById(R.id.nav_drawer));
+    }
+
+    //opens spotify account dialog
+    public void onClickOpenAccountDialog(View view) {
+        View contextView = findViewById(R.id.nav_header_SProfilePicture);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+        //code to open account dialog
     }
 
 
-
-    private void  copyDatabaseFile(String destinationPath) throws IOException {
+    private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
         OutputStream dbOut = new FileOutputStream(destinationPath);
         byte[] buffer = new byte[1024];

@@ -15,7 +15,7 @@
         android:id="@+id/recycler_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/back_button"/>
+        android:layout_above="@id/bottom_navigation"/>
     <EditText
         android:id="@+id/edittext_searchbar"
         android:layout_above="@id/buttonBar"
@@ -24,32 +24,32 @@
         android:hint="Enter Search Term by Name"/>
     <LinearLayout
         android:id="@+id/buttonBar"
+        android:layout_above="@id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal"
-        android:layout_alignParentBottom="true">
-    <Button
-        android:id="@+id/back_button"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Go Back"
-        android:onClick="onClickStartMainActivity"/>
-    <Button
-        android:id="@+id/search_button"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:onClick="searchSongsByName"/>
-    <Button
-        android:id="@+id/deleteResults_button"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Delete Results"
-        android:onClick="onClickDeleteResults"/>
+        android:gravity="center_horizontal">
+        <Button
+            android:id="@+id/deleteResults_button"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete Results"
+            android:onClick="onClickDeleteResults"/>
+        <Button
+            android:id="@+id/search_button"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"
+            android:onClick="searchSongsByName"/>
+        <Button
+            android:id="@+id/back_button"
+            android:layout_alignParentBottom="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Go Back"
+            android:onClick="onClickStartMainActivity"/>
     </LinearLayout>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

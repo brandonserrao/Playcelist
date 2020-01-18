@@ -45,4 +45,6 @@
 
     <string name="SAccountName">!placeholder_SAccountName</string>
 
+    <string name="btnWorking">Ths button is working!</string>
+
 </resources>

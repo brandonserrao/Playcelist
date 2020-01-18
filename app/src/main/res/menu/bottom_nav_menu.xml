@@ -5,7 +5,7 @@
         android:icon="@drawable/playcelist_launcher_icon"
         android:onClick="onClickStartSongsActivity"/>
     <item android:title="Map"
-        android:id="@+id/btn_home"
+        android:id="@+id/btn_toMap"
         android:icon="@drawable/playcelist_launcher_icon"
         android:onClick="onClickStartMainActivity"/>
     <item android:title="Lists"

@@ -1,49 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="72sp"
+    android:background="@color/Surface"
+    android:orientation="horizontal"
+    android:padding="16sp"
     android:textSize="16sp"
-    android:orientation="vertical"
     android:theme="@style/AppTheme">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/tv1"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="placeholdertext1"
-            android:padding="8dp"/>
-        <TextView
-            android:id="@+id/tv2"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="placeholdertext2"
-            android:padding="8dp"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/tv3"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="placeholdertext3"
-            android:padding="8dp"/>
-        <TextView
-            android:id="@+id/tv4"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="placeholdertext4"
-            android:padding="8dp"/>
-        <TextView
-            android:id="@+id/tv5"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="placeholdertext5"
-            android:padding="8dp"/>
-    </LinearLayout>
 
-</LinearLayout>
+    <!-- list art -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:onClick="API_playThisSong"
+        android:src="@drawable/album_art" />
+
+    <RelativeLayout
+        android:id="@+id/songInfo"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginEnd="24dp"
+        android:layout_toEndOf="@+id/iv"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <RelativeLayout
+            android:id="@+id/line1"
+            android:layout_width="match_parent"
+            android:layout_height="16dp">
+
+            <!-- song number -->
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="10dp"
+                android:text="placeholdertext1" />
+
+            <!-- song name -->
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/tv1"
+                android:text="placeholdertext2"
+                android:textStyle="normal" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/line2"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_below="@+id/line1"
+            android:layout_alignParentBottom="true"
+            android:paddingTop="10dp">
+
+            <!-- artist name -->
+            <TextView
+                android:id="@+id/tv3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:paddingEnd="10dp"
+                android:text="placeholdertext3"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- latlng1 -->
+            <TextView
+                android:id="@+id/tv4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/tv3"
+                android:layout_toEndOf="@+id/tv3"
+                android:paddingEnd="10dp"
+                android:text="placeholdertext4"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- latlng2 -->
+            <TextView
+                android:id="@+id/tv5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/tv4"
+                android:text="placeholdertext5"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/btn_showSongOnMap"
+        android:layout_width="24dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:onClick="viewSongOnMap"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:src="@drawable/icon0" />
+</RelativeLayout>

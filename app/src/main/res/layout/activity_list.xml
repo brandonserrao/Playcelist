@@ -10,8 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/search_button"
+        android:layout_toStartOf="@+id/search_button"
         android:hint="@string/s_name" />
+
     <Button
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
@@ -29,30 +30,13 @@
         android:layout_below="@+id/edittext_searchbar" />
 
     <!--only while working on the app-->
-    <LinearLayout
-        android:id="@+id/buttonBar"
-        android:layout_width="match_parent"
+    <Button
+        android:id="@+id/deleteResults_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/bottom_navigation"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/deleteResults_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:onClick="onClickDeleteResults"
-            android:text="Delete Results" />
-
-        <Button
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:onClick="onClickStartMainActivity"
-            android:text="Go Back" />
-    </LinearLayout>
+        android:onClick="onClickDeleteResults"
+        android:text="Delete Results" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

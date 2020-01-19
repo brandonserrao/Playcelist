@@ -14,7 +14,8 @@
         android:id="@+id/iv"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/album_art" />
+        android:src="@drawable/album_art"
+        android:onClick="API_playThisList"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -23,7 +24,8 @@
         android:layout_toEndOf="@+id/iv"
         android:orientation="vertical"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:onClick="onClickOpenListItemDialog">
 
         <RelativeLayout
             android:id="@+id/line1"

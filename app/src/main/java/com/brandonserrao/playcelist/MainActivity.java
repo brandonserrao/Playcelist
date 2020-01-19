@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
         super.onCreate(savedInstanceState);
 
         //-------obsolete; database intialization from file from assets, as shown in tutorials
@@ -283,7 +284,12 @@ public class MainActivity extends AppCompatActivity implements
         View contextView = findViewById(R.id.btn_playcer);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
-        //code to add now playing to DB and map
+        //actual code:
+        // open dialog
+        // get GPS info (or alt. set needle on map)
+        // get API info / nowplaying
+        // create new DB item
+        // reload map / make sure it appears on map
     }
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
@@ -297,7 +303,9 @@ public class MainActivity extends AppCompatActivity implements
         View contextView = findViewById(R.id.nav_header_SProfilePicture);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
-        //code to open account dialog
+        //actual code:
+        // open dialog to log in or out / change account
+        // align with API
     }
 
 
@@ -312,6 +320,7 @@ public class MainActivity extends AppCompatActivity implements
         }else{
             checkbox1.setChecked(true);
         }
+        //align with map content
     }
     public void onClickCheckBox2(MenuItem item) {
         NavigationView navDrawer = findViewById(R.id.nav_drawer);
@@ -323,9 +332,8 @@ public class MainActivity extends AppCompatActivity implements
         }else{
             checkbox2.setChecked(true);
         }
+        //align with map content
     }
-
-    //somehow align checkboxes with menu items and map
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);

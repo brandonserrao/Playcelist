@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -125,5 +126,21 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         //send id for map to center on corresponding list circle
+    }
+
+    //sending the listID to spotify to play
+    public void API_playThisList(View view) {
+        View contextView = findViewById(R.id.iv);
+        Snackbar.make(contextView, R.string.play_playcelist, Snackbar.LENGTH_SHORT)
+                .show();
+        //enter API code here
+    }
+
+    //opens a dialog to show playcelist on map, play or delete list via API
+    public void onClickOpenListItemDialog(View view) {
+        View contextView = findViewById(R.id.iv);
+        Snackbar.make(contextView, R.string.playcelistDialog, Snackbar.LENGTH_SHORT)
+                .show();
+        //enter actual code here
     }
 }

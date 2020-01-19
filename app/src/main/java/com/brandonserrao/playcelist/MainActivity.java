@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -58,8 +60,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
         //-------obsolete; database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
@@ -300,6 +300,31 @@ public class MainActivity extends AppCompatActivity implements
         //code to open account dialog
     }
 
+
+    //nav drawer checkbox handlers
+    public void onClickCheckBox1(MenuItem item) {
+        NavigationView navDrawer = findViewById(R.id.nav_drawer);
+        MenuItem menuItem1 = navDrawer.getMenu().findItem(R.id.check_SongsOnMap);
+        CompoundButton checkbox1 = (CompoundButton) menuItem1.getActionView();
+        boolean checked = checkbox1.isChecked();
+        if (checked){
+            checkbox1.setChecked(false);
+        }else{
+            checkbox1.setChecked(true);
+        }
+    }
+    public void onClickCheckBox2(MenuItem item) {
+        NavigationView navDrawer = findViewById(R.id.nav_drawer);
+        MenuItem menuItem2 = navDrawer.getMenu().findItem(R.id.check_listsOnMap);
+        CompoundButton checkbox2 = (CompoundButton) menuItem2.getActionView();
+        boolean checked = checkbox2.isChecked();
+        if (checked){
+            checkbox2.setChecked(false);
+        }else{
+            checkbox2.setChecked(true);
+        }
+    }
+
     //somehow align checkboxes with menu items and map
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
@@ -313,5 +338,6 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.flush();
         dbOut.close();
     }
+
 
 }

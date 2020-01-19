@@ -7,10 +7,12 @@
         <item
             android:id="@+id/check_SongsOnMap"
             android:title="@string/nd_songs"
-            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox" />
+            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox"
+            android:onClick="onClickCheckBox1"/>
         <item
             android:id="@+id/check_listsOnMap"
             android:title="@string/nd_lists"
-            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox" />
+            app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox"
+            android:onClick="onClickCheckBox2"/>
     </group>
 </menu>

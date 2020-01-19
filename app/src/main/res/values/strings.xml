@@ -47,7 +47,7 @@
 
     <string name="SAccountName">[Spotify Account Name]</string>
 
-    <string name="btnWorking">Ths button is working soon!</string>
+    <string name="btnWorking">Ths button will be working soon!</string>
     <string name="s_name">search by name</string>
 
 </resources>

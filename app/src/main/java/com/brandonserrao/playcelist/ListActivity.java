@@ -119,12 +119,13 @@ public class ListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //to main activity via intent, center and zoom to list on map
     public void viewListOnMap(View view) {
         View contextView = findViewById(R.id.btn_showListOnMap);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+        Snackbar.make(contextView, R.string.showsListOnMap, Snackbar.LENGTH_SHORT)
                 .show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
         //send id for map to center on corresponding list circle
     }
 

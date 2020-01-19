@@ -48,6 +48,7 @@
     <string name="SAccountName">[Spotify Account Name]</string>
 
     <string name="btnWorking">This button will be working soon!</string>
+    <string name="showsListOnMap">The list will be shown on the map (intent)</string>
     <string name="play_playcelist">The List will start playing on Spotify</string>
     <string name="playcelistDialog">A dialog will open (play, delete, show on map)</string>
     <string name="s_name">search by name</string>

@@ -13,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -54,7 +56,7 @@ public class ListActivity extends AppCompatActivity {
 
         //create db instance for this activity
         AppDatabase database =
-                Room.databaseBuilder(this, AppDatabase.class,db_name)
+                Room.databaseBuilder(this, AppDatabase.class, db_name)
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
@@ -62,12 +64,11 @@ public class ListActivity extends AppCompatActivity {
         songdao = database.getSongDAO();
         song_list = songdao.getAllSongs();
         List<Song> list_values = song_list;
-        recyclerView=(RecyclerView)findViewById(R.id.recycler_list);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         listAdapter = new ListAdapter(list_values);
         recyclerView.setAdapter(listAdapter);
     }
-
 
 
     //button functions
@@ -92,7 +93,7 @@ public class ListActivity extends AppCompatActivity {
     }
 
     //-----obsolete db init function; from tutorials
-    private void  copyDatabaseFile(String destinationPath) throws IOException {
+    private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
         OutputStream dbOut = new FileOutputStream(destinationPath);
         byte[] buffer = new byte[1024];
@@ -106,14 +107,20 @@ public class ListActivity extends AppCompatActivity {
 
 
     //Button Click Handlers
+
+    //navigates to songs activity
     public void onClickStartSongsActivity(MenuItem item) {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
+
+    //navigates to main (map) activity
     public void onClickStartMainActivity(MenuItem item) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+    //navigates to list activity
     public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
@@ -134,7 +141,9 @@ public class ListActivity extends AppCompatActivity {
         View contextView = findViewById(R.id.iv);
         Snackbar.make(contextView, R.string.play_playcelist, Snackbar.LENGTH_SHORT)
                 .show();
-        //enter API code here
+        //actual code:
+        // get listID from db item
+        // send intent(?) via API to play/shuffle list
     }
 
     //opens a dialog to show playcelist on map, play or delete list via API
@@ -142,6 +151,14 @@ public class ListActivity extends AppCompatActivity {
         View contextView = findViewById(R.id.iv);
         Snackbar.make(contextView, R.string.playcelistDialog, Snackbar.LENGTH_SHORT)
                 .show();
-        //enter actual code here
+        //actual code:
+        //
+        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+                .setTitle("list name")
+                .setMessage("Message")
+                .setPositiveButton("play", null)
+                .setNeutralButton("show on map", null)
+                .setNegativeButton("delete", null)
+                .show();
     }
 }

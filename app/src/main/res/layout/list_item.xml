@@ -14,18 +14,19 @@
         android:id="@+id/iv"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/album_art"
-        android:onClick="API_playThisList"/>
+        android:onClick="API_playThisList"
+        android:src="@drawable/album_art" />
 
     <RelativeLayout
+        android:id="@+id/text_list_info"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_toStartOf="@+id/btn_showListOnMap"
         android:layout_toEndOf="@+id/iv"
+        android:onClick="onClickOpenListItemDialog"
         android:orientation="vertical"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:onClick="onClickOpenListItemDialog">
+        android:paddingEnd="16dp">
 
         <RelativeLayout
             android:id="@+id/line1"
@@ -38,7 +39,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="10dp"
-                android:text="placeholdertext1" />
+                android:text="placeholdertext1"
+                android:textColor="@color/OnSurface" />
 
             <!-- list name -->
             <TextView
@@ -47,6 +49,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/tv1"
                 android:text="placeholdertext2"
+                android:textColor="@color/OnSurface"
                 android:textStyle="normal" />
         </RelativeLayout>
 
@@ -92,6 +95,11 @@
         </RelativeLayout>
     </RelativeLayout>
 
+    <!-- <RelativeLayout
+         android:id="@+id/icons"
+         android:layout_width="wrap_content"
+         android:layout_height="40dp"> -->
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/btn_showListOnMap"
         android:layout_width="24dp"
@@ -101,4 +109,16 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:src="@drawable/icon0" />
+
+    <!-- <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/btn_deleteList"
+        android:layout_width="24dp"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
+        android:onClick="viewListOnMap"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:src="@drawable/icon0" />
+
+</RelativeLayout>-->
 </RelativeLayout>

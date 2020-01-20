@@ -13,4 +13,11 @@
     <color name="OnError">#000000</color>
 
     <color name="white">#ffffff</color>
+
+
+    <color name="activity_background">#444444</color>
+
+
+
+    <color name="colorAccent">#FF4081</color>
 </resources>

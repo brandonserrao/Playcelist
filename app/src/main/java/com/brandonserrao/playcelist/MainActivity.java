@@ -2,10 +2,14 @@ package com.brandonserrao.playcelist;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,13 +17,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.brandonserrao.playcelist.model.Image;
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.android.gestures.MoveGestureDetector;
-import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -35,15 +39,27 @@ import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import com.brandonserrao.playcelist.model.SPUser;
+
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
@@ -293,19 +309,28 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
-    public void onClickOpenNavDrawer(View view) {
+    public void onClickOpenNavDrawer(View view) throws InterruptedException {
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
+        Checkloginstatus();
+
     }
 
     //opens spotify account dialog
     public void onClickOpenAccountDialog(View view) {
-        View contextView = findViewById(R.id.nav_header_SProfilePicture);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
+        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+        String url = CUser.getImages().get(0).getUrl();
+        Glide.with(Upic).load(url).into(Upic);
+
+
+
         //actual code:
         // open dialog to log in or out / change account
         // align with API
+
+
+
+
     }
 
 
@@ -346,6 +371,166 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.flush();
         dbOut.close();
     }
+
+
+
+
+    // spotify stufff
+
+    public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
+    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
+    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+    public SPUser CUser; // user profile
+
+    private final OkHttpClient mOkHttpClient = new OkHttpClient();
+    public String mAccessToken;
+    public String mAccessCode;
+    public Call mCall;
+
+    @Override
+    protected void onDestroy() {
+            cancelCall();
+        super.onDestroy();
+
+    }
+
+    public void RequestCode() {
+        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.CODE);
+        AuthenticationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
+    }
+
+    public void RequestToken() {
+        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
+        AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+    }
+
+
+    public void Checkloginstatus() {
+        if (mAccessToken == null) {
+            // no login
+            //Log.e("Chek","Check");
+            RequestToken();
+            Log.e("Chek","Check32");
+
+        }
+        else {
+
+
+
+
+
+
+        }
+
+    }  ;
+
+
+    public void GetUser() {
+
+
+        final Request request = new Request.Builder()
+                   .url("https://api.spotify.com/v1/me") //get user data
+                //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
+                .addHeader("Authorization","Bearer " + mAccessToken)
+                .build();
+        cancelCall();
+        mCall = mOkHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+               Log.e("Response","Request fail");//Fail
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                try  {
+
+                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                    String JsonResponse = jsonObject.toString();
+                    Gson gson = new Gson();
+
+
+                    CUser = gson.fromJson(JsonResponse, SPUser.class);
+
+                    Log.e("Response","User" +CUser.getDisplayName());
+                    TextView Username= findViewById(R.id.nav_header_SUserName);
+                    Username.setText(CUser.getDisplayName());
+                    Log.e("Upic link","Url" +CUser.getImages().get(0).getUrl());
+
+
+                        Log.e("Response","User" +JsonResponse);
+                    response.close();
+
+                }
+
+                catch (JSONException e) {
+                    //Fail
+                }
+
+
+            }
+
+
+
+
+        });
+
+
+
+
+
+    }
+
+
+    private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
+        return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+                .setShowDialog(false)
+                .setScopes(new String[]{"user-read-email","user-read-playback-state","user-read-currently-playing","user-read-private"})
+                .setCampaign("your-campaign-token")
+                .build();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+
+        if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
+            mAccessToken = response.getAccessToken();
+            Log.e("Token","THere"+mAccessToken);
+
+            GetUser();
+
+
+
+
+
+
+        } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
+            mAccessCode = response.getCode();
+            Log.e("Code","CHere "+mAccessCode);
+            GetUser();
+
+        }
+
+    }
+
+
+
+
+    private Uri getRedirectUri() {
+        return new Uri.Builder()
+                .scheme(getString(R.string.com_spotify_sdk_redirect_scheme))
+                .authority(getString(R.string.com_spotify_sdk_redirect_host))
+                .build();
+    }
+
+    private void cancelCall() {
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
+
 
 
 }

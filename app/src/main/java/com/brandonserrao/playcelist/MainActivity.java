@@ -1,5 +1,6 @@
 package com.brandonserrao.playcelist;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -17,6 +18,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.dialog.MaterialDialogs;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.brandonserrao.playcelist.model.Image;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
@@ -75,8 +79,10 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
 
         //-------obsolete; database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
@@ -114,7 +120,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) { //started on successfuly map creation; main activities start here
-
         MainActivity.this.mapboxMap = mapboxMap;//get the map java object
         //set style and
         mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
@@ -309,28 +314,37 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
-    public void onClickOpenNavDrawer(View view) throws InterruptedException {
+    public void onClickOpenNavDrawer(View view) {
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
-        Checkloginstatus();
-
     }
 
     //opens spotify account dialog
     public void onClickOpenAccountDialog(View view) {
-        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-        String url = CUser.getImages().get(0).getUrl();
-        Glide.with(Upic).load(url).into(Upic);
-
-
-
-        //actual code:
         // open dialog to log in or out / change account
+        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+                .setTitle("Your Spotify Account")
+                .setPositiveButton("change user", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LogIntoSpotify();
+                    }
+                })
+                .setNeutralButton("log out", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LogOutOfSpotify();
+                        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+                        String url = CUser.getImages().get(0).getUrl();
+                        Glide.with(Upic).load(url).into(Upic);
+                    }
+                })
+                .show();
+
         // align with API
-
-
-
-
+        // -
+        // -
+        // -
     }
 
 
@@ -340,24 +354,31 @@ public class MainActivity extends AppCompatActivity implements
         MenuItem menuItem1 = navDrawer.getMenu().findItem(R.id.check_SongsOnMap);
         CompoundButton checkbox1 = (CompoundButton) menuItem1.getActionView();
         boolean checked = checkbox1.isChecked();
-        if (checked){
+        if (checked) {
             checkbox1.setChecked(false);
-        }else{
+        } else {
             checkbox1.setChecked(true);
         }
         //align with map content
+        // -
+        // -
+        // -
     }
+
     public void onClickCheckBox2(MenuItem item) {
         NavigationView navDrawer = findViewById(R.id.nav_drawer);
         MenuItem menuItem2 = navDrawer.getMenu().findItem(R.id.check_listsOnMap);
         CompoundButton checkbox2 = (CompoundButton) menuItem2.getActionView();
         boolean checked = checkbox2.isChecked();
-        if (checked){
+        if (checked) {
             checkbox2.setChecked(false);
-        }else{
+        } else {
             checkbox2.setChecked(true);
         }
         //align with map content
+        // -
+        // -
+        // -
     }
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
@@ -371,8 +392,6 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.flush();
         dbOut.close();
     }
-
-
 
 
     // spotify stufff
@@ -389,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-            cancelCall();
+        cancelCall();
         super.onDestroy();
 
     }
@@ -405,87 +424,65 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    public void Checkloginstatus() {
+    public void LogIntoSpotify() {
         if (mAccessToken == null) {
             // no login
             //Log.e("Chek","Check");
             RequestToken();
-            Log.e("Chek","Check32");
-
+            Log.e("Chek", "Check32");
+        } else {
+            Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
         }
-        else {
+    }
 
-
-
-
-
-
-        }
-
-    }  ;
+    public void LogOutOfSpotify() {
+        Toast.makeText(this, R.string.btnWorking, Toast.LENGTH_LONG).show();
+        //function to log out of spotify
+        // -
+        // -
+        // -
+    }
 
 
     public void GetUser() {
-
-
         final Request request = new Request.Builder()
-                   .url("https://api.spotify.com/v1/me") //get user data
+                .url("https://api.spotify.com/v1/me") //get user data
                 //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
-                .addHeader("Authorization","Bearer " + mAccessToken)
+                .addHeader("Authorization", "Bearer " + mAccessToken)
                 .build();
         cancelCall();
         mCall = mOkHttpClient.newCall(request);
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-               Log.e("Response","Request fail");//Fail
+                Log.e("Response", "Request fail");//Fail
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                try  {
+                try {
 
                     final JSONObject jsonObject = new JSONObject(response.body().string());
                     String JsonResponse = jsonObject.toString();
                     Gson gson = new Gson();
-
-
                     CUser = gson.fromJson(JsonResponse, SPUser.class);
-
-                    Log.e("Response","User" +CUser.getDisplayName());
-                    TextView Username= findViewById(R.id.nav_header_SUserName);
+                    TextView Username = findViewById(R.id.nav_header_SUserName);
                     Username.setText(CUser.getDisplayName());
-                    Log.e("Upic link","Url" +CUser.getImages().get(0).getUrl());
-
-
-                        Log.e("Response","User" +JsonResponse);
+                    Log.e("Response", "User" + JsonResponse);
                     response.close();
 
-                }
-
-                catch (JSONException e) {
+                } catch (JSONException e) {
                     //Fail
                 }
-
-
             }
-
-
-
-
         });
-
-
-
-
-
     }
 
 
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
         return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email","user-read-playback-state","user-read-currently-playing","user-read-private"})
+                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
                 .setCampaign("your-campaign-token")
                 .build();
     }
@@ -497,25 +494,16 @@ public class MainActivity extends AppCompatActivity implements
 
         if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
             mAccessToken = response.getAccessToken();
-            Log.e("Token","THere"+mAccessToken);
-
+            Log.e("Token", "THere" + mAccessToken);
             GetUser();
-
-
-
-
 
 
         } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
             mAccessCode = response.getCode();
-            Log.e("Code","CHere "+mAccessCode);
+            Log.e("Code", "CHere " + mAccessCode);
             GetUser();
-
         }
-
     }
-
-
 
 
     private Uri getRedirectUri() {
@@ -530,7 +518,6 @@ public class MainActivity extends AppCompatActivity implements
             mCall.cancel();
         }
     }
-
 
 
 }

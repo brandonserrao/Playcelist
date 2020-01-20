@@ -54,11 +54,6 @@ public class SongsActivity extends AppCompatActivity {
 
 
     //button functions
-    public void onClickStartMainActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
     public void searchSongsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
@@ -72,7 +67,6 @@ public class SongsActivity extends AppCompatActivity {
         String search_term = et.getText().toString();
         songdao.deleteSearchResults(search_term);
         et.setText("");
-
         List<Song> songs = songdao.getAllSongs();
         songsAdapter = new SongsAdapter(songs);
         recyclerView.setAdapter(songsAdapter);

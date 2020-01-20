@@ -101,5 +101,5 @@
         android:onClick="viewSongOnMap"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:src="@drawable/icon0" />
+        android:src="@drawable/onmapicon" />
 </RelativeLayout>

@@ -1,12 +1,16 @@
 package com.brandonserrao.playcelist;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -132,8 +136,14 @@ public class ListActivity extends AppCompatActivity {
         Snackbar.make(contextView, R.string.showsListOnMap, Snackbar.LENGTH_SHORT)
                 .show();
         //Intent intent = new Intent(this, MainActivity.class);
+        // -
+        // -
         //startActivity(intent);
+        // -
+        // -
         //send id for map to center on corresponding list circle
+        // -
+        // -
     }
 
     //sending the listID to spotify to play
@@ -143,22 +153,36 @@ public class ListActivity extends AppCompatActivity {
                 .show();
         //actual code:
         // get listID from db item
+        // -
+        // -
+        // -
         // send intent(?) via API to play/shuffle list
+        // -
+        // -
+        // -
     }
 
-    //opens a dialog to show playcelist on map, play or delete list via API
-    public void onClickOpenListItemDialog(View view) {
-        View contextView = findViewById(R.id.iv);
-        Snackbar.make(contextView, R.string.playcelistDialog, Snackbar.LENGTH_SHORT)
-                .show();
-        //actual code:
-        //
+    public interface delListener{
+        public void onClick();
+    }
+
+    //opens a dialog to confirm deleting the List
+    public void onClickOpenListDeleteDialog(View view) {
+        //to get the relative Layout for the item: view.getParent().getParent();
         new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
-                .setTitle("list name")
-                .setMessage("Message")
-                .setPositiveButton("play", null)
-                .setNeutralButton("show on map", null)
-                .setNegativeButton("delete", null)
+                .setMessage("Do you want to delete this playcelist?")
+                .setNeutralButton("back", null)
+                .setNegativeButton("delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(ListActivity.this, R.string.btnWillDeleteList, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                // .setNegativeButtonIcon(getDrawable(R.drawable.delete))
                 .show();
+        //code to delete the list from DB & Spotify:
+        // -
+        // -
+        // -
     }
 }

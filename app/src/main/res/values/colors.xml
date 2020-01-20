@@ -7,7 +7,8 @@
     <color name="Primary">#EEEEEE</color>
     <color name="PrimaryVariant">#616161</color>
     <color name="OnPrimary">#000000</color>
-    <color name="Secondary">#FFEA00</color>
+    <color name="Secondary">#1de9b6</color>
+    <!--<color name="Secondary">#FFEA00</color>-->
     <color name="OnSecondary">#000000</color>
     <color name="Error">#CF6679</color>
     <color name="OnError">#000000</color>

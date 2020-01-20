@@ -35,4 +35,13 @@
         <item name="colorOnError">@color/OnError</item>
     </style>
 
+    <style name="circleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/activity_splash_screen</item>
+    </style>
+
 </resources>

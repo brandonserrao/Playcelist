@@ -36,8 +36,22 @@ dependencies {
 
     //material design dependency
     implementation 'com.google.android.material:material:1.2.0-alpha03'
+
+
+   // spotify autorization
     implementation 'com.spotify.android:auth:1.1.0'
-    implementation "com.google.code.gson:gson:2.6.1"
+
+    // http reqeats
+
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+// json parsing
+
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+
 
     //database dependencies
 /*    implementation 'androidx.room:room-runtime:2.2.0-beta01'

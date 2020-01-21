@@ -22,7 +22,7 @@
         android:cropToPadding="true"
         android:scaleType="centerInside"
         app:shapeAppearanceOverlay="@style/circleImageView"
-        app:srcCompat="@drawable/album_art" />
+        app:srcCompat="@drawable/albumart" />
 
     <TextView
         android:id="@+id/nav_header_SUserName"

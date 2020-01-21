@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 mapboxMap.getStyle().addImage("red_marker",
                         BitmapFactory.decodeResource(getResources(),
-                                R.drawable.red_marker)); //add the symbol
+                                R.drawable.songpin)); //add the symbol
 
                 SymbolManager symbolManager =
                         new SymbolManager(mapView, mapboxMap, style); //init symbolmanager

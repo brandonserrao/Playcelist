@@ -15,7 +15,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:onClick="API_playThisSong"
-        android:src="@drawable/album_art" />
+        android:src="@drawable/albumart" />
 
     <RelativeLayout
         android:id="@+id/songInfo"

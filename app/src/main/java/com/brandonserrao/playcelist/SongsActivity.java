@@ -2,16 +2,19 @@ package com.brandonserrao.playcelist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -101,23 +104,60 @@ public class SongsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //to main activity via intent, center and zoom to list on map
     public void viewSongOnMap(View view) {
         View contextView = findViewById(R.id.btn_showSongOnMap);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+        Snackbar.make(contextView, R.string.showsSongOnMap, Snackbar.LENGTH_SHORT)
                 .show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        //send id for map to center on corresponding song bubble
+        //Intent intent = new Intent(this, MainActivity.class);
+        // -
+        // -
+        //startActivity(intent);
+        // -
+        // -
+        //send id for map to center on corresponding list circle
+        // -
+        // -
     }
 
-    //sending the songID to spotify to play
-    //DOESN'T WORK ATM
+    //sending the listID to spotify to play
     public void API_playThisSong(View view) {
-        View contextView = findViewById(R.id.iv);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+        View contextView = findViewById(R.id.btn_playSong);
+        Snackbar.make(contextView, R.string.play_song, Snackbar.LENGTH_SHORT)
                 .show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        //enter API code here
+        //actual code:
+        // get listID from db item
+        // -
+        // -
+        // -
+        // send intent(?) via API to play/shuffle list
+        // -
+        // -
+        // -
     }
+
+    public interface delListener{
+        public void onClick();
+    }
+
+    //opens a dialog to confirm deleting the List
+    public void onClickOpenSongDeleteDialog(View view) {
+        //to get the relative Layout for the item: view.getParent().getParent();
+        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+                .setMessage("Do you want to unplayce this song?")
+                .setNeutralButton("cancel", null)
+                .setNegativeButton("delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(SongsActivity.this, R.string.btnWillDeleteSong, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                // .setNegativeButtonIcon(getDrawable(R.drawable.delete))
+                .show();
+        //code to delete the list from DB & Spotify:
+        // -
+        // -
+        // -
+    }
+
 }

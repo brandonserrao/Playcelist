@@ -10,7 +10,8 @@
         <item name="colorPrimary">@color/Primary</item>
         <item name="colorPrimaryVariant">@color/PrimaryVariant</item>
         <item name="colorOnPrimary">@color/OnPrimary</item>
-        <item name="colorSecondary">@color/Secondary</item>
+        <item name="colorSecondary">@color/SecondaryDark</item>
+        <item name="colorAccent">@color/Secondary</item>
         <item name="colorOnSecondary">@color/OnSecondary</item>
         <item name="colorError">@color/Error</item>
         <item name="colorOnError">@color/OnError</item>

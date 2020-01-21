@@ -14,15 +14,16 @@
         android:id="@+id/iv"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:onClick="API_playThisSong"
+        android:clickable="false"
         android:src="@drawable/albumart" />
 
     <RelativeLayout
-        android:id="@+id/songInfo"
+        android:id="@+id/text_list_info"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginEnd="24dp"
+        android:layout_toStartOf="@+id/icons"
         android:layout_toEndOf="@+id/iv"
+        android:clickable="false"
         android:orientation="vertical"
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
@@ -32,21 +33,23 @@
             android:layout_width="match_parent"
             android:layout_height="16dp">
 
-            <!-- song number -->
+            <!-- list number -->
             <TextView
                 android:id="@+id/tv1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="10dp"
-                android:text="placeholdertext1" />
+                android:text="placeholdertext1"
+                android:textColor="@color/OnSurface" />
 
-            <!-- song name -->
+            <!-- list name -->
             <TextView
                 android:id="@+id/tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/tv1"
                 android:text="placeholdertext2"
+                android:textColor="@color/OnSurface"
                 android:textStyle="normal" />
         </RelativeLayout>
 
@@ -58,7 +61,7 @@
             android:layout_alignParentBottom="true"
             android:paddingTop="10dp">
 
-            <!-- artist name -->
+            <!-- analog to artist -->
             <TextView
                 android:id="@+id/tv3"
                 android:layout_width="wrap_content"
@@ -69,7 +72,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <!-- latlng1 -->
+            <!-- lat -->
             <TextView
                 android:id="@+id/tv4"
                 android:layout_width="wrap_content"
@@ -81,7 +84,6 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
-            <!-- latlng2 -->
             <TextView
                 android:id="@+id/tv5"
                 android:layout_width="wrap_content"
@@ -93,13 +95,39 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/btn_showSongOnMap"
-        android:layout_width="24dp"
+    <RelativeLayout
+        android:id="@+id/icons"
+        android:layout_width="104dp"
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"
-        android:onClick="viewSongOnMap"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:src="@drawable/onmapicon" />
+        android:paddingVertical="8dp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btn_showSongOnMap"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:onClick="viewSongOnMap"
+            android:paddingEnd="8dp"
+            android:src="@drawable/mapicon" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btn_playSong"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/btn_showSongOnMap"
+            android:onClick="API_playThisSong"
+            android:paddingHorizontal="8dp"
+            android:src="@drawable/play" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/btn_deleteSong"
+            android:layout_width="32dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:onClick="onClickOpenSongDeleteDialog"
+            android:paddingStart="8dp"
+            android:src="@drawable/delete" />
+
+    </RelativeLayout>
 </RelativeLayout>

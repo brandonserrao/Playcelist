@@ -49,6 +49,7 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -203,6 +204,12 @@ public class MainActivity extends AppCompatActivity implements
                 );
                 Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
 
+                //*****
+                //Include a dialog to choose between playcing a song or a list
+                // in case of playcing a list, the radius should be entered (further dialog) and then the db item should be created
+                // if aborted, delete marker again
+                //*****
+
                 //creating new song entry and placing in database
                 Song song = new Song();
                 song.setLNG((float) lng);
@@ -216,6 +223,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
+        //*****
+        // we need an onclicklistener that starts playing songs / lists when you click on a marker on the map
+        //*****
 
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
             @Override
@@ -273,8 +283,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
     /*button IDs for reference
-        btn_nd [top left in main activity] > opens nav drawer
-        btn_playcer [bottom right in main activity] > playces current playing at current position
+        btn_nd [bar at top left in main activity] > opens nav drawer
+        btn_playcer [bottom right in main activity] > zooms to current position (GPS) and playces current playing at current position
         btn_toSongs [left in bottom nav bar] > navigates via intent to Songs Activity
         btn_toMap [middle in bottom nav bar] > navigates via intent to Main Activity
         btn_toLists [right in bottom nav bar] > navigates via intent to Lists Activity
@@ -306,11 +316,18 @@ public class MainActivity extends AppCompatActivity implements
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
         //actual code:
-        // open dialog
-        // get GPS info (or alt. set needle on map)
+        //*****
+        // get GPS info
         // get API info / nowplaying
-        // create new DB item
-        // reload map / make sure it appears on map
+        // navigate to current position
+        // set new marker
+        // open dialog (do you want to playce [now playing song] here?)
+        // if confirmed
+        //   create new DB item
+        //   reload map / make sure it appears on map
+        // else
+        //   dismiss and delete marker
+        //*****
     }
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
@@ -319,24 +336,28 @@ public class MainActivity extends AppCompatActivity implements
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
     }
 
+
     //opens spotify account dialog
     public void onClickOpenAccountDialog(View view) {
         // open dialog to log in or out / change account
+
         new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
-                .setTitle("Your Spotify Account")
-                .setPositiveButton("change user", new DialogInterface.OnClickListener() {
+                .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         LogIntoSpotify();
                     }
                 })
-                .setNeutralButton("log out", new DialogInterface.OnClickListener() {
+                .setNegativeButton("log out", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         LogOutOfSpotify();
-                        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-                        String url = CUser.getImages().get(0).getUrl();
-                        Glide.with(Upic).load(url).into(Upic);
+                    }
+                })
+                .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        LoadUserPic();
                     }
                 })
                 .show();
@@ -346,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements
         // -
         // -
     }
+
 
 
     //nav drawer checkbox handlers
@@ -441,6 +463,13 @@ public class MainActivity extends AppCompatActivity implements
         // -
         // -
         // -
+    }
+
+
+    private void LoadUserPic() {
+        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+        String url = CUser.getImages().get(0).getUrl();
+        Glide.with(Upic).load(url).into(Upic);
     }
 
 

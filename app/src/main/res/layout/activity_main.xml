@@ -27,7 +27,7 @@
                 android:layout_width="8dp"
                 android:layout_height="160dp"
                 android:layout_alignTop="@id/mapbox"
-                android:background="@color/Secondary"
+                android:background="@color/SecondaryDark"
                 android:onClick="onClickOpenNavDrawer" />
 
             <androidx.appcompat.widget.SearchView

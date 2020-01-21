@@ -171,7 +171,7 @@ public class ListActivity extends AppCompatActivity {
         //to get the relative Layout for the item: view.getParent().getParent();
         new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
                 .setMessage("Do you want to delete this playcelist?")
-                .setNeutralButton("back", null)
+                .setNeutralButton("cancel", null)
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

@@ -78,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements
     SongDAO songdao;
     List<Song> song_list;
 
+    //we should find a way to be able to use a loggedIn flag...
+    boolean isLoggedIn = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -452,6 +455,7 @@ public class MainActivity extends AppCompatActivity implements
             //Log.e("Chek","Check");
             RequestToken();
             Log.e("Chek", "Check32");
+            isLoggedIn = true;
         } else {
             Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
         }
@@ -467,9 +471,13 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private void LoadUserPic() {
-        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-        String url = CUser.getImages().get(0).getUrl();
-        Glide.with(Upic).load(url).into(Upic);
+        if(isLoggedIn == false){
+            Toast.makeText(this, R.string.plzLogIn, Toast.LENGTH_LONG).show();
+        } else {
+            ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+            String url = CUser.getImages().get(0).getUrl();
+            Glide.with(Upic).load(url).into(Upic);
+        }
     }
 
 

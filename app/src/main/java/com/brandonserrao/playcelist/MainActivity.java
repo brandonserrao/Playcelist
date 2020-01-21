@@ -15,17 +15,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.dialog.MaterialDialogs;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.brandonserrao.playcelist.model.Image;
-import com.bumptech.glide.Glide;
+
+
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
+
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.mapboxsdk.Mapbox;
@@ -43,13 +44,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
+
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,13 +53,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import com.brandonserrao.playcelist.model.SPUser;
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
+
+
+
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -80,6 +79,11 @@ public class MainActivity extends AppCompatActivity implements
 
     //we should find a way to be able to use a loggedIn flag...
     boolean isLoggedIn = false;
+
+    //spotify vars
+    private static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd";
+    private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
+    private SpotifyAppRemote mSpotifyAppRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +123,46 @@ public class MainActivity extends AppCompatActivity implements
         mapView = findViewById(R.id.mapbox);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
     }
+
+    @Override
+    // spotify auth on first start of the app
+    protected void onStart() {
+        super.onStart();
+
+        SpotifyAppRemote.connect(
+                getApplication(),
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build(),
+                new Connector.ConnectionListener() {
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.e("SPOTIFY", "yeah");
+                    }
+
+                    @Override
+                    public void onFailure(Throwable error) {
+                        Log.e("SPOTIFY", "fuck");
+
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+    }
+
+
 
 
     @Override
@@ -348,19 +391,19 @@ public class MainActivity extends AppCompatActivity implements
                 .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        LogIntoSpotify();
+
                     }
                 })
                 .setNegativeButton("log out", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        LogOutOfSpotify();
+
                     }
                 })
                 .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        LoadUserPic();
+
                     }
                 })
                 .show();
@@ -420,141 +463,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
     // spotify stufff
-
-    public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
-    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
-    public SPUser CUser; // user profile
-
-    private final OkHttpClient mOkHttpClient = new OkHttpClient();
-    public String mAccessToken;
-    public String mAccessCode;
-    public Call mCall;
-
-    @Override
-    protected void onDestroy() {
-        cancelCall();
-        super.onDestroy();
-
-    }
-
-    public void RequestCode() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.CODE);
-        AuthenticationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
-    }
-
-    public void RequestToken() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
-        AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
-    }
-
-
-    public void LogIntoSpotify() {
-        if (mAccessToken == null) {
-            // no login
-            //Log.e("Chek","Check");
-            RequestToken();
-            Log.e("Chek", "Check32");
-            isLoggedIn = true;
-        } else {
-            Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void LogOutOfSpotify() {
-        Toast.makeText(this, R.string.btnWorking, Toast.LENGTH_LONG).show();
-        //function to log out of spotify
-        // -
-        // -
-        // -
-    }
-
-
-    private void LoadUserPic() {
-        if(isLoggedIn == false){
-            Toast.makeText(this, R.string.plzLogIn, Toast.LENGTH_LONG).show();
-        } else {
-            ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-            String url = CUser.getImages().get(0).getUrl();
-            Glide.with(Upic).load(url).into(Upic);
-        }
-    }
-
-
-    public void GetUser() {
-        final Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me") //get user data
-                //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
-                .addHeader("Authorization", "Bearer " + mAccessToken)
-                .build();
-        cancelCall();
-        mCall = mOkHttpClient.newCall(request);
-        mCall.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e("Response", "Request fail");//Fail
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                try {
-
-                    final JSONObject jsonObject = new JSONObject(response.body().string());
-                    String JsonResponse = jsonObject.toString();
-                    Gson gson = new Gson();
-                    CUser = gson.fromJson(JsonResponse, SPUser.class);
-                    TextView Username = findViewById(R.id.nav_header_SUserName);
-                    Username.setText(CUser.getDisplayName());
-                    Log.e("Response", "User" + JsonResponse);
-                    response.close();
-
-                } catch (JSONException e) {
-                    //Fail
-                }
-            }
-        });
-    }
-
-
-    private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
-        return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
-                .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
-                .setCampaign("your-campaign-token")
-                .build();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
-
-        if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
-            mAccessToken = response.getAccessToken();
-            Log.e("Token", "THere" + mAccessToken);
-            GetUser();
-
-
-        } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
-            mAccessCode = response.getCode();
-            Log.e("Code", "CHere " + mAccessCode);
-            GetUser();
-        }
-    }
-
-
-    private Uri getRedirectUri() {
-        return new Uri.Builder()
-                .scheme(getString(R.string.com_spotify_sdk_redirect_scheme))
-                .authority(getString(R.string.com_spotify_sdk_redirect_host))
-                .build();
-    }
-
-    private void cancelCall() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
-    }
 
 
 }

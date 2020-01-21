@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -38,19 +42,16 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha03'
 
 
-    // spotify autorization
-    implementation 'com.spotify.android:auth:1.1.0'
+    // spotify libs
+    implementation project(':spotify-app-remote-release-0.7.0')
+
 
     // http reqeats
 
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-// json parsing
 
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.0'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
-    implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
+// json parsing
+    implementation "com.google.code.gson:gson:2.8.5"
+
 
 
     //database dependencies

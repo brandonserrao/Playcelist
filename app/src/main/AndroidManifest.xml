@@ -3,6 +3,7 @@
     package="com.brandonserrao.playcelist">
     <!-- permissions necessary for getting device location access -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -13,16 +14,29 @@
         android:theme="@style/AppTheme">
         <activity android:name=".SplashScreen"></activity>
         <activity android:name=".SpotifyPlayground" />
-        <activity android:name=".SongsActivity" />
+        <activity android:name=".SongsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="http"
+                    android:host="com.brandonserrao.playcelist"
+                    android:pathPattern="/callback" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ListActivity" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
         </activity>
     </application>
 

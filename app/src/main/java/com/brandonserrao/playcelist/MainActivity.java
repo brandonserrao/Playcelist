@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements
     List<Song> song_list;
 
     //we should find a way to be able to use a loggedIn flag...
-    boolean isLoggedIn = false;
+    private boolean isUpicloaded = false;
+    private boolean isLoggedIn= false;
 
     // spotify stufff
 
@@ -360,7 +361,10 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickOpenNavDrawer(View view) {
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
-        LoadUserPic();
+        if (isUpicloaded==false){
+            LoadUserPic();
+            isUpicloaded=true;
+        }
     }
 
 
@@ -444,9 +448,10 @@ public class MainActivity extends AppCompatActivity implements
 
 
     // spotify stufff
+    @Override
     protected void onStart() {
         super.onStart();
-
+        if (isLoggedIn == false) {
         SpotifyAppRemote.connect(
                 getApplication(),
                 new ConnectionParams.Builder(CLIENT_ID)
@@ -470,6 +475,8 @@ public class MainActivity extends AppCompatActivity implements
                     }
 
                 });
+        isLoggedIn=true;
+        }
 
 
     }

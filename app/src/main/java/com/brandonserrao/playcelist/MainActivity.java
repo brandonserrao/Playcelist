@@ -66,15 +66,6 @@ import okhttp3.Response;
 import com.brandonserrao.playcelist.model.SPUser;
 
 
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
-import com.spotify.android.appremote.api.SpotifyAppRemote;
-
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
-import com.spotify.protocol.types.Track;
-
-
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
 
@@ -86,24 +77,6 @@ public class MainActivity extends AppCompatActivity implements
     String db_name = "sqlstudio_db2_v5.sqlite";
     SongDAO songdao;
     List<Song> song_list;
-
-    //we should find a way to be able to use a loggedIn flag...
-    private boolean isUpicloaded = false;
-    private boolean isLoggedIn= false;
-
-    // spotify stufff
-
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd";
-    private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
-    private SpotifyAppRemote mSpotifyAppRemote;
-    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
-    public SPUser CUser; // user profile
-
-    private final OkHttpClient mOkHttpClient = new OkHttpClient();
-    public String mAccessToken;
-    public String mAccessCode;
-    public Call mCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -361,10 +334,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickOpenNavDrawer(View view) {
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
-        if (isUpicloaded==false){
-            LoadUserPic();
-            isUpicloaded=true;
-        }
     }
 
 
@@ -376,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                    //    LogIntoSpotify();
+                        LogIntoSpotify();
                     }
                 })
                 .setNegativeButton("log out", new DialogInterface.OnClickListener() {
@@ -388,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                     //   LoadUserPic();
+                        LoadUserPic();
                     }
                 })
                 .show();
@@ -448,69 +417,16 @@ public class MainActivity extends AppCompatActivity implements
 
 
     // spotify stufff
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (isLoggedIn == false) {
-        SpotifyAppRemote.connect(
-                getApplication(),
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build(),
-                new Connector.ConnectionListener() {
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.e("SPOTIFY", "yeah");
-                        connected();
 
-                    }
+    public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
+    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
+    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+    public SPUser CUser; // user profile
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("SPOTIFY", "fuck");
-
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-
-                });
-        isLoggedIn=true;
-        }
-
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-    }
-
-    private void connected() {
-
-        LogIntoSpotify();
-
-
-        Log.e("SPOTIFY", "connected");
-        // Subscribe to PlayerState
-        TextView Current_song =findViewById(R.id.nowplaying_info);
-        mSpotifyAppRemote.getPlayerApi()
-                .subscribeToPlayerState()
-                .setEventCallback(playerState -> {
-                    Log.e("SPOTIFY", "plazer");
-                    final Track track = playerState.track;
-                    if (track != null) {
-                        Log.e("MainActivity", track.name + " by " + track.artist.name);
-                        Current_song.setText(track.name + "\n"+ track.artist.name);
-                    }
-                });
-
-        //get user
-
-
-    }
-
+    private final OkHttpClient mOkHttpClient = new OkHttpClient();
+    public String mAccessToken;
+    public String mAccessCode;
+    public Call mCall;
 
     @Override
     protected void onDestroy() {
@@ -536,7 +452,6 @@ public class MainActivity extends AppCompatActivity implements
             //Log.e("Chek","Check");
             RequestToken();
             Log.e("Chek", "Check32");
-            isLoggedIn = true;
         } else {
             Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
         }
@@ -552,13 +467,9 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private void LoadUserPic() {
-        if(isLoggedIn == false){
-            Toast.makeText(this, R.string.plzLogIn, Toast.LENGTH_LONG).show();
-        } else {
-            ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-            String url = CUser.getImages().get(0).getUrl();
-            Glide.with(Upic).load(url).into(Upic);
-        }
+        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+        String url = CUser.getImages().get(0).getUrl();
+        Glide.with(Upic).load(url).into(Upic);
     }
 
 
@@ -598,7 +509,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
-        return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
+        return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
                 .setShowDialog(false)
                 .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
                 .setCampaign("your-campaign-token")

@@ -2,6 +2,8 @@ package com.brandonserrao.playcelist;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,6 +68,15 @@ import okhttp3.Response;
 import com.brandonserrao.playcelist.model.SPUser;
 
 
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+
+import com.spotify.protocol.client.Subscription;
+import com.spotify.protocol.types.PlayerState;
+import com.spotify.protocol.types.Track;
+
+
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
 
@@ -78,10 +89,68 @@ public class MainActivity extends AppCompatActivity implements
     SongDAO songdao;
     List<Song> song_list;
 
+    //we should find a way to be able to use a loggedIn flag...
+    private boolean isUpicloaded = false;
+    private boolean isAppLoggedIn= false;
+    private boolean isWebLoggedIn= false;
+
+    // spotify stufff
+
+    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd";
+    private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
+    private SpotifyAppRemote mSpotifyAppRemote;
+    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
+    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+    public SPUser CUser; // user profile
+
+    private final OkHttpClient mOkHttpClient = new OkHttpClient();
+    public String mAccessToken;
+    public String mAccessCode;
+    public Call mCall;
+
+    public String CurrentTrackID;
+    public String CurrentTrackName;
+    public String CurrentTrackArtist;
+
+    public String CUserName="Please log in";
+
+
+
+
+    // saving state
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        // restoring important variables state
+
+        SharedPreferences pref= getSharedPreferences("MySharedPref", MODE_PRIVATE);;
+        Editor editor = pref.edit();
+
+        mAccessToken=pref.getString("mAccessToken","");
+        Log.e("SHARED","tk+"+mAccessToken);
+
+      //  isUpicloaded=pref.getBoolean("isUpicloaded",false);
+        if (isUpicloaded)Log.e("SHARED","isUpicloaded1");else   Log.e("SHARED","isUpicloaded0");
+
+        //isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        if (isAppLoggedIn)Log.e("SHARED","isAppLoggedIn1") ;else  Log.e("SHARED","isAppLoggedIn0");
+
+        //isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
+        if (isWebLoggedIn)Log.e("SHARED","isWebLoggedIn1") ;else  Log.e("SHARED","isWebLoggedIn0");
+
+        CUserName=pref.getString("CUserName","Please log in");
+        Log.e("SHARED","Name "+CUserName);
+
+
+
+
 
         //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
 
@@ -315,10 +384,15 @@ public class MainActivity extends AppCompatActivity implements
         View contextView = findViewById(R.id.btn_playcer);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
+
+
         //actual code:
         //*****
         // get GPS info
+
         // get API info / nowplaying
+        // USE  CurrentTrackID CurrentTrackName CurrentTrackArtistVariable
+
         // navigate to current position
         // set new marker
         // open dialog (do you want to playce [now playing song] here?)
@@ -334,6 +408,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickOpenNavDrawer(View view) {
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
+
     }
 
 
@@ -352,12 +427,13 @@ public class MainActivity extends AppCompatActivity implements
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         LogOutOfSpotify();
+
                     }
                 })
                 .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        LoadUserPic();
+                     LoadUserPic();
                     }
                 })
                 .show();
@@ -417,24 +493,82 @@ public class MainActivity extends AppCompatActivity implements
 
 
     // spotify stufff
+    @Override
+    protected void onStart() {
 
-    public static final String CLIENT_ID = "089d841ccc194c10a77afad9e1c11d54";
-    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
-    public SPUser CUser; // user profile
 
-    private final OkHttpClient mOkHttpClient = new OkHttpClient();
-    public String mAccessToken;
-    public String mAccessCode;
-    public Call mCall;
+        super.onStart();
+//connection to the Sporify APP
+        Log.e("SPOTIFY", "login attemt");
+        if(isAppLoggedIn==false) {
+            SpotifyAppRemote.connect(
+                    getApplication(),
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build(),
+                    new Connector.ConnectionListener() {
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.e("SPOTIFY", " APP connected");
+                            connected();
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("SPOTIFY", " APP conn fail");
+                            Log.e("MyActivity", throwable.getMessage(), throwable);
+                        }
+
+                    });
+
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+
+    }
+
+    // On succcesful connection to the Spotify APP
+    private void connected() {
+        SharedPreferences pref= getSharedPreferences("MySharedPref", MODE_PRIVATE);;
+        Editor editor = pref.edit();
+        isAppLoggedIn=true;
+        editor.putBoolean("isAppLoggedIn",true);
+        editor.commit();
+        if (isAppLoggedIn)Log.e("SHARED","isAppLoggedIn1") ;else  Log.e("SHARED","isAppLoggedIn0");
+
+        Log.e("SPOTIFY", "connected");
+        // Subscribe to PlayerState
+        TextView Current_song =findViewById(R.id.nowplaying_info);
+        mSpotifyAppRemote.getPlayerApi()
+                .subscribeToPlayerState()
+                .setEventCallback(playerState -> {
+                    Log.e("SPOTIFY", "player");
+                    final Track track = playerState.track;
+                    if (track != null) {
+                        Log.e("MainActivity", track.name + " by " + track.artist.name);
+                        Current_song.setText(track.name + "\n"+ track.artist.name);
+                        CurrentTrackID= track.uri;
+                        CurrentTrackName= track.name;
+                        CurrentTrackArtist= track.artist.name;
+                    }
+                });
+    }
+
 
     @Override
     protected void onDestroy() {
         cancelCall();
         super.onDestroy();
 
-    }
 
+    }
+// Requests for the SPotifyWEB
     public void RequestCode() {
         final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.CODE);
         AuthenticationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
@@ -445,35 +579,48 @@ public class MainActivity extends AppCompatActivity implements
         AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
     }
 
-
+   // log in SpotifyWeb
     public void LogIntoSpotify() {
-        if (mAccessToken == null) {
+
+
+        if (isWebLoggedIn ==false) {
             // no login
-            //Log.e("Chek","Check");
+            Log.e("SPOTIFZ", "Web-login");
             RequestToken();
-            Log.e("Chek", "Check32");
+            Log.e("SPOTIFY", "Web-login succ");
+
         } else {
             Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
     public void LogOutOfSpotify() {
-        Toast.makeText(this, R.string.btnWorking, Toast.LENGTH_LONG).show();
-        //function to log out of spotify
-        // -
-        // -
-        // -
+
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://accounts.spotify.com/en/logout ")));
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        isAppLoggedIn =false;
+        isWebLoggedIn =false;
+
+
+
+        // clear name and pic
+
     }
 
 
     private void LoadUserPic() {
-        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-        String url = CUser.getImages().get(0).getUrl();
-        Glide.with(Upic).load(url).into(Upic);
+
+            ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+            String url = CUser.getImages().get(0).getUrl();
+            Glide.with(Upic).load(url).into(Upic);
+
     }
 
-
+// get user info from Sporify WEB
     public void GetUser() {
+        if(mAccessToken !=null){
         final Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me") //get user data
                 //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
@@ -499,24 +646,33 @@ public class MainActivity extends AppCompatActivity implements
                     Username.setText(CUser.getDisplayName());
                     Log.e("Response", "User" + JsonResponse);
                     response.close();
+                    CUserName=CUser.getDisplayName();
+                    SharedPreferences pref= getSharedPreferences("MySharedPref", MODE_PRIVATE);;
+                    Editor editor = pref.edit();
+                    editor.putString("CUserName",CUserName);
+                    editor.commit();
+                    Log.e("SHARED",CUserName);
+
 
                 } catch (JSONException e) {
                     //Fail
                 }
             }
-        });
+        });}
+        else {// messagge to log in
+            };
     }
 
-
+// auth request to spotify WEB
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
-        return new AuthenticationRequest.Builder(CLIENT_ID, type, getRedirectUri().toString())
+        return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
                 .setShowDialog(false)
                 .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
-                .setCampaign("your-campaign-token")
                 .build();
     }
 
     @Override
+    // Spotify web resoinse parser
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
@@ -524,7 +680,17 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
             mAccessToken = response.getAccessToken();
             Log.e("Token", "THere" + mAccessToken);
+            SharedPreferences pref= getSharedPreferences("MySharedPref", MODE_PRIVATE);;
+            Editor editor = pref.edit();
+            editor.putString("mAccessToken",mAccessToken);
+            editor.commit();
+            Log.e("SHARED",mAccessToken);
             GetUser();
+            isWebLoggedIn =false;
+            editor.putBoolean("isWebLoggedIn",isWebLoggedIn);
+            editor.commit();
+
+
 
 
         } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
@@ -532,15 +698,11 @@ public class MainActivity extends AppCompatActivity implements
             Log.e("Code", "CHere " + mAccessCode);
             GetUser();
         }
+
+
     }
 
 
-    private Uri getRedirectUri() {
-        return new Uri.Builder()
-                .scheme(getString(R.string.com_spotify_sdk_redirect_scheme))
-                .authority(getString(R.string.com_spotify_sdk_redirect_host))
-                .build();
-    }
 
     private void cancelCall() {
         if (mCall != null) {

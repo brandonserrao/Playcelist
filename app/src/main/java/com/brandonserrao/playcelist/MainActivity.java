@@ -156,27 +156,17 @@ public class MainActivity extends AppCompatActivity implements
         //??potentially can be moved outside of here+made publicstatic to only be run once
         for (int i = 0; i < song_list.size(); i++) {
             Song song = song_list.get(i);
-            double lat = (double) song.getLAT(),
-                    lng = (double) song.getLNG();
-            //construct geojson feature
-            Feature feature = Feature.fromGeometry(Point.fromLngLat(lng, lat));
-            feature.addStringProperty("NAME", song.getNAME());
-            feature.addStringProperty("SONG_ID", song.getSONG_ID());
-            feature.addNumberProperty("UID", song.getUID());
-            featurelist_songlayer.add(feature);
+            addSongToFeaturelist(song,featurelist_songlayer);
         }//produces List<Feature>
-
-        //List<Feature> to FeatureCollection to GeoJsonSource as source
-        /*FeatureCollection*/ song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
-        /*Source*/ song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
-        //construct layer
-        /*SymbolLayer*/ song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+        updateLayerSources();
+        //firsttime construction of symbollayer
+        song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
                 .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
                         iconAllowOverlap(true)
                 );
 
         //create mapstyle + adding marker image
-        /*Style.Builder*/ song_styleBuilder = new Style.Builder()
+        song_styleBuilder = new Style.Builder()
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
                         R.drawable.songpin
@@ -398,25 +388,10 @@ public class MainActivity extends AppCompatActivity implements
                 songdao.insert(song);
                 //-------
                 //??need to add song to songlayersource and style in order to display marker
-                //potentially write a function to do this, taking in only lng and lat
-                Feature feature = Feature.fromGeometry(Point.fromLngLat(lng, lat));
-                feature.addStringProperty("NAME", song.getNAME());
-                feature.addStringProperty("SONG_ID", song.getSONG_ID());
-                feature.addNumberProperty("UID", song.getUID());
-                featurelist_songlayer.add(feature);
-                song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
-                song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
-                song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
-                        .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
-                                iconAllowOverlap(true));
-                song_styleBuilder = new Style.Builder()
-                        .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
-                                MainActivity.this.getResources(),
-                                R.drawable.songpin)
-                        )
-                        .withSource(song_source)
-                        .withLayer(song_symbolLayer);
-                mapboxMap.setStyle(song_styleBuilder); //resetting the style after reconstructing source shows newly added marker
+                addSongToFeaturelist(song,featurelist_songlayer);
+                updateLayerSources();
+                resetMapStyle();
+                //resetting the style after reconstructing source shows newly added marker
             //-----------
 
 
@@ -438,6 +413,38 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    //----functions for marker creation process
+    public void addSongToFeaturelist(@NonNull Song song,List<Feature> featurelist_songlayer) {
+        Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
+        feature.addStringProperty("NAME", song.getNAME());
+        feature.addStringProperty("SONG_ID", song.getSONG_ID());
+        feature.addNumberProperty("UID", song.getUID());
+        featurelist_songlayer.add(feature);
+    }
+
+    public void updateLayerSources() {
+        //List<Feature> to FeatureCollection to GeoJsonSource as source
+        song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
+        song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
+        //??insert other additional updates here
+        //construct layer//necessary or else attempts to add layer twice and breaks
+        song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+                .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
+                        iconAllowOverlap(true)
+                );
+    }
+
+    public void resetMapStyle() {
+        //create mapstyle + adding marker image
+        song_styleBuilder = new Style.Builder()
+                .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
+                        MainActivity.this.getResources(),
+                        R.drawable.songpin))
+                .withSource(song_source)
+                .withLayer(song_symbolLayer);
+        mapboxMap.setStyle(song_styleBuilder);
     }
 
     private void enableLocationComponent(@NonNull Style loadedMapStyle) {

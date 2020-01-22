@@ -88,16 +88,20 @@ public class MainActivity extends AppCompatActivity implements
     private MapView mapView;
 
     //database implementation variables
-    /*public static*/ String db_name = "sqlstudio_db2_v5.sqlite";
-    /*public static*/ SongDAO songdao;
-    /*public static*/ List<Song> song_list; //to hold Song objects from db queries
+    public static String db_name = "sqlstudio_db2_v5.sqlite";
+    public static SongDAO songdao;
+    public static List<Song> song_list; //to hold Song objects from db queries
 
     //marker implementation variables
     private static final String SONGS_SOURCE_ID = "songs";
     private static final String SONGS_ICON_ID = "songs";
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
-    public static List<Feature> source_songlayer = new ArrayList<>(); //for starting off markers
+    public static List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
+    FeatureCollection song_featureCollection;
+    Source song_source;
+    SymbolLayer song_symbolLayer;
+    Style.Builder song_styleBuilder;
 
 
 
@@ -159,29 +163,30 @@ public class MainActivity extends AppCompatActivity implements
             feature.addStringProperty("NAME", song.getNAME());
             feature.addStringProperty("SONG_ID", song.getSONG_ID());
             feature.addNumberProperty("UID", song.getUID());
-            source_songlayer.add(feature);
+            featurelist_songlayer.add(feature);
         }//produces List<Feature>
 
         //List<Feature> to FeatureCollection to GeoJsonSource as source
-        FeatureCollection featureCollection = FeatureCollection.fromFeatures(source_songlayer);
-        Source source = new GeoJsonSource(SONGS_SOURCE_ID, featureCollection);
+        /*FeatureCollection*/ song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
+        /*Source*/ song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
         //construct layer
-        SymbolLayer symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+        /*SymbolLayer*/ song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
                 .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
                         iconAllowOverlap(true)
                 );
 
         //create mapstyle + adding marker image
-        Style.Builder styleBuilder = new Style.Builder()
+        /*Style.Builder*/ song_styleBuilder = new Style.Builder()
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
                         R.drawable.songpin
                         )
                 )
-                .withSource(source)
-                .withLayer(symbolLayer);
+                .withSource(song_source)
+                .withLayer(song_symbolLayer);
+
         //mandatory set mapstyle; onStyleLoaded @end to perform extra data adds + adjustments
-        mapboxMap.setStyle(styleBuilder,
+        mapboxMap.setStyle(song_styleBuilder,
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -203,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements
                 )
                 //add geojson (location data) source for these icons
                 .withSource(new GeoJsonSource(SONGS_SOURCE_ID,
-                                FeatureCollection.fromFeatures(source_songlayer)
+                                FeatureCollection.fromFeatures(featurelist_songlayer)
                         )
                 )
                 //add the SymbolLayer to the mapstyle; icon placement properties handled
@@ -340,9 +345,8 @@ public class MainActivity extends AppCompatActivity implements
                                     entry.getKey(),entry.getValue()
                             ));
                         }*/
-
                     }
-                    else {textView.setText("no feature is null");
+                    else {textView.setText("no feature properties ie. is null");
                     }
                 }
                 else {textView.setText("features.size() = 0");
@@ -361,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMapLongClick(@NonNull LatLng point) {
 
                 double lat = point.getLatitude(), lng = point.getLongitude();
+                String name = "!placeholdername!", song_id = "!placeholder_songid!"; //??
 
 /*
                 //??old code
@@ -388,9 +393,34 @@ public class MainActivity extends AppCompatActivity implements
                 Song song = new Song();
                 song.setLNG((float) lng);
                 song.setLAT((float) lat);
-                song.setNAME("!placeholdername!");
-                song.setSONG_ID("!placeholder_songid!");
+                song.setNAME(name);
+                song.setSONG_ID(song_id);
                 songdao.insert(song);
+                //-------
+                //??need to add song to songlayersource and style in order to display marker
+                //potentially write a function to do this, taking in only lng and lat
+                Feature feature = Feature.fromGeometry(Point.fromLngLat(lng, lat));
+                feature.addStringProperty("NAME", song.getNAME());
+                feature.addStringProperty("SONG_ID", song.getSONG_ID());
+                feature.addNumberProperty("UID", song.getUID());
+                featurelist_songlayer.add(feature);
+                song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
+                song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
+                song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+                        .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
+                                iconAllowOverlap(true));
+                song_styleBuilder = new Style.Builder()
+                        .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
+                                MainActivity.this.getResources(),
+                                R.drawable.songpin)
+                        )
+                        .withSource(song_source)
+                        .withLayer(song_symbolLayer);
+                mapboxMap.setStyle(song_styleBuilder); //resetting the style after reconstructing source shows newly added marker
+            //-----------
+
+
+
                 Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
 
 
@@ -473,7 +503,7 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    //navigates to main activity which shows now playing info and a map with all playced songs as colorful bubbles
+    //navigates to main activity which shows now playing info and a map with all playced songs as ??colorful bubbles
     public void onClickStartMainActivity(MenuItem item) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -491,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
         //actual code:
-        //*****
+        //??***
         // get GPS info
         // get API info / nowplaying
         // navigate to current position

@@ -50,6 +50,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
+import com.mapbox.mapboxsdk.style.sources.Source;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -82,16 +83,20 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+
+    //database implementation variables
+    /*public static*/ String db_name = "sqlstudio_db2_v5.sqlite";
+    /*public static*/ SongDAO songdao;
+    /*public static*/ List<Song> song_list; //to hold Song objects from db queries
+
+    //marker implementation variables
     private static final String SONGS_SOURCE_ID = "songs";
     private static final String SONGS_ICON_ID = "songs";
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
-    public static List<Feature> source_songlayer = new ArrayList<>();
+    public static List<Feature> source_songlayer = new ArrayList<>(); //for starting off markers
 
-    //database implementation variables
-    public static String db_name = "sqlstudio_db2_v5.sqlite";
-    public static SongDAO songdao;
-    public static List<Song> song_list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,11 +141,12 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-        //started on successfuly map creation; main activities start here
+        //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
 
 
         //loop to add db records to map
+        //??potentially can be moved outside of here+made publicstatic to only be run once
         for (int i = 0; i < song_list.size(); i++) {
             Song song = song_list.get(i);
             double lat = (double) song.getLAT(),
@@ -148,11 +154,42 @@ public class MainActivity extends AppCompatActivity implements
             //construct geojson feature
             Feature feature = Feature.fromGeometry(Point.fromLngLat(lng, lat));
             feature.addStringProperty("NAME", song.getNAME());
-            feature.addStringProperty("NAME", song.getSONG_ID());
-            feature.addNumberProperty("NAME", song.getUID());
+            feature.addStringProperty("SONG_ID", song.getSONG_ID());
+            feature.addNumberProperty("UID", song.getUID());
             source_songlayer.add(feature);
-        }
+        }//produces List<Feature>
 
+        //List<Feature> to FeatureCollection to GeoJsonSource as source
+        FeatureCollection featureCollection = FeatureCollection.fromFeatures(source_songlayer);
+        Source source = new GeoJsonSource(SONGS_SOURCE_ID, featureCollection);
+        //construct layer
+        SymbolLayer symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+                .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
+                        iconAllowOverlap(true)
+                );
+
+        //create mapstyle + adding marker image
+        Style.Builder styleBuilder = new Style.Builder()
+                .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
+                        MainActivity.this.getResources(),
+                        R.drawable.songpin
+                        )
+                )
+                .withSource(source)
+                .withLayer(symbolLayer);
+        //mandatory set mapstyle; onStyleLoaded @end to perform extra data adds + adjustments
+        mapboxMap.setStyle(styleBuilder,
+                new Style.OnStyleLoaded() {
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style) {
+                        //Map setup+style load completed;
+                        //add extra data and perform further adjustments here
+                    }
+                });
+
+
+
+/* //markers using style; version 1
         mapboxMap.setStyle(new Style.Builder()
                 .fromUri(getResources().getString(R.string.darkstyleURL))
                 //add SymbolLayer icon image to this style
@@ -201,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
         );
+*/
 
 
         //---backup code for song loading
@@ -282,13 +320,6 @@ public class MainActivity extends AppCompatActivity implements
         mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
             public boolean onMapLongClick(@NonNull LatLng point) {
-
-/*                //??new code
-                Feature newFeature = Feature.fromGeometry(
-                        Point.fromLngLat(
-                                point.getLatitude(), point.getLongitude()
-                        )
-                );*/
 
                 //??old code
                 Style style = mapboxMap.getStyle();

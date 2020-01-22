@@ -9,37 +9,6 @@
     <string name="code">Code: %1$s</string>
     <string name="token">Access Token: %1$s</string>
 
-    <string-array name="list_values">
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-        <item>TU Munich</item>
-        <item>TU Wien</item>
-        <item>TU Dresden</item>
-        <item>ITC</item>
-    </string-array>
-
     <string name="title_activity_main2">Main2Activity</string>
 
     <string name="nd_songs">playced songs</string>

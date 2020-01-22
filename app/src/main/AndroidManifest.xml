@@ -14,7 +14,7 @@
         <activity android:name=".SplashScreen"></activity>
         <activity android:name=".SpotifyPlayground" />
         <activity android:name=".SongsActivity" />
-        <activity android:name=".ListActivity" />
+        <activity android:name=".ListsActivity" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/SplashTheme">

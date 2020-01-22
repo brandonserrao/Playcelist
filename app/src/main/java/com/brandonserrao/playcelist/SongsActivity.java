@@ -25,11 +25,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import static com.brandonserrao.playcelist.MainActivity.db_name;
+import static com.brandonserrao.playcelist.MainActivity.song_list;
+import static com.brandonserrao.playcelist.MainActivity.songdao;
+
 public class SongsActivity extends AppCompatActivity {
 
-    String db_name = "sqlstudio_db2_v5.sqlite";
+/*    String db_name = "sqlstudio_db2_v5.sqlite";
     SongDAO songdao;
-    List<Song> song_list;
+    List<Song> song_list;*/
+
     SongsAdapter songsAdapter;
     RecyclerView recyclerView;
 
@@ -100,7 +105,7 @@ public class SongsActivity extends AppCompatActivity {
         startActivity(intent);
     }
     public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListActivity.class);
+        Intent intent = new Intent(this, ListsActivity.class);
         startActivity(intent);
     }
 

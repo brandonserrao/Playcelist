@@ -26,8 +26,12 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -43,6 +47,9 @@ import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -55,6 +62,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -65,6 +73,8 @@ import okhttp3.Response;
 
 import com.brandonserrao.playcelist.model.SPUser;
 
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+
 
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
@@ -72,18 +82,23 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+    private static final String SONGS_SOURCE_ID = "songs";
+    private static final String SONGS_ICON_ID = "songs";
+    private static final String SONGS_LAYER_ID = "songs";
+    //init feature list to be displayed
+    public static List<Feature> source_songlayer = new ArrayList<>();
 
     //database implementation variables
-    String db_name = "sqlstudio_db2_v5.sqlite";
-    SongDAO songdao;
-    List<Song> song_list;
+    public static String db_name = "sqlstudio_db2_v5.sqlite";
+    public static SongDAO songdao;
+    public static List<Song> song_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
-        //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
+        //??somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
 
         //-------obsolete; database intialization from file from assets, as shown in tutorials
 /*        final File dbFile = this.getDatabasePath(db_name);
@@ -120,10 +135,83 @@ public class MainActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onMapReady(@NonNull final MapboxMap mapboxMap) { //started on successfuly map creation; main activities start here
-        MainActivity.this.mapboxMap = mapboxMap;//get the map java object
-        //set style and
-        mapboxMap.setStyle(new Style.Builder().fromUri(getResources().getString(R.string.darkstyleURL)), new Style.OnStyleLoaded() {
+    public void onMapReady(@NonNull final MapboxMap mapboxMap) {
+        //started on successfuly map creation; main activities start here
+        MainActivity.this.mapboxMap = mapboxMap;
+
+
+        //loop to add db records to map
+        for (int i = 0; i < song_list.size(); i++) {
+            Song song = song_list.get(i);
+            double lat = (double) song.getLAT(),
+                    lng = (double) song.getLNG();
+            //construct geojson feature
+            Feature feature = Feature.fromGeometry(Point.fromLngLat(lng, lat));
+            feature.addStringProperty("NAME", song.getNAME());
+            feature.addStringProperty("NAME", song.getSONG_ID());
+            feature.addNumberProperty("NAME", song.getUID());
+            source_songlayer.add(feature);
+        }
+
+        mapboxMap.setStyle(new Style.Builder()
+                .fromUri(getResources().getString(R.string.darkstyleURL))
+                //add SymbolLayer icon image to this style
+                .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
+                        MainActivity.this.getResources(),
+                        R.drawable.listpin)
+                )
+                //add geojson (location data) source for these icons
+                .withSource(new GeoJsonSource(SONGS_SOURCE_ID,
+                                FeatureCollection.fromFeatures(source_songlayer)
+                        )
+                )
+                //add the SymbolLayer to the mapstyle; icon placement properties handled
+                .withLayer(new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
+                        .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
+                                iconAllowOverlap(true)
+                        )
+                ), new Style.OnStyleLoaded() {
+
+                    @Override
+                    public void onStyleLoaded(@NonNull Style style) {
+                        //addtional data and adjustments done in here
+
+                        enableLocationComponent(style);
+
+                        //---old code used for testing
+                        SymbolManager symbolManager =
+                                new SymbolManager(mapView, mapboxMap, style); //init symbolmanager
+
+                        //shift camera to ?? device location i.e. current user locaton
+                        LatLng focus = new LatLng(51.051877, 13.741517);
+                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                                new CameraPosition.Builder()
+                                        .target(focus)
+                                        .zoom(12)
+                                        .build()));
+
+                        //-------demonstration; add star marker image
+                        mapboxMap.getStyle().addImage("my-star-marker",
+                                BitmapFactory.decodeResource(getResources(), R.drawable.star_marker));
+                        symbolManager.create(new SymbolOptions()
+                                .withLatLng(new LatLng(51.02855, 13.723903))
+                                .withIconImage("my-star-marker")
+                                .withIconAnchor("bottom"));
+                        //--------
+                    }
+                }
+        );
+
+
+        //---backup code for song loading
+        /*
+        mapboxMap.setStyle(
+                new Style.Builder()
+                        .fromUri(getResources()
+                                .getString(R.string.darkstyleURL)),
+                new Style.OnStyleLoaded() {
+
+
 
             @Override
             public void onStyleLoaded(@NonNull Style style) {
@@ -137,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements
                         new SymbolManager(mapView, mapboxMap, style); //init symbolmanager
 
                 //adding songs from database to the map
+                //?? replace this construction loop using
                 SymbolOptions song_symbol = new SymbolOptions() //settings for default song symbol; init'd without latlng
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom");
@@ -148,8 +237,8 @@ public class MainActivity extends AppCompatActivity implements
                     );
                 }
 
-                //shift camera to desired focus
-                LatLng focus = new LatLng(51.051877, 13.741517); //ideally current device location
+                //shift camera to ?? device location i.e. current user locaton
+                LatLng focus = new LatLng(51.051877, 13.741517);
                 mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                         new CameraPosition.Builder()
                                 .target(focus)
@@ -178,7 +267,9 @@ public class MainActivity extends AppCompatActivity implements
                 });
             }
         });
-        //-----------testing Map Listeners; taken from mapbox sdk documentation---------
+*/
+
+        //Map Listeners
 
         mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -191,6 +282,15 @@ public class MainActivity extends AppCompatActivity implements
         mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
             public boolean onMapLongClick(@NonNull LatLng point) {
+
+/*                //??new code
+                Feature newFeature = Feature.fromGeometry(
+                        Point.fromLngLat(
+                                point.getLatitude(), point.getLongitude()
+                        )
+                );*/
+
+                //??old code
                 Style style = mapboxMap.getStyle();
                 SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.setIconAllowOverlap(true);
@@ -202,9 +302,10 @@ public class MainActivity extends AppCompatActivity implements
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom")
                 );
+
                 Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
 
-                //*****
+                //??***
                 //Include a dialog to choose between playcing a song or a list
                 // in case of playcing a list, the radius should be entered (further dialog) and then the db item should be created
                 // if aborted, delete marker again
@@ -223,7 +324,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        //*****
+        //??***
         // we need an onclicklistener that starts playing songs / lists when you click on a marker on the map
         //*****
 
@@ -306,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //opens Lists Activity which shows all playcelists in a recycler view
     public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListActivity.class);
+        Intent intent = new Intent(this, ListsActivity.class);
         startActivity(intent);
     }
 

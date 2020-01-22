@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String SONGS_ICON_ID = "songs";
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
-    public static List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
+    public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
     FeatureCollection song_featureCollection;
     Source song_source;
     SymbolLayer song_symbolLayer;
@@ -357,22 +357,6 @@ public class MainActivity extends AppCompatActivity implements
                 double lat = point.getLatitude(), lng = point.getLongitude();
                 String name = "!placeholdername!", song_id = "!placeholder_songid!"; //??
 
-/*
-                //??old code
-                Style style = mapboxMap.getStyle();
-                SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style);
-                symbolManager.setIconAllowOverlap(true);
-                symbolManager.setIconIgnorePlacement(true);
-                // Add symbol at specified lat/lon
-                symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(lat, lng))
-                        .withIconImage("red_marker")
-                        .withIconAnchor("bottom")
-                );
-                Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
-*/
-
-
                 //??***
                 //Include a dialog to choose between playcing a song or a list
                 // in case of playcing a list, the radius should be entered (further dialog) and then the db item should be created
@@ -386,19 +370,13 @@ public class MainActivity extends AppCompatActivity implements
                 song.setNAME(name);
                 song.setSONG_ID(song_id);
                 songdao.insert(song);
-                //-------
-                //??need to add song to songlayersource and style in order to display marker
+
                 addSongToFeaturelist(song,featurelist_songlayer);
                 updateLayerSources();
                 resetMapStyle();
                 //resetting the style after reconstructing source shows newly added marker
-            //-----------
-
-
 
                 Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
-
-
                 return true;
             }
         });

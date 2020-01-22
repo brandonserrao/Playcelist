@@ -3,6 +3,7 @@ package com.brandonserrao.playcelist;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -65,6 +67,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -184,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements
                     public void onStyleLoaded(@NonNull Style style) {
                         //Map setup+style load completed;
                         //add extra data and perform further adjustments here
+
                     }
                 });
 
@@ -309,32 +313,70 @@ public class MainActivity extends AppCompatActivity implements
 
         //Map Listeners
 
-        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+/*        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public boolean onMapClick(@NonNull LatLng point) {
                 Toast.makeText(MainActivity.this, "onClick: longclick to place marker", Toast.LENGTH_LONG).show();
                 return false;
             }
+        }); */
+
+        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
+            @Override
+            public boolean onMapClick(@NonNull LatLng point) {
+                //conv latlng to screen pixel + check rendered feats there
+                final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(pixel,SONGS_LAYER_ID);
+                TextView textView = findViewById(R.id.debug_textview);
+               //get topmost feature of query results
+                if (features.size() > 0) {
+                    Feature feature = features.get(0);
+                    //check for feature properties; return properties
+                    if (feature.properties() != null) {
+                        textView.setText(feature.toJson());
+/*                        for (Map.Entry<String, JsonElement> entry: feature.properties().entrySet()) {
+                            textView.setText(String.format(
+                                    "%s = %s",
+                                    entry.getKey(),entry.getValue()
+                            ));
+                        }*/
+
+                    }
+                    else {textView.setText("no feature is null");
+                    }
+                }
+                else {textView.setText("features.size() = 0");
+                }
+
+                Toast.makeText(MainActivity.this, "onClick: testing mapbox map query", Toast.LENGTH_LONG).show();
+                return false;
+            }
         });
+
+
+
 
         mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
             public boolean onMapLongClick(@NonNull LatLng point) {
 
+                double lat = point.getLatitude(), lng = point.getLongitude();
+
+/*
                 //??old code
                 Style style = mapboxMap.getStyle();
                 SymbolManager symbolManager = new SymbolManager(mapView, mapboxMap, style);
                 symbolManager.setIconAllowOverlap(true);
                 symbolManager.setIconIgnorePlacement(true);
                 // Add symbol at specified lat/lon
-                double lat = point.getLatitude(), lng = point.getLongitude();
                 symbolManager.create(new SymbolOptions()
                         .withLatLng(new LatLng(lat, lng))
                         .withIconImage("red_marker")
                         .withIconAnchor("bottom")
                 );
-
                 Toast.makeText(MainActivity.this, "onLongClick: marker placed", Toast.LENGTH_LONG).show();
+*/
+
 
                 //??***
                 //Include a dialog to choose between playcing a song or a list
@@ -347,8 +389,9 @@ public class MainActivity extends AppCompatActivity implements
                 song.setLNG((float) lng);
                 song.setLAT((float) lat);
                 song.setNAME("!placeholdername!");
+                song.setSONG_ID("!placeholder_songid!");
                 songdao.insert(song);
-                Toast.makeText(MainActivity.this, "record successfully added,", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
 
 
                 return true;

@@ -46,6 +46,20 @@
                 android:onClick="onClickPlayceCurrentHere"
                 android:src="@drawable/playcericon" />
 
+            <ScrollView
+                android:id="@+id/debug_scrollview"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_above="@id/nowplaying_info"
+                android:scrollbarStyle="outsideInset"
+                android:background="@color/cardview_dark_background">
+                <TextView
+                    android:id="@+id/debug_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_horizontal"
+                    android:hint="debug\n\ninfor\n\nin\n\nhere"/>
+            </ScrollView>
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/nowplaying_info"
                 android:layout_width="match_parent"

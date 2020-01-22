@@ -88,9 +88,9 @@ public class MainActivity extends AppCompatActivity implements
     private MapView mapView;
 
     //database implementation variables
-    public static String db_name = "sqlstudio_db2_v5.sqlite";
-    public static SongDAO songdao;
-    public static List<Song> song_list; //to hold Song objects from db queries
+    public /*static*/ String db_name = "sqlstudio_db2_v5.sqlite";
+    public /*static*/ SongDAO songdao;
+    public /*static*/ List<Song> song_list; //to hold Song objects from db queries
 
     //marker implementation variables
     private static final String SONGS_SOURCE_ID = "songs";

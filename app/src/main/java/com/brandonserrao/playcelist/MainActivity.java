@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -99,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements
     //init feature list to be displayed
     public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
     FeatureCollection song_featureCollection;
-    Source song_source;
+    GeoJsonSource song_source;
     SymbolLayer song_symbolLayer;
     Style.Builder song_styleBuilder;
 
@@ -151,14 +152,15 @@ public class MainActivity extends AppCompatActivity implements
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
 
-
         //loop to add db records to map
         //??potentially can be moved outside of here+made publicstatic to only be run once
         for (int i = 0; i < song_list.size(); i++) {
             Song song = song_list.get(i);
             addSongToFeaturelist(song,featurelist_songlayer);
-        }//produces List<Feature>
+        }
+
         updateLayerSources();
+
         //firsttime construction of symbollayer
         song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
                 .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
@@ -167,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //create mapstyle + adding marker image
         song_styleBuilder = new Style.Builder()
+                .fromUri(getResources().getString(R.string.darkstyleURL))
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
                         R.drawable.songpin
@@ -183,138 +186,19 @@ public class MainActivity extends AppCompatActivity implements
                         //Map setup+style load completed;
                         //add extra data and perform further adjustments here
 
-                    }
-                });
 
-
-
-/* //markers using style; version 1
-        mapboxMap.setStyle(new Style.Builder()
-                .fromUri(getResources().getString(R.string.darkstyleURL))
-                //add SymbolLayer icon image to this style
-                .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
-                        MainActivity.this.getResources(),
-                        R.drawable.listpin)
-                )
-                //add geojson (location data) source for these icons
-                .withSource(new GeoJsonSource(SONGS_SOURCE_ID,
-                                FeatureCollection.fromFeatures(featurelist_songlayer)
-                        )
-                )
-                //add the SymbolLayer to the mapstyle; icon placement properties handled
-                .withLayer(new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
-                        .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
-                                iconAllowOverlap(true)
-                        )
-                ), new Style.OnStyleLoaded() {
-
-                    @Override
-                    public void onStyleLoaded(@NonNull Style style) {
-                        //addtional data and adjustments done in here
-
-                        enableLocationComponent(style);
-
-                        //---old code used for testing
-                        SymbolManager symbolManager =
-                                new SymbolManager(mapView, mapboxMap, style); //init symbolmanager
-
-                        //shift camera to ?? device location i.e. current user locaton
-                        LatLng focus = new LatLng(51.051877, 13.741517);
+                        //----demonstration of shift map focus
+/*                        LatLng focus = new LatLng(51.051877, 13.741517);
                         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                                 new CameraPosition.Builder()
                                         .target(focus)
                                         .zoom(12)
-                                        .build()));
+                                        .build()));*/
 
-                        //-------demonstration; add star marker image
-                        mapboxMap.getStyle().addImage("my-star-marker",
-                                BitmapFactory.decodeResource(getResources(), R.drawable.star_marker));
-                        symbolManager.create(new SymbolOptions()
-                                .withLatLng(new LatLng(51.02855, 13.723903))
-                                .withIconImage("my-star-marker")
-                                .withIconAnchor("bottom"));
-                        //--------
-                    }
-                }
-        );
-*/
-
-
-        //---backup code for song loading
-        /*
-        mapboxMap.setStyle(
-                new Style.Builder()
-                        .fromUri(getResources()
-                                .getString(R.string.darkstyleURL)),
-                new Style.OnStyleLoaded() {
-
-
-
-            @Override
-            public void onStyleLoaded(@NonNull Style style) {
-                enableLocationComponent(style);
-
-                mapboxMap.getStyle().addImage("red_marker",
-                        BitmapFactory.decodeResource(getResources(),
-                                R.drawable.songpin)); //add the symbol
-
-                SymbolManager symbolManager =
-                        new SymbolManager(mapView, mapboxMap, style); //init symbolmanager
-
-                //adding songs from database to the map
-                //?? replace this construction loop using
-                SymbolOptions song_symbol = new SymbolOptions() //settings for default song symbol; init'd without latlng
-                        .withIconImage("red_marker")
-                        .withIconAnchor("bottom");
-                for (int i = 0; i < song_list.size(); i++) { //loop to add db records to map
-                    Song song = song_list.get(i);
-                    double lat = (double) song.getLAT();
-                    double lng = (double) song.getLNG();
-                    symbolManager.create(song_symbol.withLatLng(new LatLng(lat, lng))
-                    );
-                }
-
-                //shift camera to ?? device location i.e. current user locaton
-                LatLng focus = new LatLng(51.051877, 13.741517);
-                mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                        new CameraPosition.Builder()
-                                .target(focus)
-                                .zoom(12)
-                                .build()));
-
-                //-------demonstration; add star marker image
-                mapboxMap.getStyle().addImage("my-star-marker",
-                        BitmapFactory.decodeResource(getResources(), R.drawable.star_marker));
-                symbolManager.create(new SymbolOptions()
-                        .withLatLng(new LatLng(51.02855, 13.723903))
-                        .withIconImage("my-star-marker")
-                        .withIconAnchor("bottom"));
-                //--------
-                //--------demonstration; adding behavior/listeners
-                symbolManager.addClickListener(new OnSymbolClickListener() {
-                    @Override
-                    public void onAnnotationClick(Symbol symbol) {
-                        Toast.makeText(MainActivity.this, "HÜL/S590: Computer Pool",
-                                Toast.LENGTH_LONG).show();
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                                new CameraPosition.Builder()
-                                        .target(symbol.getLatLng())
-                                        .build()));
                     }
                 });
-            }
-        });
-*/
 
         //Map Listeners
-
-/*        mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
-            @Override
-            public boolean onMapClick(@NonNull LatLng point) {
-                Toast.makeText(MainActivity.this, "onClick: longclick to place marker", Toast.LENGTH_LONG).show();
-                return false;
-            }
-        }); */
 
         mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
@@ -325,10 +209,10 @@ public class MainActivity extends AppCompatActivity implements
                 TextView textView = findViewById(R.id.debug_textview);
                //get topmost feature of query results
                 if (features.size() > 0) {
-                    Feature feature = features.get(0);
+                    Feature f = features.get(0);
                     //check for feature properties; return properties
-                    if (feature.properties() != null) {
-                        textView.setText(feature.toJson());
+                    if (f.properties() != null) {
+                        textView.setText(f.toJson());
 /*                        for (Map.Entry<String, JsonElement> entry: feature.properties().entrySet()) {
                             textView.setText(String.format(
                                     "%s = %s",
@@ -339,16 +223,22 @@ public class MainActivity extends AppCompatActivity implements
                     else {textView.setText("no feature properties ie. is null");
                     }
                 }
-                else {textView.setText("features.size() = 0");
+                else {//get all visible/rendered markers
+                    RectF rectF = new RectF(
+                            mapView.getLeft(),
+                            mapView.getTop(),
+                            mapView.getRight(),
+                            mapView.getBottom()
+                    );
+                    features = mapboxMap.queryRenderedFeatures(rectF);
+                    String text = "features.size() = 0 \n" + features.toArray().toString();
+                    textView.setText(text);
                 }
 
                 Toast.makeText(MainActivity.this, "onClick: testing mapbox map query", Toast.LENGTH_LONG).show();
                 return false;
             }
         });
-
-
-
 
         mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
             @Override
@@ -370,7 +260,7 @@ public class MainActivity extends AppCompatActivity implements
                 song.setNAME(name);
                 song.setSONG_ID(song_id);
                 songdao.insert(song);
-
+                //adding to featurelist to be placed as a marker on map
                 addSongToFeaturelist(song,featurelist_songlayer);
                 updateLayerSources();
                 resetMapStyle();
@@ -393,7 +283,6 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    //----functions for marker creation process
     public void addSongToFeaturelist(@NonNull Song song,List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
@@ -403,6 +292,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void updateLayerSources() {
+/*        // "proper" method from stackoverflow response
+        GeoJsonSource song_source = mapboxMap.getSourceAs(SONGS_SOURCE_ID); //??mapboxMap.getSourceAs() doesn't exist
+        song_source.setGeoJson(song_featureCollection);*/
+
+        //my method
         //List<Feature> to FeatureCollection to GeoJsonSource as source
         song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
         song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
@@ -417,6 +311,7 @@ public class MainActivity extends AppCompatActivity implements
     public void resetMapStyle() {
         //create mapstyle + adding marker image
         song_styleBuilder = new Style.Builder()
+                .fromUri(getResources().getString(R.string.darkstyleURL))
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
                         R.drawable.songpin))

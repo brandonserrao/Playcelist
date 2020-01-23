@@ -37,6 +37,16 @@
                 android:layout_toEndOf="@id/btn_nd" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btn_listPlaycer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/mapbox"
+                android:layout_alignParentStart="true"
+                android:layout_margin="10dp"
+                android:onClick="onClickCreatePlaycelist"
+                android:src="@drawable/listicon" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btn_playcer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

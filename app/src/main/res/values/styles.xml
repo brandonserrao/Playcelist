@@ -20,20 +20,9 @@
         <item name="elevationOverlayColor">@color/OnSurface</item>
     </style>
 
-    <style name="DialogTheme" parent="Theme.MaterialComponents.Dialog">
+    <style name="AppTheme.Dialog" parent="Theme.MaterialComponents.Dialog">
         <item name="colorAccent">@color/Secondary</item>
         <item name="colorPrimary">@color/Secondary</item>
-
-        <item name="android:colorBackground">@color/Background</item>
-        <item name="colorOnBackground">@color/OnBackground</item>
-        <item name="colorSurface">@color/Surface</item>
-        <item name="colorOnSurface">@color/OnSurface</item>
-        <item name="colorPrimaryVariant">@color/PrimaryVariant</item>
-        <item name="colorOnPrimary">@color/OnPrimary</item>
-        <item name="colorSecondary">@color/Secondary</item>
-        <item name="colorOnSecondary">@color/OnSecondary</item>
-        <item name="colorError">@color/Error</item>
-        <item name="colorOnError">@color/OnError</item>
     </style>
 
     <style name="circleImageView" parent="">
@@ -41,8 +30,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="SplashTheme" parent="Theme.MaterialComponents.NoActionBar">
-        <item name="android:windowBackground">@drawable/activity_splash_screen</item>
+    <style name="AppTheme.Launcher">
     </style>
-
 </resources>

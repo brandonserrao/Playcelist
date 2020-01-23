@@ -148,7 +148,7 @@ public class SongsActivity extends AppCompatActivity {
     //opens a dialog to confirm deleting the List
     public void onClickOpenSongDeleteDialog(View view) {
         //to get the relative Layout for the item: view.getParent().getParent();
-        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to unplayce this song?")
                 .setNeutralButton("cancel", null)
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {

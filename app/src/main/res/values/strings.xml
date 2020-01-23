@@ -31,7 +31,8 @@
     <string name="btnWillDeleteSong">This song will be deleted</string>
 
     <string name="s_name">search by name</string>
-
+    <string name="signIn">sign in with Spotify</string>
+    <string name="tomain">ToMain (will be gone later)</string>
 
 
 </resources>

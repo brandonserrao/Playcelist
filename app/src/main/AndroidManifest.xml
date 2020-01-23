@@ -10,14 +10,21 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/playcelist_launcher_icon"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".SplashScreen"></activity>
+        android:theme="@style/AppTheme.Launcher">
+        <activity android:name=".LauncherActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SplashScreen" />
         <activity android:name=".SpotifyPlayground" />
         <activity android:name=".SongsActivity" />
         <activity android:name=".ListsActivity" />
         <activity
             android:name=".MainActivity"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

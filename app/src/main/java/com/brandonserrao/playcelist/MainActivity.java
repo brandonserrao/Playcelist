@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickOpenAccountDialog(View view) {
         // open dialog to log in or out / change account
 
-        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -796,4 +796,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    public void onClickCreatePlaycelist(View view) {
+        View contextView = findViewById(R.id.btn_playcer);
+        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                .show();
+        /*
+        ToDo
+        CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
+        */
+    }
 }

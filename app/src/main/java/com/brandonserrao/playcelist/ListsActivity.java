@@ -150,7 +150,7 @@ public class ListsActivity extends AppCompatActivity {
 
     public void onClickOpenListDeleteDialog(View view) {
         //to get the relative Layout for the item: view.getParent().getParent();
-        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to delete this playcelist?")
                 .setNeutralButton("cancel", null)
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {

@@ -51,11 +51,14 @@ public class LauncherActivity extends AppCompatActivity {
         View contextView = findViewById(R.id.btn_LogIn);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
-        // THIS DOESN'T WORK YET: problem with getAuthenticationRequest
-        // final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
-        // AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+        /*
+         Todo THIS DOESN'T WORK YET: problem with getAuthenticationRequest
+         final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
+         AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+        */
     }
 
+    //Todo this has to be removed once the login -> to main works.
     public void OnClickStartMainActivity(View view) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

@@ -33,6 +33,8 @@
     <string name="s_name">search by name</string>
     <string name="signIn">sign in with Spotify</string>
     <string name="tomain">ToMain (will be gone later)</string>
+    <string name="nd_lo">log out</string>
+    <string name="nameHint">my Playcelist</string>
 
 
 </resources>

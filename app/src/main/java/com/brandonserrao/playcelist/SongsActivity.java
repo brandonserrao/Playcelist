@@ -114,15 +114,18 @@ public class SongsActivity extends AppCompatActivity {
         View contextView = findViewById(R.id.btn_showSongOnMap);
         Snackbar.make(contextView, R.string.showsSongOnMap, Snackbar.LENGTH_SHORT)
                 .show();
-        //Intent intent = new Intent(this, MainActivity.class);
-        // -
-        // -
-        //startActivity(intent);
-        // -
-        // -
-        //send id for map to center on corresponding list circle
-        // -
-        // -
+        /*
+        Todo actual code
+         Intent intent = new Intent(this, MainActivity.class);
+         -
+         -
+         startActivity(intent);
+         -
+         -
+         send id for map to center on corresponding list circle
+         -
+         -
+        */
     }
 
     //sending the listID to spotify to play
@@ -130,17 +133,20 @@ public class SongsActivity extends AppCompatActivity {
         View contextView = findViewById(R.id.btn_playSong);
         Snackbar.make(contextView, R.string.play_song, Snackbar.LENGTH_SHORT)
                 .show();
-        //actual code:
-        // get listID from db item
-        // -
-        // -
-        // -
-        // send intent(?) via API to play/shuffle list
-        // -
-        // -
-        // -
+        /*
+        Todo actual code:
+         get listID from db item
+         -
+         -
+         -
+         send intent(?) via API to play/shuffle list
+         -
+         -
+         -
+        */
     }
 
+    //Todo what's that?
     public interface delListener{
         public void onClick();
     }
@@ -159,7 +165,8 @@ public class SongsActivity extends AppCompatActivity {
                 })
                 // .setNegativeButtonIcon(getDrawable(R.drawable.delete))
                 .show();
-        //code to delete the list from DB & Spotify:
+        //Todo (same as in ListsActivity)
+        // code to delete the list from DB & Spotify:
         // -
         // -
         // -

@@ -1,64 +1,41 @@
 package com.brandonserrao.playcelist;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
-import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "SONGS"
+
+@Entity(tableName = "LISTS"
 /*      //example foreignkey room notation in java
 , foreignKeys = @ForeignKey(entity = inPlaylist.class,
-        parentColumns = "SONG_UID",
+        parentColumns = "LIST_UID",
         childColumns = "UID",
         onDelete = ForeignKey.CASCADE)*/
 )
 
-public class Song {
+public class Playlist {
 
     @PrimaryKey(autoGenerate = true)
     @NonNull
     Integer UID;
-    String SONG_ID;
-    float LAT;
-    float LNG;
+    String LIST_ID;
     String NAME;
-
-
-    public String getSONG_ID() {
-        return SONG_ID;
-    }
-
-    public void setSONG_ID(String SONG_ID) {
-        this.SONG_ID = SONG_ID;
-    }
-
-
-    public void setUID(@NonNull Integer UID) {
-        this.UID = UID;
-    }
 
     @NonNull
     public Integer getUID() {
         return UID;
     }
 
-
-    public float getLAT() {
-        return LAT;
+    public void setUID(@NonNull Integer UID) {
+        this.UID = UID;
     }
 
-    public void setLAT(float LAT) {
-        this.LAT = LAT;
+    public String getLIST_ID() {
+        return LIST_ID;
     }
 
-
-    public float getLNG() {
-        return LNG;
+    public void setLIST_ID(String LIST_ID) {
+        this.LIST_ID = LIST_ID;
     }
-
-    public void setLNG(float LNG) {
-        this.LNG = LNG;
-    }
-
 
     public String getNAME() {
         return NAME;

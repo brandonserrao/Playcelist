@@ -32,6 +32,7 @@ import static com.brandonserrao.playcelist.MainActivity.songdao;*/
 public class SongsActivity extends AppCompatActivity {
 
     String db_name = "sqlstudio_db2_v5.sqlite";
+    //public /*static*/ String db_name = "sqlstudio_db2_v7.sqlite";
     SongDAO songdao;
     List<Song> song_list;
 

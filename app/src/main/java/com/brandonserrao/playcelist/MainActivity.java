@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //database implementation variables
     public /*static*/ String db_name = "sqlstudio_db2_v5.sqlite";
+    //public /*static*/ String db_name = "sqlstudio_db2_v7.sqlite";
     public /*static*/ SongDAO songdao;
     public /*static*/ List<Song> song_list; //to hold Song objects from db queries
 
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
     public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
+    //public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
     FeatureCollection song_featureCollection;
     GeoJsonSource song_source;
     SymbolLayer song_symbolLayer;

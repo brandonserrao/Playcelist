@@ -1,12 +1,18 @@
 package com.brandonserrao.playcelist;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +28,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
@@ -101,6 +109,8 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+    LocationManager locationManager;
+    LocationListener locationListener;
 
     //database implementation variables
     public /*static*/ String db_name = "sqlstudio_db2_v5.sqlite";
@@ -156,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements
         // restoring important variables state
 
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        ;
         Editor editor = pref.edit();
 
         mAccessToken = pref.getString("mAccessToken", "");
@@ -250,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements
                 .fromUri(getResources().getString(R.string.darkstyleURL))
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
-                        R.drawable.songpin
+                        R.drawable.pin
                         )
                 )
                 .withSource(song_source)
@@ -322,29 +331,18 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMapLongClick(@NonNull LatLng point) {
 
                 double lat = point.getLatitude(), lng = point.getLongitude();
-                String name = "!placeholdername!", song_id = "!placeholder_songid!"; // Todo
-
-                /*
-                 Todo
-                Include a dialog to choose between playcing a song or a list
-                 in case of playcing a list, the radius should be entered (further dialog) and then the db item should be created
-                 if aborted, delete marker again
-                creating new song entry and placing in database
-                */
-
-                Song song = new Song();
-                song.setLNG((float) lng);
-                song.setLAT((float) lat);
-                song.setNAME(name);
-                song.setSONG_ID(song_id);
-                songdao.insert(song);
-                //adding to featurelist to be placed as a marker on map
-                addSongToFeaturelist(song, featurelist_songlayer);
-                updateLayerSources();
-                resetMapStyle();
-                //resetting the style after reconstructing source shows newly added marker
-
-                Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
+                //String name = "!placeholdername!", song_id = "!placeholder_songid!"; // Todo
+                new MaterialAlertDialogBuilder(MainActivity.this, R.style.AppTheme_Dialog)
+                        .setTitle("Playce currently playing song")
+                        .setMessage("here?")
+                        .setNeutralButton("cancel", null)
+                        .setPositiveButton("song", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                createSongItem(lng, lat);
+                            }
+                        })
+                        .show();
                 return true;
             }
         });
@@ -360,6 +358,29 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void createSongItem(double lng, double lat) {
+        Song song = new Song();
+        song.setLNG((float) lng);
+        song.setLAT((float) lat);
+        song.setNAME(CurrentTrackName);
+        song.setSONG_ID(CurrentTrackID);
+        /*
+        Todo activate after DB update:
+         song.setARTIST(CurrentTrackArtist);
+        */
+        songdao.insert(song);
+        //adding to featurelist to be placed as a marker on map
+        addSongToFeaturelist(song, featurelist_songlayer);
+        updateLayerSources();
+        resetMapStyle();
+        // resetting the style after reconstructing source shows newly added marker
+        /*
+        Todo @Brandon: somewhere here the pins are changed again - don't know how to change that /V
+        Todo (is fine again after recreating mainActivity)
+        */
+        Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
     }
 
     public void addSongToFeaturelist(@NonNull Song song, List<Feature> featurelist_songlayer) {
@@ -479,6 +500,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //opens dialog to confirm playcing the current playing song at the current GPS position
     public void onClickPlayceCurrentSongHere(View view) {
+        zoomToCurrentLocation();
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")
@@ -492,18 +514,36 @@ public class MainActivity extends AppCompatActivity implements
                 .show();
     }
 
+    //a method that retrieves the current location and tells the map to center and zoom to that location
+    private void zoomToCurrentLocation() {
+        /*
+        Todo
+         use getCurrentLocation() to tell the map where to zoom to
+        */
+    }
+
+    //returns current lat&long for further processing
+    private void getCurrentLocation() {
+        /*Todo something like this
+           lat = getLatitude();
+           lon = getLongitude();
+           return(lng, lat);
+           */
+    }
+
     //zooms to current GPS position on the map and creates a song marker
     //creates new song item in the DB using now playing info and GPS info
     private void onClickPlayceSong(MapView mapView) {
         View contextView = findViewById(R.id.btn_playcer);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
                 .show();
+        getCurrentLocation();
+
         /*
         Todo actual code:
          get GPS info
          get API info / nowplaying
          USE CurrentTrackID CurrentTrackName CurrentTrackArtistVariable
-         navigate to current position
          set new marker
          open dialog (do you want to playce [now playing song] here?)
          if confirmed

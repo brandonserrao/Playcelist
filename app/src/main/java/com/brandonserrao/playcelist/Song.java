@@ -1,4 +1,5 @@
 package com.brandonserrao.playcelist;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -13,6 +14,8 @@ public class Song {
     float LAT;
     float LNG;
     String NAME;
+    //Todo add field for Artistname
+    //String ARTIST;
 
 
     public String getSONG_ID() {
@@ -59,4 +62,9 @@ public class Song {
     public void setNAME(String NAME) {
         this.NAME = NAME;
     }
+
+    /*
+    Todo activate after field has been added:
+     public void setARTIST(String ARTIST) { this.ARTIST = ARTIST; }
+    */
 }

@@ -16,10 +16,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:paddingVertical="200dp"
+            android:paddingTop="200dp"
+            android:paddingHorizontal="50dp"
             android:src="@drawable/playcelist" />
 
         <com.google.android.material.button.MaterialButton
+            android:layout_marginTop="100dp"
             android:id="@+id/btn_LogIn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -21,11 +21,25 @@ public interface SongDAO {
 
     @Query("SELECT * FROM SONGS")
     public List<Song> getAllSongs();
+    // Todo include ... WHERE TYPE IS 's' ... once field is available
+
+    /*
+    Todo query method for lists:
+     @Query("SELECT * FROM SONGS WHERE NAME IS 'l')
+     public List<Song> getAllLists();
+    */
 
     @Query ("SELECT * FROM SONGS WHERE ( NAME LIKE '%' || :search_term || '%' ) ")
     public List<Song> searchSongsByName(String search_term);
+    //Todo include ..AND WHERE TYPE is 's'..
 
     @Query("DELETE FROM SONGS WHERE (NAME LIKE '%' || :search_term || '%')")
     public void deleteSearchResults(String search_term);
+    //Todo include ..AND WHERE TYPE is 's'..
+
+    @Query("DELETE FROM SONGS WHERE (SONG_ID IS :delID)")
+    public void deleteByID(String delID);
+
+    //Todo create analog methods for lists
 
 }

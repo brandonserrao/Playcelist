@@ -14,8 +14,11 @@ public class Song {
     float LAT;
     float LNG;
     String NAME;
-    //Todo add field for Artistname
-    //String ARTIST;
+    /*
+    Todo add field for Artistname and type of item
+         String ARTIST;
+         String TYPE;
+    */
 
 
     public String getSONG_ID() {

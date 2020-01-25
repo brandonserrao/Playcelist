@@ -19,18 +19,16 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.MyViewHolder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv1;
         public TextView tv2;
-        public TextView tv3;
-        public TextView tv4;
-        public TextView tv5;
+        //Todo delete in case we don't want a second line:
+        // public TextView tv3;
         public View layout;
         public MyViewHolder(View v) {
             super(v);
             layout = v;
             tv1 = v.findViewById(R.id.tv1);
             tv2 = v.findViewById(R.id.tv2);
-            tv3 = v.findViewById(R.id.tv3);
-            tv4 = v.findViewById(R.id.tv4);
-            tv5 = v.findViewById(R.id.tv5);
+            //Todo delete in case we don't want a second line:
+            // tv3 = v.findViewById(R.id.tv3);
         }
     }
     @Override
@@ -45,9 +43,10 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.tv1.setText(String.valueOf(mDataset.get(position).getUID()));
         holder.tv2.setText(mDataset.get(position).getNAME());
-        holder.tv5.setText(mDataset.get(position).getS_ID());
-        holder.tv3.setText(String.valueOf(mDataset.get(position).getLNG()));
-        holder.tv4.setText(String.valueOf(mDataset.get(position).getLAT()));
+        /*
+        Todo delete in case we don't want a second line:
+         holder.tv3.setText(String.valueOf(mDataset.get(position).getLIST_ITEMS()));
+        */
     }
     @Override
     public int getItemCount() {

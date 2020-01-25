@@ -2,6 +2,7 @@ package com.brandonserrao.playcelist;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -170,9 +171,6 @@ public class MainActivity extends AppCompatActivity implements
 
         CUserUpiclnk = pref.getString("CUserUpiclnk", "");
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
-
-
-
 
 
         //create db instance + interface for this activity
@@ -380,49 +378,17 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        mapboxMap.addOnMapLongClickListener(new MapboxMap.OnMapLongClickListener() {
-            @Override
-            public boolean onMapLongClick(@NonNull LatLng point) {
-
-                double lat = point.getLatitude(), lng = point.getLongitude();
-                String name = "!placeholdername!", song_id = "!placeholder_songid!", artist = "!placeholderArtist";//??
-/*                new MaterialAlertDialogBuilder(MainActivity.this, R.style.AppTheme_Dialog)
-                        .setTitle("Playce currently playing song")
-                        .setMessage("here?")
-                        .setNeutralButton("cancel", null)
-                        .setPositiveButton("song", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                createSongItem(lng, lat);
-                            }
-                        })
-                        .show();
-                return true;
-            }
-        });*/
-
-        /*
-        Todo
-         we need an onclicklistener that starts playing songs / lists when you click on a marker on the map
-        */
-
-                //creating new song entry and placing in database
-                Record song = new Record();
-                song.setLNG((float) lng);
-                song.setLAT((float) lat);
-                song.setNAME(name);
-                song.setS_ID(song_id);
-                song.setIsLIST(false);
-                recorddao.insert(song);
-                //adding to featurelist to be placed as a marker on map
-                addSongToFeaturelist(song, featurelist_songlayer);
-                updateLayerSources();
-                resetMapStyle();
-                //resetting the style after reconstructing source shows newly added marker
-
-                Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
-                return true;
-            }
+        //when longclicking on the map, a dialog opens and the currently playing song can be playced
+        mapboxMap.addOnMapLongClickListener(point -> {
+            double lat = point.getLatitude();
+            double lng = point.getLongitude();
+            new MaterialAlertDialogBuilder(MainActivity.this, R.style.AppTheme_Dialog)
+                    .setTitle("Playce currently playing song")
+                    .setMessage("here?")
+                    .setNeutralButton("cancel", null)
+                    .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(lat, lng))
+                    .show();
+            return true;
         });
 
         //??***
@@ -588,50 +554,41 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
+    //zooms to current GPS posittion on the map and
     //opens dialog to confirm playcing the current playing song at the current GPS position
-    public void onClickPlayceCurrentSongHere(View view) {
-        zoomToCurrentLocation();
+    public void onClickPlayceSongAtGPS(View view) {
+        double lat = device_location.getLatitude();
+        double lng = device_location.getLongitude();
+        zoomToLatLng(lat, lng, 16);
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")
                 .setNeutralButton("cancel", null)
-                .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(mapView))
+                .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(lat, lng))
                 .show();
     }
 
-    //a method that retrieves the current location and tells the map to center and zoom to that location
-    private void zoomToCurrentLocation() {
-        /*
-        Todo
-         use getCurrentLocation() to tell the map where to zoom to
-        */
-    }
+    //Todo make sure current location is not null in all methods using it
 
-    //returns current lat&long for further processing
-    private float getCurrentLocation() {
-        /*Todo
-         */
-        return 0;
-    }
-
-    //zooms to current GPS position on the map and creates a song marker
-    //creates new song item in the DB using now playing info and GPS info
-    private void onClickPlayceSong(MapView mapView) {
+    //creates new song item in the DB using now playing info and lat and lng as input
+    private void onClickPlayceSong(double dlat, double dlng) {
         //getting all the information for a new record item
-        float lat = getCurrentLocation();
-        float lng = getCurrentLocation();
+        float lat = (float) dlat;
+        float lng = (float) dlng;
         String songID = CurrentTrackID;
         String songArtist = CurrentTrackArtist;
         String songName = CurrentTrackName;
 
-        //creating new song entry and placing it in db
+        //creating new song entry and inserting it in db table
         Record song = new Record();
         song.setLNG(lng);
         song.setLAT(lat);
         song.setNAME(songName);
         song.setS_ID(songID);
         song.setIsLIST(false);
+        song.setARTIST(songArtist);
         recorddao.insert(song);
+
         //adding to featurelist to be placed as a marker on map
         addSongToFeaturelist(song, featurelist_songlayer);
         updateLayerSources();

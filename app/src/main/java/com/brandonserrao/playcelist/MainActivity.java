@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements
     public LocationManager locationManager;
     public LocationListener locationListener;
     public Location device_location;
+    public String address;
 
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
@@ -196,12 +197,46 @@ public class MainActivity extends AppCompatActivity implements
                 (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
+
                 if (location != null) {
-                    TextView textView = findViewById(R.id.debug_textview);
                     device_location = location;
+                    //--displaying gps location for debugging
+                    TextView textView = findViewById(R.id.debug_textview);
                     double lat = device_location.getLatitude(), lng = device_location.getLongitude();
                     String debug_text = String.valueOf(lat) + String.valueOf(lng);
-                textView.setText(debug_text);}
+                    textView.setText(debug_text);
+
+                    //getting reverse geocoded address for potential use in playlist placement
+                    Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+                    try {
+                        int num_results = 1;
+                        List<Address> address_list = geocoder.getFromLocation(lat,lng,num_results);
+                        address = address_list.get(0).getAddressLine(0);
+                        /*////--from my tutorial
+                        int num_results=4;
+                        List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
+                        String address = address_list.get(0).getAddressLine(0); // just gets tested for existence by the following loop
+                        if (address!=null) {
+
+
+                            String multi_address = "";
+                            for(int i=0;i<num_results;i++){
+                                multi_address = multi_address
+                                        + "\u2794 " + address_list.get(i).getAddressLine(0)
+                                        + "\n" + "URL: " + ((address_list.get(i).getUrl()!=null)?address_list.get(i).getUrl():"none available")
+                                        + System.getProperty("line.separator");
+                            }
+//                            addressField.setText("\u2794 " + address);
+                            addressField.setText(multi_address);
+                        }*/
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(location==null) {/*
+                    textview_lat.setText(R.string.label_lat+R.string.unknown_location);
+                    textview_long.setText(R.string.label_long+R.string.unknown_location);*/
+                }
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -330,7 +365,9 @@ public class MainActivity extends AppCompatActivity implements
                     String numberOfFeatures = String.valueOf(features.size());
                     String current_location = "Device \n Latitude: " + String.valueOf(device_location.getLatitude())
                             + "\n Longitude: " + String.valueOf(device_location.getLongitude())
-                            + "\n Time: " + device_location.getTime();
+                            + "\n Time: " + device_location.getTime()
+                            + "\n Address: " + address
+                            ;
                     String debug_text = current_location + "\n"
                             + "Got " + numberOfFeatures + " rendered song features \n"
                             //+ features.toString()

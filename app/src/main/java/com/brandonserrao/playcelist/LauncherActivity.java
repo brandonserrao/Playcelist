@@ -85,7 +85,7 @@ public class LauncherActivity extends AppCompatActivity {
         // Example routing
         if (isWebLoggedIn) {
             Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+          startActivity(intent);
         }
     }
 
@@ -133,7 +133,7 @@ public class LauncherActivity extends AppCompatActivity {
             editor.putString("mAccessToken", mAccessToken);
             editor.commit();
 
-            Log.e("SHARED", mAccessToken);
+//            Log.e("SHARED", mAccessToken);
             GetUser();
             isWebLoggedIn = true;
             AppLogin();

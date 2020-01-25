@@ -32,4 +32,5 @@
         android:text="@string/SAccountName"
         android:textColor="@color/OnSecondary" />
 
+
 </LinearLayout>

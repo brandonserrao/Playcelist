@@ -47,6 +47,7 @@ public class LauncherActivity extends AppCompatActivity {
         routeToMain();
     }
 
+
     public void RequestToken() {
         View contextView = findViewById(R.id.btn_LogIn);
         Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
@@ -63,4 +64,33 @@ public class LauncherActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
+    /*Todo: move to Launcher Screen
+    //opens spotify account dialog
+    public void onClickOpenAccountDialog(View view) {
+        // open dialog to log in or out / change account
+
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                .setTitle("title")
+                .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                              LogIntoSpotify();
+                          }
+                      })
+                .setNegativeButton("log out", new DialogInterface.OnClickListener() {
+                          @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                              LogOutOfSpotify();
+
+                                  }
+                      })
+                .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
+                        @Override
+                          public void onClick(DialogInterface dialog, int which) {
+                              LoadUserPic();
+                          }
+                      })
+                .show();
+    }*/
 }

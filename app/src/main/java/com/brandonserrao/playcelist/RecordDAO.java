@@ -44,4 +44,18 @@ public interface RecordDAO {
     @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%') AND (isLIST = 1)")
     public void deleteListSearchResults(String search_term);
 
+
+    @Query("DELETE FROM RECORDS WHERE (UID = :uid )")
+    public void deleteRecordByUID(String uid);
+
+
+    @Query("SELECT LAT FROM RECORDS WHERE (UID = :uid)")
+    public float getLatByUid(String uid);
+
+    @Query("SELECT LNG FROM RECORDS WHERE (UID = :uid)")
+    public float getLngByUid(String uid);
+
+    @Query("SELECT S_ID FROM RECORDS WHERE (UID = :uid)")
+    public String getSidByUid(String uid);
+
 }

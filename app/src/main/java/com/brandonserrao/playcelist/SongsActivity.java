@@ -116,61 +116,60 @@ public class SongsActivity extends AppCompatActivity {
 
     //to main activity via intent, center and zoom to song position on map
     public void viewSongOnMap(View view) {
-        //Todo specifiy the item that was clicked on to get that specific item's lat+lng
-        // atm the tv s of the first item on the list are being returned
-        TextView lngtv = findViewById(R.id.tv3);
-        String lng = (String) lngtv.getText();
-        TextView lattv = findViewById(R.id.tv4);
-        String lat = (String) lattv.getText();
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1);
+        String uid = (String) uidTv.getText();
+        double lat = recorddao.getLatByUid(uid);
+        double lng = recorddao.getLngByUid(uid);
 
-        View contextView = findViewById(R.id.btn_showSongOnMap);
-        Snackbar.make(contextView, lng + "   " + lat, Snackbar.LENGTH_SHORT)
-                .show();
-        /*
-        Todo
-         send latlng via intent to map to center and zoom
-         Intent intent = new Intent(this, MainActivity.class);
-         startActivity(intent);
-        */
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("methodName", "ZoomToLatLng");
+        intent.putExtra("Lat", lat);
+        intent.putExtra("Lng", lng);
+        startActivity(intent);
     }
 
     //retrieves and sends the songID to spotify to play
     public void API_playThisSong(View view) {
-        //Todo specifiy the item that was clicked on to get that specific item's SongID
-        TextView idtv = findViewById(R.id.tv5);
-        String sID = (String) idtv.getText();
-        View contextView = findViewById(R.id.btn_playSong);
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1);
+        String uid = (String) uidTv.getText();
+        String sID = recorddao.getSidByUid(uid);
+
+        View contextView = itemView.findViewById(R.id.btn_playSong);
         Snackbar.make(contextView, R.string.play_song + sID, Snackbar.LENGTH_SHORT)
                 .show();
         /*
-        Todo
-         send intent(?) via API to play song
+        Todo API
+         send S_ID via API to play song
         */
     }
 
     //opens a dialog to confirm deleting the Song
     //deletes song from the DB
-/*
     public void onClickOpenSongDeleteDialog(View view) {
-        //todo get the correct item specifications to delete
-        TextView idTV = findViewById(R.id.tv5); //now this gets tv5 of the first item in the list...
-        String delID = (String) idTV.getText();
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1); //now this gets tv5 of the first item in the list...
+        String uid = (String) uidTv.getText();
+
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to unplayce this song?")
                 .setNeutralButton("cancel", null)
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        RecordDAO.deleteByID(delID);
-                        List<Record> songs = RecordDAO.getAllSongs();
-                        songsAdapter = new SongsAdapter(songs);
-                        recyclerView.setAdapter(songsAdapter);
-                        //Todo doesn't delete anything yet...
-                        Toast.makeText(SongsActivity.this, R.string.btnWillDeleteSong + delID, Toast.LENGTH_SHORT).show();
+                        deleteRecord(uid);
                     }
                 })
                 .show();
     }
-*/
+
+    private void deleteRecord(String uid) {
+        recorddao.deleteRecordByUID(uid);
+        List<Record> songs = recorddao.getAllSongs();
+        songsAdapter = new SongsAdapter(songs);
+        recyclerView.setAdapter(songsAdapter);
+    }
+
 
 }

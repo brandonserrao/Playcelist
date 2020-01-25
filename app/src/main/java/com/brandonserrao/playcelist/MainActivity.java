@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
-    public RecordDAO songdao;
+    public RecordDAO recorddao;
     public List<Record> song_list; //to hold Song objects from db queries
 
     //marker implementation variables
@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements
     GeoJsonSource song_source;
     SymbolLayer song_symbolLayer;
     Style.Builder song_styleBuilder;
-
 
 
     //we should find a way to be able to use a loggedIn flag...
@@ -190,13 +189,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
         /*
-        Todo
-         somehow check the boxes
-         see onClickCheckBox1(); and onClickCheckBox2();
-         */
-
-
-        /*
         -------obsolete; database intialization from file from assets, as shown in tutorials
         */
 
@@ -220,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
-        songdao = database.getRecordDAO();
-        song_list = songdao.getAllSongs();
+        recorddao = database.getRecordDAO();
+        song_list = recorddao.getAllSongs();
 
 
         //mapbox map creation + styling
@@ -238,6 +230,16 @@ public class MainActivity extends AppCompatActivity implements
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
 
+        Intent intent = getIntent();
+        if (intent.hasExtra("methodName")) {
+            if (intent.getStringExtra("methodName").equals("ZoomToLatLng")) {
+                String sLat = String.valueOf(intent.getDoubleExtra("Lat", 0));
+                String sLng = String.valueOf(intent.getDoubleExtra("Lng", 0));
+                Toast.makeText(this, sLat + " " + sLng, Toast.LENGTH_LONG).show();
+                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0));
+            }
+        }
+
         /*
         Todo
          loop to add db records to map
@@ -245,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements
         */
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
-            addSongToFeaturelist(song,featurelist_songlayer);
+            addSongToFeaturelist(song, featurelist_songlayer);
         }
 
         updateLayerSources();
@@ -294,9 +296,9 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMapClick(@NonNull LatLng point) {
                 //conv latlng to screen pixel + check rendered feats there
                 final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
-                List<Feature> features = mapboxMap.queryRenderedFeatures(pixel,SONGS_LAYER_ID);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, SONGS_LAYER_ID);
                 TextView textView = findViewById(R.id.debug_textview);
-               //get topmost feature of query results
+                //get topmost feature of query results
                 if (features.size() > 0) {
                     Feature f = features.get(0);
                     //check for feature properties; return properties
@@ -308,11 +310,10 @@ public class MainActivity extends AppCompatActivity implements
                                     entry.getKey(),entry.getValue()
                             ));
                         }*/
+                    } else {
+                        textView.setText("no feature properties ie. is null");
                     }
-                    else {textView.setText("no feature properties ie. is null");
-                    }
-                }
-                else {//get all visible/rendered markers
+                } else {//get all visible/rendered markers
                     RectF rectF = new RectF(
                             mapView.getLeft(),
                             mapView.getTop(),
@@ -321,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements
                     );
                     features = mapboxMap.queryRenderedFeatures(rectF);
                     String feats_str = "";
-                    for(int i = 0; i < features.size(); i++) {
+                    for (int i = 0; i < features.size(); i++) {
                         String feat = features.get(i).toJson();
                         feats_str.concat(feat);
                     }
@@ -367,9 +368,9 @@ public class MainActivity extends AppCompatActivity implements
                 song.setNAME(name);
                 song.setS_ID(song_id);
                 song.setIsLIST(false);
-                songdao.insert(song);
+                recorddao.insert(song);
                 //adding to featurelist to be placed as a marker on map
-                addSongToFeaturelist(song,featurelist_songlayer);
+                addSongToFeaturelist(song, featurelist_songlayer);
                 updateLayerSources();
                 resetMapStyle();
                 //resetting the style after reconstructing source shows newly added marker
@@ -413,8 +414,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-    public void addSongToFeaturelist(@NonNull Record song,List<Feature> featurelist_songlayer) {
+    public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
         feature.addStringProperty("SONG_ID", song.getS_ID());
@@ -500,8 +500,22 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    //INTENT handler methods
+    //zooms map to a given lat&lng
+    private void zoomToLatLng(Double lat, Double lng) {
+        LatLng focus;
+        focus = new LatLng(lat, lng);
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(focus)
+                        .zoom(16)
+                        .build()));
+    }
 
-    /*button IDs for reference
+    //Todo  write method to zoom to a given extent (to be used when coming from lists activity
+
+    /*Todo probably get rid of this:
+       button IDs for reference
         btn_nd [bar at top left in main activity] > opens nav drawer
         btn_playcer [bottom right in main activity] > zooms to current position (GPS) and playces current playing at current position
         btn_toSongs [left in bottom nav bar] > navigates via intent to Songs Activity
@@ -556,7 +570,7 @@ public class MainActivity extends AppCompatActivity implements
     //returns current lat&long for further processing
     private void getCurrentLocation() {
         /*Todo
-           */
+         */
     }
 
     //zooms to current GPS position on the map and creates a song marker
@@ -630,38 +644,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    /*Todo: moved / has to move to Launcher Screen resp. drawer menu
-    //opens spotify account dialog
-    public void onClickOpenAccountDialog(View view) {
-        // open dialog to log in or out / change account
-
-        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
-                .setTitle("obsolete")
-                .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                              LogIntoSpotify();
-                          }
-                      })
-                .setNegativeButton("log out", new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              LogOutOfSpotify();
-
-                                  }
-                      })
-                .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
-                        @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              LoadUserPic();
-                          }
-                      })
-                .show();
-    }*/
-
-
     //nav drawer checkbox handlers
-    public void onClickCheckBox1(MenuItem item) {
+    /*public void onClickCheckBox1(MenuItem item) {
         NavigationView navDrawer = findViewById(R.id.nav_drawer);
         MenuItem menuItem1 = navDrawer.getMenu().findItem(R.id.check_SongsOnMap);
         CompoundButton checkbox1 = (CompoundButton) menuItem1.getActionView();
@@ -691,7 +675,7 @@ public class MainActivity extends AppCompatActivity implements
         // -
         // -
         // -
-    }
+    }*/
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
@@ -814,14 +798,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void LogOutOfSpotify(MenuItem menuItem) {
-
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://accounts.spotify.com/en/logout ")));
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         isAppLoggedIn = false;
         isWebLoggedIn = false;
-
-
-        // clear name and pic
+        //Todo clear name and pic
 
     }
 

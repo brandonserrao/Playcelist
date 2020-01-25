@@ -150,6 +150,7 @@ public class SongsActivity extends AppCompatActivity {
 
     //opens a dialog to confirm deleting the Song
     //deletes song from the DB
+/*
     public void onClickOpenSongDeleteDialog(View view) {
         //todo get the correct item specifications to delete
         TextView idTV = findViewById(R.id.tv5); //now this gets tv5 of the first item in the list...
@@ -160,8 +161,8 @@ public class SongsActivity extends AppCompatActivity {
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        songdao.deleteByID(delID);
-                        List<Song> songs = songdao.getAllSongs();
+                        RecordDAO.deleteByID(delID);
+                        List<Record> songs = RecordDAO.getAllSongs();
                         songsAdapter = new SongsAdapter(songs);
                         recyclerView.setAdapter(songsAdapter);
                         //Todo doesn't delete anything yet...
@@ -170,5 +171,6 @@ public class SongsActivity extends AppCompatActivity {
                 })
                 .show();
     }
+*/
 
 }

@@ -383,26 +383,26 @@ public class MainActivity extends AppCompatActivity implements
         // we need an onclicklistener that starts playing songs / lists when you click on a marker on the map
         //*****
 
-        private void createSongItem(double lng, double lat) {
+/*        private void createSongItem(double lat, double lng) {
             Record song = new Record();
             song.setLNG((float) lng);
             song.setLAT((float) lat);
             song.setNAME(CurrentTrackName);
             song.setS_ID(CurrentTrackID);
             song.setIsLIST(false);
-            song.setARTIST(artist);
+            song.setARTIST(CurrentTrackArtist);
             songdao.insert(song);
             //adding to featurelist to be placed as a marker on map
             addSongToFeaturelist(song, featurelist_songlayer);
             updateLayerSources();
             resetMapStyle();
             // resetting the style after reconstructing source shows newly added marker
-        /*
+        *//*
         Todo @Brandon: somewhere here the pins are changed again - don't know how to change that /V
         Todo (is fine again after recreating mainActivity)
-        */
+        *//*
             Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
-        }
+        }*/
 
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
             @Override

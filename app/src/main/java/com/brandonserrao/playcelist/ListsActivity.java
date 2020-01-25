@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,8 +31,8 @@ public class ListsActivity extends AppCompatActivity {
 
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
-    RecordDAO songdao;
-    List<Record> song_list;
+    RecordDAO recorddao;
+    List<Record> list_list;
 
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
@@ -49,9 +50,9 @@ public class ListsActivity extends AppCompatActivity {
                         .build();
 
         //setup recycler view and contents
-        songdao = database.getRecordDAO();
-        song_list = songdao.getAllLists();
-        List<Record> list_values = song_list;
+        recorddao = database.getRecordDAO();
+        list_list = recorddao.getAllLists();
+        List<Record> list_values = list_list;
 
         recyclerView = findViewById(R.id.recycler_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -61,10 +62,10 @@ public class ListsActivity extends AppCompatActivity {
 
 
     //button functions
-    public void searchSongsByName(View view) {
+    public void searchListsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Record> search_results = songdao.searchListsByName(search_term);
+        List<Record> search_results = recorddao.searchListsByName(search_term);
         listsAdapter = new ListsAdapter(search_results);
         recyclerView.setAdapter(listsAdapter);
     }
@@ -72,12 +73,12 @@ public class ListsActivity extends AppCompatActivity {
     public void onClickDeleteResults(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        songdao.deleteListSearchResults(search_term);
+        recorddao.deleteListSearchResults(search_term);
         et.setText("");
 
-        List<Record> songs = songdao.getAllLists();
+        List<Record> lists = recorddao.getAllLists();
 
-        listsAdapter = new ListsAdapter(songs);
+        listsAdapter = new ListsAdapter(lists);
         recyclerView.setAdapter(listsAdapter);
         //recreate();
     }
@@ -113,66 +114,63 @@ public class ListsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //to main activity via intent, center and zoom to list position on map
     public void viewListOnMap(View view) {
-        View contextView = findViewById(R.id.btn_showListOnMap);
-        Snackbar.make(contextView, R.string.showsListOnMap, Snackbar.LENGTH_SHORT)
-                .show();
-        /*
-        Todo actual code
-         Intent intent = new Intent(this, MainActivity.class);
-         -
-         -
-         startActivity(intent);
-         -
-         -
-         send id for map to center on corresponding list circle
-         -
-         -
-        */
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1);
+        String uid = (String) uidTv.getText();
+        double lat = recorddao.getLatByUid(uid);
+        double lng = recorddao.getLngByUid(uid);
+        int zoomLevel = Integer.parseInt(recorddao.getZoomLevelByUid(uid));
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("methodName", "ZoomToLatLng");
+        intent.putExtra("Lat", lat);
+        intent.putExtra("Lng", lng);
+        intent.putExtra("Zoomlevel", zoomLevel);
+        startActivity(intent);
     }
 
-    //sending the listID to spotify to play
+    //retrieves and sends the listID to spotify to play
     public void API_playThisList(View view) {
-        View contextView = findViewById(R.id.iv);
-        Snackbar.make(contextView, R.string.play_playcelist, Snackbar.LENGTH_SHORT)
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1);
+        String uid = (String) uidTv.getText();
+        String listID = recorddao.getSidByUid(uid);
+
+        View contextView = itemView.findViewById(R.id.btn_playList);
+        Snackbar.make(contextView, listID, Snackbar.LENGTH_SHORT)
                 .show();
         /*
-        Todo actual code:
-         get listID from db item
-         -
-         -
-         -
-         send intent(?) via API to play/shuffle list
-         -
-         -
-         -
+        Todo API
+         send listID via API to play song
         */
     }
 
-    //Todo (what was this for?
-    public interface delListener{
-        void onClick();
-    }
-
+    //opens a dialog to confirm deleting the list
     public void onClickOpenListDeleteDialog(View view) {
-        //to get the relative Layout for the item: view.getParent().getParent();
+        View itemView = (View) view.getParent().getParent();
+        TextView uidTv = itemView.findViewById(R.id.tv1); //now this gets tv5 of the first item in the list...
+        String uid = (String) uidTv.getText();
+
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to delete this playcelist?")
                 .setNeutralButton("cancel", null)
-                .setNegativeButton("delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(ListsActivity.this, R.string.btnWillDeleteList, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                // .setNegativeButtonIcon(getDrawable(R.drawable.delete))
+                .setNegativeButton("delete", (dialog, which) -> deleteRecord(uid))
                 .show();
+    }
+
+    //deletes selected list from db
+    private void deleteRecord(String uid) {
+        recorddao.deleteRecordByUID(uid);
+        List<Record> lists = recorddao.getAllLists();
+        listsAdapter = new ListsAdapter(lists);
+        recyclerView.setAdapter(listsAdapter);
+
+        String listID = recorddao.getSidByUid(uid);
         /*
-        Todo
-         code to delete the list from DB & Spotify:
-         -
-         -
-         -
+        Todo API
+         send listID via API to delete list on spotify
         */
     }
 }

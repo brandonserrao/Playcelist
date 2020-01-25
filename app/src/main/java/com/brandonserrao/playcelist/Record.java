@@ -22,7 +22,8 @@ public class Record {
 
     float LAT;
     float LNG;
-    String ARTIST;
+
+    String ARTIST; //Todo zoomlevels for lists are to be saved here
 
     String NAME;
 

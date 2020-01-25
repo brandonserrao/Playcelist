@@ -23,23 +23,15 @@
         <com.google.android.material.button.MaterialButton
             android:layout_marginTop="100dp"
             android:id="@+id/btn_LogIn"
+            android:layout_marginBottom="100dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/logoText"
+            android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:gravity="center"
             android:onClick="LogIntoSpotify"
-            android:text="@string/signIn" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_ToMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_LogIn"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:onClick="OnClickStartMainActivity"
-            android:text="@string/tomain" />
+            android:text="@string/signIn"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:textColor="@color/Secondary"/>
     </RelativeLayout>
 
 

@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
-    public RecordDAO songdao;
+    public RecordDAO recorddao;
     public List<Record> song_list; //to hold Song objects from db queries
 
     //marker implementation variables
@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements
     Style.Builder song_styleBuilder;
 
 
-
     //we should find a way to be able to use a loggedIn flag...
     private boolean isUpicloaded = false;
     private boolean isAppLoggedIn = false;
@@ -142,11 +141,12 @@ public class MainActivity extends AppCompatActivity implements
 
     // spotify stufff
 
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd";
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
-    private SpotifyAppRemote mSpotifyAppRemote;
+    public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+
     public SPUser CUser; // user profile
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
@@ -158,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements
     public String CurrentTrackName;
     public String CurrentTrackArtist;
 
-    public String CUserName = "Please log in";
+    public String CUserName ;
+    public String CUserUpiclnk;
 
 
     // saving state
@@ -168,10 +169,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-
+        Log.e("MAIN", "the are in the main");
         // restoring important variables state
 
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref",MODE_WORLD_READABLE);
         Editor editor = pref.edit();
 
         mAccessToken = pref.getString("mAccessToken", "");
@@ -193,11 +194,12 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("SHARED", "Name " + CUserName);
 
 
-        /*
-        Todo
-         somehow check the boxes
-         see onClickCheckBox1(); and onClickCheckBox2();
-         */
+        CUserUpiclnk = pref.getString("CUserUpiclnk", "");
+        Log.e("SHARED", "Piclink " + CUserUpiclnk);
+
+
+
+
 
         //create db instance + interface for this activity
         AppDatabase database =
@@ -205,8 +207,8 @@ public class MainActivity extends AppCompatActivity implements
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
-        songdao = database.getRecordDAO();
-        song_list = songdao.getAllSongs();
+        recorddao = database.getRecordDAO();
+        song_list = recorddao.getAllSongs();
 
 
         //mapbox map creation + styling
@@ -256,6 +258,13 @@ public class MainActivity extends AppCompatActivity implements
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
+        LoadUsertoNavBar();
+        Intent intent = getIntent();
+        if (intent.hasExtra("methodName")) {
+            if (intent.getStringExtra("methodName").equals("ZoomToLatLng")) {
+                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getIntExtra("ZoomLevel", 0));
+            }
+        }
 
         /*
         Todo
@@ -264,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements
         */
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
-            addSongToFeaturelist(song,featurelist_songlayer);
+            addSongToFeaturelist(song, featurelist_songlayer);
         }
 
         updateLayerSources();
@@ -313,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMapClick(@NonNull LatLng point) {
                 //conv latlng to screen pixel + check rendered feats there
                 final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
-                List<Feature> features = mapboxMap.queryRenderedFeatures(pixel,SONGS_LAYER_ID);
+                List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, SONGS_LAYER_ID);
                 TextView textView = findViewById(R.id.debug_textview);
                 Feature f;
                //get topmost feature of query results
@@ -328,11 +337,10 @@ public class MainActivity extends AppCompatActivity implements
                                     entry.getKey(),entry.getValue()
                             ));
                         }*/
+                    } else {
+                        textView.setText("no feature properties ie. is null");
                     }
-                    else {textView.setText("no feature properties ie. is null");
-                    }
-                }
-                else {//get all visible/rendered markers
+                } else {//get all visible/rendered markers
                     RectF rectF = new RectF(
                             mapView.getLeft(),
                             mapView.getTop(),
@@ -395,9 +403,9 @@ public class MainActivity extends AppCompatActivity implements
                 song.setNAME(name);
                 song.setS_ID(song_id);
                 song.setIsLIST(false);
-                songdao.insert(song);
+                recorddao.insert(song);
                 //adding to featurelist to be placed as a marker on map
-                addSongToFeaturelist(song,featurelist_songlayer);
+                addSongToFeaturelist(song, featurelist_songlayer);
                 updateLayerSources();
                 resetMapStyle();
                 //resetting the style after reconstructing source shows newly added marker
@@ -441,8 +449,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
-    public void addSongToFeaturelist(@NonNull Record song,List<Feature> featurelist_songlayer) {
+    public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
         feature.addStringProperty("SONG_ID", song.getS_ID());
@@ -528,8 +535,22 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    //INTENT handler methods
+    //zooms map to a given lat&lng
+    private void zoomToLatLng(Double lat, Double lng, Integer zoomlevel) {
+        LatLng focus;
+        focus = new LatLng(lat, lng);
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(focus)
+                        .zoom(zoomlevel)
+                        .build()));
+    }
 
-    /*button IDs for reference
+    //Todo  write method to zoom to a given extent (to be used when coming from lists activity
+
+    /*Todo probably get rid of this:
+       button IDs for reference
         btn_nd [bar at top left in main activity] > opens nav drawer
         btn_playcer [bottom right in main activity] > zooms to current position (GPS) and playces current playing at current position
         btn_toSongs [left in bottom nav bar] > navigates via intent to Songs Activity
@@ -564,12 +585,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")
                 .setNeutralButton("cancel", null)
-                .setPositiveButton("playce", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onClickPlayceSong(mapView);
-                    }
-                })
+                .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(mapView))
                 .show();
     }
 
@@ -584,7 +600,7 @@ public class MainActivity extends AppCompatActivity implements
     //returns current lat&long for further processing
     private void getCurrentLocation() {
         /*Todo
-           */
+         */
     }
 
     //zooms to current GPS position on the map and creates a song marker
@@ -617,29 +633,37 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickCreatePlaycelist(View view) {
         AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_input, null);
+        View dialogView = inflater.inflate(R.layout.dialog_input, null);
         dialogBuilder.setView(dialogView);
-        final EditText edt = findViewById(R.id.nameInput);
+        //EditText edt = findViewById(R.id.inputET);
+        //String nameInput = edt.getText().toString();
         //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("enter a name for your playcelist");
-        dialogBuilder.setPositiveButton("create playcelist", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                View contextView = mapView;
-                Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                        .show();
-                //createPlaycelist(mapView, edt.getText().toString());
-            }
-        });
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> createPlaycelist("name"));
         dialogBuilder.setNeutralButton("Cancel", null);
-        AlertDialog b = dialogBuilder.create();
-        b.show();
+        AlertDialog d = dialogBuilder.create();
+        d.show();
     }
 
-    /*private void createPlaycelist(MapView mapview, String nameInput) {
-        View contextView = mapView;
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
+    /*
+    @Override
+    public void buttonAction(final View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.layout.dialog_input:
+                onClickCreatePlaycelist();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }*/
+
+    private void createPlaycelist(String input) {
+        //EditText edt = findViewById(R.id.inputET);
+        //String nameInput = edt.getText().toString();
+        Toast.makeText(this, input, Toast.LENGTH_LONG).show();
         /*
         ToDo
          CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
@@ -648,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements
          create list item in DB incl name and info from spotify
          (create rectangular shape on map)
         */
-    //}
+    }
 
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
@@ -658,38 +682,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    /*Todo: moved / has to move to Launcher Screen resp. drawer menu
-    //opens spotify account dialog
-    public void onClickOpenAccountDialog(View view) {
-        // open dialog to log in or out / change account
-
-        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
-                .setTitle("obsolete")
-                .setPositiveButton("log in with Spotify", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                              LogIntoSpotify();
-                          }
-                      })
-                .setNegativeButton("log out", new DialogInterface.OnClickListener() {
-                          @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              LogOutOfSpotify();
-
-                                  }
-                      })
-                .setNeutralButton("load user pic", new DialogInterface.OnClickListener() {
-                        @Override
-                          public void onClick(DialogInterface dialog, int which) {
-                              LoadUserPic();
-                          }
-                      })
-                .show();
-    }*/
-
-
     //nav drawer checkbox handlers
-    public void onClickCheckBox1(MenuItem item) {
+    /*public void onClickCheckBox1(MenuItem item) {
         NavigationView navDrawer = findViewById(R.id.nav_drawer);
         MenuItem menuItem1 = navDrawer.getMenu().findItem(R.id.check_SongsOnMap);
         CompoundButton checkbox1 = (CompoundButton) menuItem1.getActionView();
@@ -719,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements
         // -
         // -
         // -
-    }
+    }*/
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
@@ -742,7 +736,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
 //connection to the Sporify APP
         Log.e("SPOTIFY", "login attemt");
-        if (isAppLoggedIn == false) {
             SpotifyAppRemote.connect(
                     getApplication(),
                     new ConnectionParams.Builder(CLIENT_ID)
@@ -762,23 +755,26 @@ public class MainActivity extends AppCompatActivity implements
                             Log.e("SPOTIFY", " APP conn fail");
                             Log.e("MyActivity", throwable.getMessage(), throwable);
                         }
-
                     });
 
-        }
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
+        Editor editor = pref.edit();
+        editor.clear();
+
+
 
     }
 
     // On succcesful connection to the Spotify APP
     private void connected() {
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        ;
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
         editor.putBoolean("isAppLoggedIn", true);
@@ -807,151 +803,42 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        cancelCall();
+
         super.onDestroy();
 
 
     }
 
-    // Requests for the SPotifyWEB
-    public void RequestCode() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.CODE);
-        AuthenticationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
-    }
 
-    public void RequestToken() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
-        AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
-    }
-
-    // log in SpotifyWeb
-    public void LogIntoSpotify() {
-
-
-        if (isWebLoggedIn == false) {
-            // no login
-            Log.e("SPOTIFZ", "Web-login");
-            RequestToken();
-            Log.e("SPOTIFY", "Web-login succ");
-
-        } else {
-            Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
 
     public void LogOutOfSpotify(MenuItem menuItem) {
-
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://accounts.spotify.com/en/logout ")));
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         isAppLoggedIn = false;
         isWebLoggedIn = false;
+        //Todo clear name and pic
 
-
-        // clear name and pic
 
     }
 
 
-    private void LoadUserPic() {
-
+    public void LoadUsertoNavBar() {
+        TextView Username = findViewById(R.id.nav_header_SUserName);
+        Username.setText(CUserName);
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-        String url = CUser.getImages().get(0).getUrl();
-        Glide.with(Upic).load(url).into(Upic);
-
-    }
-
-    // get user info from Sporify WEB
-    public void GetUser() {
-        if (mAccessToken != null) {
-            final Request request = new Request.Builder()
-                    .url("https://api.spotify.com/v1/me") //get user data
-                    //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
-                    .addHeader("Authorization", "Bearer " + mAccessToken)
-                    .build();
-            cancelCall();
-            mCall = mOkHttpClient.newCall(request);
-            mCall.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("Response", "Request fail");//Fail
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-
-                        final JSONObject jsonObject = new JSONObject(response.body().string());
-                        String JsonResponse = jsonObject.toString();
-                        Gson gson = new Gson();
-                        CUser = gson.fromJson(JsonResponse, SPUser.class);
-                        TextView Username = findViewById(R.id.nav_header_SUserName);
-                        Username.setText(CUser.getDisplayName());
-                        Log.e("Response", "User" + JsonResponse);
-                        response.close();
-                        CUserName = CUser.getDisplayName();
-                        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-                        ;
-                        Editor editor = pref.edit();
-                        editor.putString("CUserName", CUserName);
-                        editor.commit();
-                        Log.e("SHARED", CUserName);
-
-
-                    } catch (JSONException e) {
-                        //Fail
-                    }
-                }
-            });
-        } else {// messagge to log in
-        }
-        ;
-    }
-
-    // auth request to spotify WEB
-    private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
-        return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
-                .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
-                .build();
-    }
-
-    @Override
-    // Spotify web resoinse parser
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
-
-        if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
-            mAccessToken = response.getAccessToken();
-            Log.e("Token", "THere" + mAccessToken);
-            SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-            ;
-            Editor editor = pref.edit();
-            editor.putString("mAccessToken", mAccessToken);
-            editor.commit();
-            Log.e("SHARED", mAccessToken);
-            GetUser();
-            isWebLoggedIn = false;
-            editor.putBoolean("isWebLoggedIn", isWebLoggedIn);
-            editor.commit();
-
-
-        } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
-            mAccessCode = response.getCode();
-            Log.e("Code", "CHere " + mAccessCode);
-            GetUser();
-        }
+        Glide.with(Upic).load(CUserUpiclnk).into(Upic);
 
 
     }
 
 
-    private void cancelCall() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
-    }
+
+
+
+
+
+
+
+
 
 }

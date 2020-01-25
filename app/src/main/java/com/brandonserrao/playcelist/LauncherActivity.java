@@ -7,11 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.brandonserrao.playcelist.model.SPUser;
-import com.google.android.material.snackbar.Snackbar;
+import com.brandonserrao.playcelist.SPUser.SPUser;
 import com.google.gson.Gson;
 import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
@@ -33,8 +30,8 @@ import okhttp3.Response;
 
 public class LauncherActivity extends AppCompatActivity {
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -48,6 +45,7 @@ public class LauncherActivity extends AppCompatActivity {
 
     public String CUserName;
     public String CUserUpiclnk;
+    public String CUserID;
     public boolean isWebLoggedIn = false;
     public boolean isAppLoggedIn = false;
 
@@ -75,6 +73,9 @@ public class LauncherActivity extends AppCompatActivity {
 
         CUserUpiclnk = pref.getString("CUserUpiclnk", "_");
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
+
+        CUserID = pref.getString("CUserID", "_");
+        Log.e("SHARED", "CUserID " + CUserID);
 
 
         super.onCreate(savedInstanceState);
@@ -113,7 +114,7 @@ public class LauncherActivity extends AppCompatActivity {
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
         return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
                 .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
+                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private","playlist-modify-private","playlist-modify-public"})
                 .build();
     }
 
@@ -180,11 +181,13 @@ public class LauncherActivity extends AppCompatActivity {
                         response.close();
                         CUserName = CUser.getDisplayName();
                         CUserUpiclnk = CUser.getImages().get(0).getUrl();
+                        CUserID = CUser.getId();
 
                         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString("CUserName", CUserName);
                         editor.putString("CUserUpiclnk", CUserUpiclnk);
+                        editor.putString("CUserID", CUserID);
                         editor.commit();
                         Log.e("SHARED", CUserName);
                         Log.e("SHARED", CUserUpiclnk);
@@ -195,7 +198,7 @@ public class LauncherActivity extends AppCompatActivity {
                     }
                 }
             });
-        } else {// messagge to log in
+        } else {// todo messagge to log in
         }
         ;
     }

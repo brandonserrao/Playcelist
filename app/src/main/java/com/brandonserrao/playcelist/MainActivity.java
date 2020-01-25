@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity implements
 
     // spotify stufff
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -165,10 +165,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-
+        Log.e("MAIN", "the are in the main");
         // restoring important variables state
 
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref",MODE_WORLD_READABLE);
         Editor editor = pref.edit();
 
         mAccessToken = pref.getString("mAccessToken", "");
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("SHARED", "Name " + CUserName);
 
 
-        CUserUpiclnk = pref.getString("CUserUpiclnk", "link");
+        CUserUpiclnk = pref.getString("CUserUpiclnk", "");
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
 
 
@@ -736,7 +736,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
         Editor editor = pref.edit();
         editor.clear();
 
@@ -746,7 +746,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // On succcesful connection to the Spotify APP
     private void connected() {
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);;
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
         editor.putBoolean("isAppLoggedIn", true);

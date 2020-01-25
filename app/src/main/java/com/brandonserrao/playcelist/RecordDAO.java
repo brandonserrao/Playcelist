@@ -58,4 +58,7 @@ public interface RecordDAO {
     @Query("SELECT S_ID FROM RECORDS WHERE (UID = :uid)")
     public String getSidByUid(String uid);
 
+    @Query("SELECT ARTIST FROM RECORDS WHERE (UID = :uid)")
+    public String getZoomLevelByUid(String uid);
+
 }

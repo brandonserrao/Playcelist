@@ -126,6 +126,7 @@ public class SongsActivity extends AppCompatActivity {
         intent.putExtra("methodName", "ZoomToLatLng");
         intent.putExtra("Lat", lat);
         intent.putExtra("Lng", lng);
+        intent.putExtra("ZoomLevel", 16);
         startActivity(intent);
     }
 
@@ -134,14 +135,14 @@ public class SongsActivity extends AppCompatActivity {
         View itemView = (View) view.getParent().getParent();
         TextView uidTv = itemView.findViewById(R.id.tv1);
         String uid = (String) uidTv.getText();
-        String sID = recorddao.getSidByUid(uid);
+        String songID = recorddao.getSidByUid(uid);
 
         View contextView = itemView.findViewById(R.id.btn_playSong);
-        Snackbar.make(contextView, R.string.play_song + sID, Snackbar.LENGTH_SHORT)
+        Snackbar.make(contextView, songID, Snackbar.LENGTH_SHORT)
                 .show();
         /*
         Todo API
-         send S_ID via API to play song
+         send songID via API to play song
         */
     }
 
@@ -155,12 +156,7 @@ public class SongsActivity extends AppCompatActivity {
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to unplayce this song?")
                 .setNeutralButton("cancel", null)
-                .setNegativeButton("delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteRecord(uid);
-                    }
-                })
+                .setNegativeButton("delete", (dialog, which) -> deleteRecord(uid))
                 .show();
     }
 
@@ -170,6 +166,5 @@ public class SongsActivity extends AppCompatActivity {
         songsAdapter = new SongsAdapter(songs);
         recyclerView.setAdapter(songsAdapter);
     }
-
 
 }

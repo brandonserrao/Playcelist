@@ -64,7 +64,7 @@ public class ListsActivity extends AppCompatActivity {
     public void searchSongsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Record> search_results = songdao.searchRecordsByName(search_term);
+        List<Record> search_results = songdao.searchListsByName(search_term);
         listsAdapter = new ListsAdapter(search_results);
         recyclerView.setAdapter(listsAdapter);
     }
@@ -72,10 +72,10 @@ public class ListsActivity extends AppCompatActivity {
     public void onClickDeleteResults(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        songdao.deleteSearchResults(search_term);
+        songdao.deleteListSearchResults(search_term);
         et.setText("");
 
-        List<Record> songs = songdao.getAllSongs();
+        List<Record> songs = songdao.getAllLists();
 
         listsAdapter = new ListsAdapter(songs);
         recyclerView.setAdapter(listsAdapter);

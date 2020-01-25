@@ -66,7 +66,7 @@ public class SongsActivity extends AppCompatActivity {
     public void searchSongsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Record> search_results = recorddao.searchRecordsByName(search_term);
+        List<Record> search_results = recorddao.searchSongsByName(search_term);
         songsAdapter = new SongsAdapter(search_results);
         recyclerView.setAdapter(songsAdapter);
     }
@@ -74,7 +74,7 @@ public class SongsActivity extends AppCompatActivity {
     public void onClickDeleteResults(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        recorddao.deleteSearchResults(search_term);
+        recorddao.deleteSongSearchResults(search_term);
         et.setText("");
         List<Record> songs = recorddao.getAllSongs();
         songsAdapter = new SongsAdapter(songs);

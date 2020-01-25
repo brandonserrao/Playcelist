@@ -31,7 +31,17 @@ public interface RecordDAO {
     @Query ("SELECT * FROM RECORDS WHERE ( NAME LIKE '%' || :search_term || '%' ) ")
     public List<Record> searchRecordsByName(String search_term);
 
-    @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%')")
-    public void deleteSearchResults(String search_term);
+    @Query ("SELECT * FROM RECORDS WHERE ( ( NAME LIKE '%' || :search_term || '%' ) AND (isLIST = 0) ) ")
+    public List<Record> searchSongsByName(String search_term);
+
+    @Query ("SELECT * FROM RECORDS WHERE ( ( NAME LIKE '%' || :search_term || '%' ) AND (isLIST = 1) ) ")
+    public List<Record> searchListsByName(String search_term);
+
+
+    @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%') AND (isLIST = 0)")
+    public void deleteSongSearchResults(String search_term);
+
+    @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%') AND (isLIST = 1)")
+    public void deleteListSearchResults(String search_term);
 
 }

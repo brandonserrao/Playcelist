@@ -27,14 +27,14 @@ import java.util.List;
 
 /*import static com.brandonserrao.playcelist.MainActivity.db_name;
 import static com.brandonserrao.playcelist.MainActivity.song_list;
-import static com.brandonserrao.playcelist.MainActivity.songdao;*/
+import static com.brandonserrao.playcelist.MainActivity.recorddao;*/
 
 public class SongsActivity extends AppCompatActivity {
 
-    String db_name = "sqlstudio_db2_v5.sqlite";
-    //public /*static*/ String db_name = "sqlstudio_db2_v7.sqlite";
-    SongDAO songdao;
-    List<Song> song_list;
+    public String db_name = "playcelist_db_v8.sqlite";
+    //public String db_name = "sqlstudio_db2_v5.sqlite";
+    RecordDAO recorddao;
+    List<Record> song_list;
 
     SongsAdapter songsAdapter;
     RecyclerView recyclerView;
@@ -51,9 +51,9 @@ public class SongsActivity extends AppCompatActivity {
                         .createFromAsset(db_name)
                         .build();
         //setup recycler view and contents
-        songdao = database.getSongDAO();
-        song_list = songdao.getAllSongs();
-        List<Song> list_values = song_list;
+        recorddao = database.getRecordDAO();
+        song_list = recorddao.getAllSongs();
+        List<Record> list_values = song_list;
         recyclerView=(RecyclerView)findViewById(R.id.recycler_songs);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         songsAdapter = new SongsAdapter(list_values);
@@ -66,7 +66,7 @@ public class SongsActivity extends AppCompatActivity {
     public void searchSongsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Song> search_results = songdao.searchSongsByName(search_term);
+        List<Record> search_results = recorddao.searchRecordsByName(search_term);
         songsAdapter = new SongsAdapter(search_results);
         recyclerView.setAdapter(songsAdapter);
     }
@@ -74,9 +74,9 @@ public class SongsActivity extends AppCompatActivity {
     public void onClickDeleteResults(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        songdao.deleteSearchResults(search_term);
+        recorddao.deleteSearchResults(search_term);
         et.setText("");
-        List<Song> songs = songdao.getAllSongs();
+        List<Record> songs = recorddao.getAllSongs();
         songsAdapter = new SongsAdapter(songs);
         recyclerView.setAdapter(songsAdapter);
         //recreate();

@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity implements
     private MapView mapView;
 
     //database implementation variables
-    public /*static*/ String db_name = "sqlstudio_db2_v5.sqlite";
-    //public /*static*/ String db_name = "sqlstudio_db2_v7.sqlite";
-    public /*static*/ SongDAO songdao;
-    public /*static*/ List<Song> song_list; //to hold Song objects from db queries
+    public /*static*/ String db_name = "playcelist_db_v8.sqlite";
+    //public String db_name = "sqlstudio_db2_v5.sqlite";
+    public RecordDAO songdao;
+    public List<Record> song_list; //to hold Song objects from db queries
 
     //marker implementation variables
     private static final String SONGS_SOURCE_ID = "songs";
@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
     public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
-    //public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
     FeatureCollection song_featureCollection;
     GeoJsonSource song_source;
     SymbolLayer song_symbolLayer;
@@ -179,33 +178,13 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("SHARED","Name "+CUserName);
 
 
-
-
-
-        //somehow check the boxes, see onClickCheckBox1(); and onClickCheckBox2();
-
-        //-------obsolete; database intialization from file from assets, as shown in tutorials
-/*        final File dbFile = this.getDatabasePath(db_name);
-        if (!dbFile.exists()) {
-            try {
-                copyDatabaseFile(dbFile.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        AppDatabase database =
-                Room.databaseBuilder(this, AppDatabase.class,db_name)
-                        .allowMainThreadQueries()
-                        .build();*/
-        //-----------
-
         //create db instance + interface for this activity
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class, db_name)
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
-        songdao = database.getSongDAO();
+        songdao = database.getRecordDAO();
         song_list = songdao.getAllSongs();
 
 
@@ -226,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements
         //loop to add db records to map
         //??potentially can be moved outside of here+made publicstatic to only be run once
         for (int i = 0; i < song_list.size(); i++) {
-            Song song = song_list.get(i);
+            Record song = song_list.get(i);
             addSongToFeaturelist(song,featurelist_songlayer);
         }
 
@@ -302,7 +281,12 @@ public class MainActivity extends AppCompatActivity implements
                             mapView.getBottom()
                     );
                     features = mapboxMap.queryRenderedFeatures(rectF);
-                    String text = "features.size() = 0 \n" + features.toArray().toString();
+                    String feats_str = "";
+                    for(int i = 0; i < features.size(); i++) {
+                        String feat = features.get(i).toJson();
+                        feats_str.concat(feat);
+                    }
+                    String text = "Got rendered song features \n" + feats_str + "\n .";
                     textView.setText(text);
                 }
 
@@ -316,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements
             public boolean onMapLongClick(@NonNull LatLng point) {
 
                 double lat = point.getLatitude(), lng = point.getLongitude();
-                String name = "!placeholdername!", song_id = "!placeholder_songid!"; //??
+                String name = "!placeholdername!", song_id = "!placeholder_songid!", artist = "!placeholderArtist";//??
 
                 //??***
                 //Include a dialog to choose between playcing a song or a list
@@ -325,11 +309,12 @@ public class MainActivity extends AppCompatActivity implements
                 //*****
 
                 //creating new song entry and placing in database
-                Song song = new Song();
+                Record song = new Record();
                 song.setLNG((float) lng);
                 song.setLAT((float) lat);
                 song.setNAME(name);
-                song.setSONG_ID(song_id);
+                song.setS_ID(song_id);
+                song.setIsLIST(false);
                 songdao.insert(song);
                 //adding to featurelist to be placed as a marker on map
                 addSongToFeaturelist(song,featurelist_songlayer);
@@ -354,10 +339,10 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    public void addSongToFeaturelist(@NonNull Song song,List<Feature> featurelist_songlayer) {
+    public void addSongToFeaturelist(@NonNull Record song,List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
-        feature.addStringProperty("SONG_ID", song.getSONG_ID());
+        feature.addStringProperty("SONG_ID", song.getS_ID());
         feature.addNumberProperty("UID", song.getUID());
         featurelist_songlayer.add(feature);
     }

@@ -13,9 +13,9 @@ import java.util.List;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyViewHolder> {
 
-    private List<Song> mDataset;
+    private List<Record> mDataset;
 
-    public SongsAdapter(List<Song> myDataset) {
+    public SongsAdapter(List<Record> myDataset) {
         mDataset = myDataset;
     }
 
@@ -50,7 +50,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.tv1.setText(String.valueOf(mDataset.get(position).getUID()));
         holder.tv2.setText(mDataset.get(position).getNAME());
-        holder.tv5.setText(mDataset.get(position).getSONG_ID());
+        holder.tv5.setText(mDataset.get(position).getS_ID());
         holder.tv3.setText(String.valueOf(mDataset.get(position).getLNG()));
         holder.tv4.setText(String.valueOf(mDataset.get(position).getLAT()));
     }

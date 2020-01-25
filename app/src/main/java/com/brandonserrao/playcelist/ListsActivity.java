@@ -28,10 +28,10 @@ import static com.brandonserrao.playcelist.MainActivity.songdao;*/
 
 public class ListsActivity extends AppCompatActivity {
 
-    String db_name = "sqlstudio_db2_v5.sqlite";
-    //public /*static*/ String db_name = "sqlstudio_db2_v7.sqlite";
-    SongDAO songdao;
-    List<Song> song_list;
+    public String db_name = "playcelist_db_v8.sqlite";
+    //public String db_name = "sqlstudio_db2_v5.sqlite";
+    RecordDAO songdao;
+    List<Record> song_list;
 
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
@@ -49,9 +49,9 @@ public class ListsActivity extends AppCompatActivity {
                         .build();
 
         //setup recycler view and contents
-        songdao = database.getSongDAO();
-        song_list = songdao.getAllSongs();
-        List<Song> list_values = song_list;
+        songdao = database.getRecordDAO();
+        song_list = songdao.getAllLists();
+        List<Record> list_values = song_list;
 
         recyclerView = findViewById(R.id.recycler_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -64,7 +64,7 @@ public class ListsActivity extends AppCompatActivity {
     public void searchSongsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Song> search_results = songdao.searchSongsByName(search_term);
+        List<Record> search_results = songdao.searchRecordsByName(search_term);
         listsAdapter = new ListsAdapter(search_results);
         recyclerView.setAdapter(listsAdapter);
     }
@@ -75,7 +75,7 @@ public class ListsActivity extends AppCompatActivity {
         songdao.deleteSearchResults(search_term);
         et.setText("");
 
-        List<Song> songs = songdao.getAllSongs();
+        List<Record> songs = songdao.getAllSongs();
 
         listsAdapter = new ListsAdapter(songs);
         recyclerView.setAdapter(listsAdapter);

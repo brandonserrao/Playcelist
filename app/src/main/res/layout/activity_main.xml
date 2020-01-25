@@ -71,8 +71,8 @@
                     android:id="@+id/debug_textview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:gravity="center_horizontal"
-                    android:hint="debug\n\ninfor\n\nin\n\nhere" />
+                    android:gravity="center"
+                    android:hint="Wait a few seconds for device GPS coordinates\n" />
             </ScrollView>
 
             <com.google.android.material.textview.MaterialTextView

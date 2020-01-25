@@ -6,6 +6,9 @@ import android.content.SharedPreferences.Editor;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -54,6 +57,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -76,8 +81,9 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
-    LocationManager locationManager;
-    LocationListener locationListener;
+    public LocationManager locationManager;
+    public LocationListener locationListener;
+    public Location device_location;
 
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
@@ -164,25 +170,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-
-        /*
-        -------obsolete; database intialization from file from assets, as shown in tutorials
-        */
-
-        /*        final File dbFile = this.getDatabasePath(db_name);
-        if (!dbFile.exists()) {
-            try {
-                copyDatabaseFile(dbFile.getAbsolutePath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        AppDatabase database =
-                Room.databaseBuilder(this, AppDatabase.class,db_name)
-                        .allowMainThreadQueries()
-                        .build();*/
-        //-----------
-
         //create db instance + interface for this activity
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class, db_name)
@@ -199,6 +186,40 @@ public class MainActivity extends AppCompatActivity implements
         mapView = findViewById(R.id.mapbox);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        //---testing device locating code
+        locationManager =
+                (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                if (location != null) {
+                    TextView textView = findViewById(R.id.debug_textview);
+                    device_location = location;
+                    double lat = device_location.getLatitude(), lng = device_location.getLongitude();
+                    String debug_text = String.valueOf(lat) + String.valueOf(lng);
+                textView.setText(debug_text);}
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+
+            public void onProviderEnabled(String provider) {
+            }
+
+            public void onProviderDisabled(String provider) {
+            }
+        };
+
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) ==
+                PackageManager.PERMISSION_GRANTED) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    10000, 10, locationListener);
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1340);
+        }
+
     }
 
 
@@ -272,11 +293,12 @@ public class MainActivity extends AppCompatActivity implements
                 final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
                 List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, SONGS_LAYER_ID);
                 TextView textView = findViewById(R.id.debug_textview);
-                //get topmost feature of query results
-                if (features.size() > 0) {
-                    Feature f = features.get(0);
+                Feature f;
+               //get topmost feature of query results
+                if (features.size() > 0) { //if any features found
+                    /*Feature*/ f = features.get(0); //get topmost
                     //check for feature properties; return properties
-                    if (f.properties() != null) {
+                    if (f.properties() != null) { //if there are any
                         textView.setText(f.toJson());
 /*                        for (Map.Entry<String, JsonElement> entry: feature.properties().entrySet()) {
                             textView.setText(String.format(
@@ -294,14 +316,22 @@ public class MainActivity extends AppCompatActivity implements
                             mapView.getRight(),
                             mapView.getBottom()
                     );
-                    features = mapboxMap.queryRenderedFeatures(rectF);
-                    String feats_str = "";
-                    for (int i = 0; i < features.size(); i++) {
-                        String feat = features.get(i).toJson();
-                        feats_str.concat(feat);
+                    features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
+                    String s = "";
+                    for(int i = 0; i < features.size(); i++) {
+                        f = features.get(i);
+                        s = s + "Marker " + String.valueOf(i) + ": \n" + f.toString() + "\n"; //??
                     }
-                    String text = "Got rendered song features \n" + feats_str + "\n .";
-                    textView.setText(text);
+                    //--testing getting device current location
+                    String numberOfFeatures = String.valueOf(features.size());
+                    String current_location = "Device \n Latitude: " + String.valueOf(device_location.getLatitude())
+                            + "\n Longitude: " + String.valueOf(device_location.getLongitude())
+                            + "\n Time: " + device_location.getTime();
+                    String debug_text = current_location + "\n"
+                            + "Got " + numberOfFeatures + " rendered song features \n"
+                            //+ features.toString()
+                            + s;
+                    textView.setText(debug_text);
                 }
 
                 Toast.makeText(MainActivity.this, "onClick: testing mapbox map query", Toast.LENGTH_LONG).show();

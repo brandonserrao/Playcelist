@@ -15,7 +15,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:clickable="false"
-        android:src="@drawable/albumart" />
+        android:src="@drawable/listart" />
 
     <RelativeLayout
         android:id="@+id/text_list_info"

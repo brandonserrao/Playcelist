@@ -112,8 +112,8 @@ public class MainActivity extends AppCompatActivity implements
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
-    public static LocationManager locationManager;
-    public static LocationListener locationListener;
+    public LocationManager locationManager;
+    public LocationListener locationListener;
     public Location device_location;
 
     //database implementation variables
@@ -221,44 +221,7 @@ public class MainActivity extends AppCompatActivity implements
                 (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-/*
-                TextView textview_lat = findViewById(R.id.textview_lat);
-                TextView textview_long = findViewById(R.id.textview_long);
-
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    String current_lat = String.valueOf(lat);
-                    String current_long = String.valueOf(lng);
-
-                    textview_lat.setText(R.string.label_lat + current_lat);
-                    textview_long.setText(R.string.label_long + current_long);
-
-                    TextView addressField = findViewById(R.id.tv3);
-                    Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-                    try {
-                        int num_results = 4;
-                        List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
-                        String address = address_list.get(0).getAddressLine(0); // just gets tested for existence by the following loop
-                        if (address != null) {
-                            String multi_address = "";
-                            for (int i = 0; i < num_results; i++) {
-                                multi_address = multi_address
-                                        + "\u2794 " + address_list.get(i).getAddressLine(0)
-                                        + "\n" + "URL: " + ((address_list.get(i).getUrl() != null) ? address_list.get(i).getUrl() : "none available")
-                                        + System.getProperty("line.separator");
-                            }
-//                            addressField.setText("\u2794 " + address);
-                            addressField.setText(multi_address);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (location == null) {
-
-                    textview_lat.setText(R.string.label_lat + R.string.unknown_location);
-                    textview_long.setText(R.string.label_long + R.string.unknown_location);
-                }*/
+                if (location != null) {device_location = location;}
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -280,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1340);
         }
+
     }
 
 

@@ -1,16 +1,11 @@
 package com.brandonserrao.playcelist;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -19,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,21 +22,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.dialog.MaterialDialogs;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.brandonserrao.playcelist.model.Image;
 import com.bumptech.glide.Glide;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
@@ -59,21 +44,9 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory;
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-import com.mapbox.mapboxsdk.style.sources.Source;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -81,13 +54,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 import com.brandonserrao.playcelist.model.SPUser;
 
@@ -98,8 +67,6 @@ import com.spotify.android.appremote.api.ConnectionParams;
 import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
-import com.spotify.protocol.client.Subscription;
-import com.spotify.protocol.types.PlayerState;
 import com.spotify.protocol.types.Track;
 
 
@@ -137,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements
 
     // spotify stufff
 
-    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -154,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
     public String CurrentTrackName;
     public String CurrentTrackArtist;
 
-    public String CUserName ;
+    public String CUserName;
     public String CUserUpiclnk;
 
 
@@ -168,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("MAIN", "the are in the main");
         // restoring important variables state
 
-        SharedPreferences pref = getSharedPreferences("MySharedPref",MODE_WORLD_READABLE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
         Editor editor = pref.edit();
 
         mAccessToken = pref.getString("mAccessToken", "");
@@ -455,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements
                 .fromUri(getResources().getString(R.string.darkstyleURL))
                 .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                         MainActivity.this.getResources(),
-                        R.drawable.songpin))
+                        R.drawable.pin))
                 .withSource(song_source)
                 .withLayer(song_symbolLayer);
         mapboxMap.setStyle(song_styleBuilder);
@@ -570,32 +537,35 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //returns current lat&long for further processing
-    private void getCurrentLocation() {
+    private float getCurrentLocation() {
         /*Todo
          */
+        return 0;
     }
 
     //zooms to current GPS position on the map and creates a song marker
     //creates new song item in the DB using now playing info and GPS info
     private void onClickPlayceSong(MapView mapView) {
-        View contextView = findViewById(R.id.btn_playcer);
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
-        getCurrentLocation();
+        //getting all the information for a new record item
+        float lat = getCurrentLocation();
+        float lng = getCurrentLocation();
+        String songID = CurrentTrackID;
+        String songArtist = CurrentTrackArtist;
+        String songName = CurrentTrackName;
 
-        /*
-        Todo actual code:
-         get GPS info
-         get API info / nowplaying
-         USE CurrentTrackID CurrentTrackName CurrentTrackArtistVariable
-         set new marker
-         open dialog (do you want to playce [now playing song] here?)
-         if confirmed
-           create new DB item
-           reload map / make sure it appears on map
-         else
-           dismiss and delete marker
-        */
+        //creating new song entry and placing it in db
+        Record song = new Record();
+        song.setLNG(lng);
+        song.setLAT(lat);
+        song.setNAME(songName);
+        song.setS_ID(songID);
+        song.setIsLIST(false);
+        recorddao.insert(song);
+        //adding to featurelist to be placed as a marker on map
+        addSongToFeaturelist(song, featurelist_songlayer);
+        updateLayerSources();
+        //resetting the style after reconstructing source shows newly added marker
+        resetMapStyle();
     }
 
     //opens a custom Dialog to ask for playcelist name input and confirmation
@@ -607,7 +577,7 @@ public class MainActivity extends AppCompatActivity implements
         LayoutInflater inflater = this.getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_input, null);
         dialogBuilder.setView(dialogView);
-        //EditText edt = findViewById(R.id.inputET);
+        EditText edt = findViewById(R.id.inputET);
         //String nameInput = edt.getText().toString();
         //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
         dialogBuilder.setTitle("New Playcelist");
@@ -618,16 +588,15 @@ public class MainActivity extends AppCompatActivity implements
         d.show();
     }
 
-    /*
-    @Override
-    public void buttonAction(final View v) {
+
+    /*public boolean buttonAction(View v) {
         int id = v.getId();
         switch (id) {
             case R.layout.dialog_input:
-                onClickCreatePlaycelist();
+                onClickCreatePlaycelist(findViewById(R.id.btn_listPlaycer));
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
+                return super.buttonAction(v);
         }
         return true;
     }*/
@@ -708,26 +677,26 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
 //connection to the Sporify APP
         Log.e("SPOTIFY", "login attemt");
-            SpotifyAppRemote.connect(
-                    getApplication(),
-                    new ConnectionParams.Builder(CLIENT_ID)
-                            .setRedirectUri(REDIRECT_URI)
-                            .showAuthView(true)
-                            .build(),
-                    new Connector.ConnectionListener() {
-                        @Override
-                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                            mSpotifyAppRemote = spotifyAppRemote;
-                            Log.e("SPOTIFY", " APP connected");
-                            connected();
-                        }
+        SpotifyAppRemote.connect(
+                getApplication(),
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build(),
+                new Connector.ConnectionListener() {
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.e("SPOTIFY", " APP connected");
+                        connected();
+                    }
 
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            Log.e("SPOTIFY", " APP conn fail");
-                            Log.e("MyActivity", throwable.getMessage(), throwable);
-                        }
-                    });
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("SPOTIFY", " APP conn fail");
+                        Log.e("MyActivity", throwable.getMessage(), throwable);
+                    }
+                });
 
 
     }
@@ -741,12 +710,12 @@ public class MainActivity extends AppCompatActivity implements
         editor.clear();
 
 
-
     }
 
     // On succcesful connection to the Spotify APP
     private void connected() {
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);;
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
+        ;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
         editor.putBoolean("isAppLoggedIn", true);
@@ -782,7 +751,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-
     public void LogOutOfSpotify(MenuItem menuItem) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://accounts.spotify.com/en/logout ")));
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
@@ -802,15 +770,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
     }
-
-
-
-
-
-
-
-
-
 
 
 }

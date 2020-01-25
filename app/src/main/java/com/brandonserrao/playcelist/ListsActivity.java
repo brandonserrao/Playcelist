@@ -121,7 +121,8 @@ public class ListsActivity extends AppCompatActivity {
         String uid = (String) uidTv.getText();
         double lat = recorddao.getLatByUid(uid);
         double lng = recorddao.getLngByUid(uid);
-        int zoomLevel = Integer.parseInt(recorddao.getZoomLevelByUid(uid));
+        //int zoomLevel = Integer.parseInt(recorddao.getZoomLevelByUid(uid));
+        int zoomLevel = 16;
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("methodName", "ZoomToLatLng");

@@ -33,8 +33,8 @@ import okhttp3.Response;
 
 public class LauncherActivity extends AppCompatActivity {
 
-    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
-    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
+    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -62,7 +62,6 @@ public class LauncherActivity extends AppCompatActivity {
         Log.e("SHARED", "tk+" + mAccessToken);
 
 
-
         //isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
         else Log.e("SHARED", "isAppLoggedIn0");
@@ -76,8 +75,6 @@ public class LauncherActivity extends AppCompatActivity {
 
         CUserUpiclnk = pref.getString("CUserUpiclnk", "_");
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
-
-
 
 
         super.onCreate(savedInstanceState);
@@ -95,29 +92,23 @@ public class LauncherActivity extends AppCompatActivity {
     // log in SpotifyWeb
 
 
-        public void RequestToken() {
-            final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
-            AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+    public void RequestToken() {
+        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
+        AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
+    }
+
+    // log in SpotifyWeb
+    public void LogIntoSpotify(View view) {
+        if (isWebLoggedIn == false) {
+            // no login
+            Log.e("SPOTIFZ", "Web-login");
+            RequestToken();
+            Log.e("SPOTIFY", "Web-login succ");
+
+        } else {
+            routeToMain();
         }
-
-        // log in SpotifyWeb
-        public void LogIntoSpotify(View view) {
-
-
-            if (isWebLoggedIn == false) {
-                // no login
-                Log.e("SPOTIFZ", "Web-login");
-                RequestToken();
-                Log.e("SPOTIFY", "Web-login succ");
-
-            } else {
-                routeToMain();
-            }
-
-
-
-
-        }
+    }
 
     private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
         return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
@@ -144,7 +135,7 @@ public class LauncherActivity extends AppCompatActivity {
 
             Log.e("SHARED", mAccessToken);
             GetUser();
-            isWebLoggedIn =true;
+            isWebLoggedIn = true;
             AppLogin();
             routeToMain();
             editor.putBoolean("isWebLoggedIn", isWebLoggedIn);
@@ -159,6 +150,7 @@ public class LauncherActivity extends AppCompatActivity {
 
 
     } // get user info from Sporify WEB
+
     public void GetUser() {
         if (mAccessToken != null) {
             final Request request = new Request.Builder()
@@ -182,8 +174,6 @@ public class LauncherActivity extends AppCompatActivity {
                         String JsonResponse = jsonObject.toString();
                         Gson gson = new Gson();
                         CUser = gson.fromJson(JsonResponse, SPUser.class);
-
-
 
 
                         Log.e("Response", "User" + JsonResponse);
@@ -216,38 +206,34 @@ public class LauncherActivity extends AppCompatActivity {
         }
     }
 
-public void AppLogin (){
+    public void AppLogin() {
 
 
-    SpotifyAppRemote.connect(
-            getApplication(),
-            new ConnectionParams.Builder(CLIENT_ID)
-                    .setRedirectUri(REDIRECT_URI)
-                    .showAuthView(true)
-                    .build(),
-            new Connector.ConnectionListener() {
-                @Override
-                public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                    mSpotifyAppRemote = spotifyAppRemote;
-                    Log.e("SPOTIFY", " APP splash connected");
-                    isAppLoggedIn = true;
-                    SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
-                    editor.commit();
-                }
+        SpotifyAppRemote.connect(
+                getApplication(),
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build(),
+                new Connector.ConnectionListener() {
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.e("SPOTIFY", " APP splash connected");
+                        isAppLoggedIn = true;
+                        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+                        editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
+                        editor.commit();
+                    }
 
-                @Override
-                public void onFailure(Throwable throwable) {
-                    Log.e("SPOTIFY", " APP conn fail");
-                    Log.e("MyActivity", throwable.getMessage(), throwable);
-                }
-            });
-}
-
-
-
-
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("SPOTIFY", " APP conn fail");
+                        Log.e("MyActivity", throwable.getMessage(), throwable);
+                    }
+                });
+    }
 
 
     //Todo this has to be removed once the login -> to main works.

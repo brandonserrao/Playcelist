@@ -339,12 +339,11 @@ public class MainActivity extends AppCompatActivity implements
                             mapView.getRight(),
                             mapView.getBottom()
                     );
-                    features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID);
+                    features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
                     String s = "";
                     for(int i = 0; i < features.size(); i++) {
                         f = features.get(i);
-                        s.concat(f.geometry().toString());
-                        s.concat(f.properties().toString()); //??
+                        s = s + "Marker " + String.valueOf(i) + ": \n" + f.toString() + "\n"; //??
                     }
                     //--testing getting device current location
                     String numberOfFeatures = String.valueOf(features.size());
@@ -353,6 +352,7 @@ public class MainActivity extends AppCompatActivity implements
                             + "\n Time: " + device_location.getTime();
                     String debug_text = current_location + "\n"
                             + "Got " + numberOfFeatures + " rendered song features \n"
+                            //+ features.toString()
                             + s;
                     textView.setText(debug_text);
                 }

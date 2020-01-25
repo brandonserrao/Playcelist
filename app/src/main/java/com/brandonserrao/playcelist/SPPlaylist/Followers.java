@@ -1,5 +1,5 @@
 
-package com.brandonserrao.playcelist.model;
+package com.brandonserrao.playcelist.SPPlaylist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -12,6 +12,24 @@ public class Followers {
     @SerializedName("total")
     @Expose
     private Integer total;
+
+    /**
+     * No args constructor for use in serialization
+     * 
+     */
+    public Followers() {
+    }
+
+    /**
+     * 
+     * @param total
+     * @param href
+     */
+    public Followers(Object href, Integer total) {
+        super();
+        this.href = href;
+        this.total = total;
+    }
 
     public Object getHref() {
         return href;

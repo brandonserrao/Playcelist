@@ -1,5 +1,5 @@
 
-package com.brandonserrao.playcelist.model;
+package com.brandonserrao.playcelist.SPUser;
 
 import java.util.List;
 import com.google.gson.annotations.Expose;

@@ -2,7 +2,6 @@ package com.brandonserrao.playcelist;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -34,9 +33,10 @@ import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
+import com.brandonserrao.playcelist.SPPlaylist.SPPlaylist;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Feature;
@@ -64,12 +64,18 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-import com.brandonserrao.playcelist.model.SPUser;
+import com.brandonserrao.playcelist.SPUser.SPUser;
 
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 
@@ -79,6 +85,9 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import com.spotify.protocol.types.Track;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -116,11 +125,11 @@ public class MainActivity extends AppCompatActivity implements
     private boolean isWebLoggedIn = false;
 
     // spotify stufff
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-    public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
+
 
     public SPUser CUser; // user profile
 
@@ -135,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements
 
     public String CUserName;
     public String CUserUpiclnk;
+    public String CUserID;
+    public String PlaylistID;
+
 
 
     // saving state
@@ -171,6 +183,9 @@ public class MainActivity extends AppCompatActivity implements
 
         CUserUpiclnk = pref.getString("CUserUpiclnk", "");
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
+
+        CUserID = pref.getString("CUserID", "_");
+        Log.e("SHARED", "CUserID " + CUserID);
 
 
         //create db instance + interface for this activity
@@ -610,10 +625,11 @@ public class MainActivity extends AppCompatActivity implements
         //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("enter a name for your playcelist");
-        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> createPlaycelist("name"));
-        dialogBuilder.setNeutralButton("Cancel", null);
-        AlertDialog d = dialogBuilder.create();
-        d.show();
+        //todo  here is test request
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> createPlaycelist("test name ep ","spotify:track:4iV5W9uYEdYUVa79Axb7Rh,spotify:track:1301WleyT98MSxVHPZCA6M"))
+        .show();
+
+
     }
 
 
@@ -629,10 +645,11 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }*/
 
-    private void createPlaycelist(String input) {
+    private void createPlaycelist(String name , String songIDs ) {
         //EditText edt = findViewById(R.id.inputET);
         //String nameInput = edt.getText().toString();
-        Toast.makeText(this, input, Toast.LENGTH_LONG).show();
+       // Toast.makeText(this, input, Toast.LENGTH_LONG).show();
+
         /*
         ToDo
          CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
@@ -641,8 +658,121 @@ public class MainActivity extends AppCompatActivity implements
          create list item in DB incl name and info from spotify
          (create rectangular shape on map)
         */
+
+
+        if (mAccessToken != null) {
+
+
+
+            final Request request = new Request.Builder()
+                    .url("https://api.spotify.com/v1/users/"+CUserID+"/playlists") //get user data
+                    .addHeader("Authorization", "Bearer " + mAccessToken)
+                    .post(RequestBody
+                            .create(MediaType
+                                            .parse("application/json"),
+                                    "{\"name\": \"" + name+  "\"}"
+                            ))
+                    .build();
+            cancelCall();
+            mCall = mOkHttpClient.newCall(request);
+            mCall.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("Response", "Request fail");//Fail
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    try {
+                        final JSONObject jsonObject = new JSONObject(response.body().string());
+                        String JsonResponse = jsonObject.toString();
+                        Gson gson = new Gson();
+                        SPPlaylist CPlaylist;
+                        CPlaylist = gson.fromJson(JsonResponse, SPPlaylist.class);
+                        PlaylistID = CPlaylist.getId();
+
+                        Log.e("Spotify", "Playlist created, id:" + PlaylistID);
+                        Log.e("Spotify", JsonResponse);
+                        // adding songs to the playlist
+
+
+                        final Request request2 = new Request.Builder()
+                                .url("https://api.spotify.com/v1/playlists/"+PlaylistID+"/tracks?uris="+songIDs) //get user data
+                                .addHeader("Authorization", "Bearer " + mAccessToken)
+                                .post(RequestBody
+                                        .create(MediaType
+                                                        .parse("application/json"),
+                                                "{}"
+                                        ))
+                                .build();
+
+
+
+                        Log.e("Spotify", request2.toString());
+                        Log.e("Spotify", request2.body().toString());
+                        cancelCall();
+                        mCall = mOkHttpClient.newCall(request2);
+                        mCall.enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                Log.e("Response", "Request fail");//Fail
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                try {
+                                    final JSONObject jsonObject = new JSONObject(response.body().string());
+                                    String JsonResponse = jsonObject.toString();
+
+
+
+                                    Log.e("Spotify", "Songs added" );
+                                    Log.e("Spotify", JsonResponse);
+                                    // adding songs to the playlist
+
+
+                                }
+
+
+
+                                catch(JSONException e){
+                                    //Fail
+                                }}});
+
+
+
+                    }
+
+
+
+                                catch(JSONException e){
+                            //Fail
+                        }}});
+
+
+
+
+
+
+
+
+        }
+else {
+
+    //todo please log in
+        }
+
+
     }
 
+
+
+
+    private void cancelCall() {
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)
     public void onClickOpenNavDrawer(View view) {

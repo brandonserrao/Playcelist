@@ -1,5 +1,5 @@
 
-package com.brandonserrao.playcelist.model;
+package com.brandonserrao.playcelist.SPUser;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -234,13 +234,4 @@ public class LauncherActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
-    //Todo this has to be removed once the login -> to main works.
-    public void OnClickStartMainActivity(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-    }
-
-
 }

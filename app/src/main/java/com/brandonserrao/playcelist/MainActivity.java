@@ -39,6 +39,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
@@ -46,6 +47,7 @@ import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements
     public LocationManager locationManager;
     public LocationListener locationListener;
     public Location device_location;
+    //Todo set initial location value so list building doesn't break
     public String address;
 
     //database implementation variables
@@ -144,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        //Todo somehow select the right bottom navigation item in main, lists and songs activities.
+
         Log.e("MAIN", "the are in the main");
         // restoring important variables state
 
@@ -208,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements
                     Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                     try {
                         int num_results = 1;
-                        List<Address> address_list = geocoder.getFromLocation(lat,lng,num_results);
+                        List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
                         address = address_list.get(0).getAddressLine(0);
                         /*////--from my tutorial
                         int num_results=4;
@@ -230,8 +236,7 @@ public class MainActivity extends AppCompatActivity implements
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                }
-                else if(location==null) {/*
+                } else if (location == null) {/*
                     textview_lat.setText(R.string.label_lat+R.string.unknown_location);
                     textview_long.setText(R.string.label_long+R.string.unknown_location);*/
                 }
@@ -272,11 +277,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        /*
-        Todo
-         loop to add db records to map
-         potentially can be moved outside of here+made publicstatic to only be run once
-        */
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
             addSongToFeaturelist(song, featurelist_songlayer);
@@ -331,9 +331,10 @@ public class MainActivity extends AppCompatActivity implements
                 List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, SONGS_LAYER_ID);
                 TextView textView = findViewById(R.id.debug_textview);
                 Feature f;
-               //get topmost feature of query results
+                //get topmost feature of query results
                 if (features.size() > 0) { //if any features found
-                    /*Feature*/ f = features.get(0); //get topmost
+                    /*Feature*/
+                    f = features.get(0); //get topmost
                     //check for feature properties; return properties
                     if (f.properties() != null) { //if there are any
                         textView.setText(f.toJson());
@@ -355,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements
                     );
                     features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
                     String s = "";
-                    for(int i = 0; i < features.size(); i++) {
+                    for (int i = 0; i < features.size(); i++) {
                         f = features.get(i);
                         s = s + "Marker " + String.valueOf(i) + ": \n" + f.toString() + "\n"; //??
                     }
@@ -364,8 +365,7 @@ public class MainActivity extends AppCompatActivity implements
                     String current_location = "Device \n Latitude: " + String.valueOf(device_location.getLatitude())
                             + "\n Longitude: " + String.valueOf(device_location.getLongitude())
                             + "\n Time: " + device_location.getTime()
-                            + "\n Address: " + address
-                            ;
+                            + "\n Address: " + address;
                     String debug_text = current_location + "\n"
                             + "Got " + numberOfFeatures + " rendered song features \n"
                             //+ features.toString()
@@ -391,31 +391,6 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         });
 
-        //??***
-        // we need an onclicklistener that starts playing songs / lists when you click on a marker on the map
-        //*****
-
-/*        private void createSongItem(double lat, double lng) {
-            Record song = new Record();
-            song.setLNG((float) lng);
-            song.setLAT((float) lat);
-            song.setNAME(CurrentTrackName);
-            song.setS_ID(CurrentTrackID);
-            song.setIsLIST(false);
-            song.setARTIST(CurrentTrackArtist);
-            songdao.insert(song);
-            //adding to featurelist to be placed as a marker on map
-            addSongToFeaturelist(song, featurelist_songlayer);
-            updateLayerSources();
-            resetMapStyle();
-            // resetting the style after reconstructing source shows newly added marker
-        *//*
-        Todo @Brandon: somewhere here the pins are changed again - don't know how to change that /V
-        Todo (is fine again after recreating mainActivity)
-        *//*
-            Toast.makeText(MainActivity.this, "record added,", Toast.LENGTH_LONG).show();
-        }*/
-
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
             @Override
             public void onFling() {
@@ -428,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements
     public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
-        feature.addStringProperty("SONG_ID", song.getS_ID());
+        feature.addStringProperty("S_ID", song.getS_ID());
         feature.addNumberProperty("UID", song.getUID());
         featurelist_songlayer.add(feature);
     }
@@ -442,11 +417,7 @@ public class MainActivity extends AppCompatActivity implements
         //List<Feature> to FeatureCollection to GeoJsonSource as source
         song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
         song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
-        /*
-        Todo
-         insert other additional updates here
-         //construct layer//necessary or else attempts to add layer twice and breaks
-        */
+
         song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
                 .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
                         iconAllowOverlap(true)
@@ -523,17 +494,6 @@ public class MainActivity extends AppCompatActivity implements
                         .build()));
     }
 
-    //Todo  write method to zoom to a given extent (to be used when coming from lists activity
-
-    /*Todo probably get rid of this:
-       button IDs for reference
-        btn_nd [bar at top left in main activity] > opens nav drawer
-        btn_playcer [bottom right in main activity] > zooms to current position (GPS) and playces current playing at current position
-        btn_toSongs [left in bottom nav bar] > navigates via intent to Songs Activity
-        btn_toMap [middle in bottom nav bar] > navigates via intent to Main Activity
-        btn_toLists [right in bottom nav bar] > navigates via intent to Lists Activity
-    */
-
 
     //Button Click Handlers
     //opens Songs Activity which shows all playced songs in a recycler view
@@ -603,17 +563,72 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickCreatePlaycelist(View view) {
         AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_input, null);
+        final View dialogView = inflater.inflate(R.layout.dialog_input, null);
         dialogBuilder.setView(dialogView);
-        EditText edt = findViewById(R.id.inputET);
-        //String nameInput = edt.getText().toString();
-        //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
+        final EditText edt = dialogView.findViewById(R.id.inputET);
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("enter a name for your playcelist");
-        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> createPlaycelist("name"));
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> onClickCreateListItem(edt.getText().toString()));
         dialogBuilder.setNeutralButton("Cancel", null);
         AlertDialog d = dialogBuilder.create();
         d.show();
+    }
+
+    /*public void onClickCreatePlaycelist(View view) {
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                .setTitle("Create a new playcelist")
+                .setMessage("from currently visible songs?")
+                .setNeutralButton("cancel", null)
+                .setPositiveButton("create", (dialog, which) -> onClickCreateListItem("name"))
+                .show();
+    }*/
+
+    private void onClickCreateListItem(String nameInput) {
+        double lat = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLongitude();
+        double lng = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLatitude();
+        double zoom = mapboxMap.getCameraPosition().zoom;
+        String listName = nameInput;
+        String address = getAddress(lat, lng);
+        String songIDs = getVisibleSongs();
+        if (songIDs != null) {
+            //createPlaycelist(name, songIDs);
+            Toast.makeText(this, listName + "\n" + songIDs, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "no visible songs", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String getAddress(double lat, double lng) {
+        String a = null;
+        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
+        try {
+            int num_results = 1;
+            List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
+            a = address_list.get(0).getAddressLine(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return a;
+    }
+
+    private String getVisibleSongs() {
+        RectF rectF = new RectF(
+                mapView.getLeft(),
+                mapView.getTop(),
+                mapView.getRight(),
+                mapView.getBottom()
+        );
+        String songIDs = null;
+        List<Feature> features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
+        if (features.size() > 0) {
+            songIDs = features.get(0).getProperty("S_ID").getAsString();
+            if (features.size() > 1) {
+                for (int i = 1; i < features.size(); i++) {
+                    songIDs = songIDs + "\n" + features.get(i).getProperty("S_ID").getAsString();
+                }
+            }
+        }
+        return songIDs;
     }
 
 
@@ -629,10 +644,10 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }*/
 
-    private void createPlaycelist(String input) {
+    private void createPlaycelist(String listName, String songIDs) {
         //EditText edt = findViewById(R.id.inputET);
         //String nameInput = edt.getText().toString();
-        Toast.makeText(this, input, Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, input, Toast.LENGTH_LONG).show();
         /*
         ToDo
          CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
@@ -788,6 +803,7 @@ public class MainActivity extends AppCompatActivity implements
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);
         Username.setText("Please log in");
+        //Todo make sure to go back to Launcher (not main) when going back to the app.
     }
 
 

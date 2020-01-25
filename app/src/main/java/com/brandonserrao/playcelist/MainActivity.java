@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("SHARED", "Piclink " + CUserUpiclnk);
 
 
-        LoadUsertoNavBar();
+
 
 
 
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
-
+        LoadUsertoNavBar();
         Intent intent = getIntent();
         if (intent.hasExtra("methodName")) {
             if (intent.getStringExtra("methodName").equals("ZoomToLatLng")) {
@@ -736,6 +736,11 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.clear();
+
+
 
     }
 
@@ -785,20 +790,22 @@ public class MainActivity extends AppCompatActivity implements
         isWebLoggedIn = false;
         //Todo clear name and pic
 
-    }
-
-
-    private void LoadUsertoNavBar() {
-
-       // ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-      //  Glide.with(Upic).load(CUserUpiclnk).into(Upic);
-
 
     }
 
 
+    public void LoadUsertoNavBar() {
+        TextView Username = findViewById(R.id.nav_header_SUserName);
+        Username.setText(CUserName);
+        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+        Glide.with(Upic).load(CUserUpiclnk).into(Upic);
 
-    // auth request to spotify WEB
+
+    }
+
+
+
+
 
 
 

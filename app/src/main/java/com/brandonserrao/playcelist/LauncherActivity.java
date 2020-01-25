@@ -185,8 +185,7 @@ public class LauncherActivity extends AppCompatActivity {
 
 
 
-                        //TextView Username = findViewById(R.id.nav_header_SUserName);
-                        //Username.setText(CUser.getDisplayName());
+
                         Log.e("Response", "User" + JsonResponse);
                         response.close();
                         CUserName = CUser.getDisplayName();

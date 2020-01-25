@@ -182,8 +182,8 @@ public class ListsActivity extends AppCompatActivity {
                 .show();
 
         // Play a playlist
-        // todo insert real id
-        mSpotifyAppRemote.getPlayerApi().play("spotify:playlist:"+"37i9dQZF1DX2sUQwD7tbmL");
+
+        mSpotifyAppRemote.getPlayerApi().play(listID);
 
     }
 
@@ -208,12 +208,9 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
 
         String listID = recorddao.getSidByUid(uid);
-        /*
-        Todo API
-         send listID via API to delete list on spotify
-        */
 
-        try {mSpotifyAppRemote.getUserApi().removeFromLibrary("spotify:playlist:"+listID); } finally {
+
+        try {mSpotifyAppRemote.getUserApi().removeFromLibrary(listID); } finally {
 
         };
     }

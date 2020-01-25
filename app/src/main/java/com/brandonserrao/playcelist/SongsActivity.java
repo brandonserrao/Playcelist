@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -18,6 +19,9 @@ import androidx.room.Room;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
 
 import org.w3c.dom.Text;
 
@@ -33,6 +37,13 @@ import static com.brandonserrao.playcelist.MainActivity.song_list;
 import static com.brandonserrao.playcelist.MainActivity.recorddao;*/
 
 public class SongsActivity extends AppCompatActivity {
+
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
+    public SpotifyAppRemote mSpotifyAppRemote;
+
+
 
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
@@ -61,6 +72,30 @@ public class SongsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         songsAdapter = new SongsAdapter(list_values);
         recyclerView.setAdapter(songsAdapter);
+
+
+        Log.e("SPOTIFY", "login attemt");
+        SpotifyAppRemote.connect(
+                getApplication(),
+                new ConnectionParams.Builder(CLIENT_ID)
+                        .setRedirectUri(REDIRECT_URI)
+                        .showAuthView(true)
+                        .build(),
+                new Connector.ConnectionListener() {
+                    @Override
+                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote;
+                        Log.e("SPOTIFY", " APP connected in  song list ");
+
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+                        Log.e("SPOTIFY", " APP conn fail in  song list");
+                        Log.e("MyActivity", throwable.getMessage(), throwable);
+                    }
+                });
+
     }
 
 
@@ -140,10 +175,10 @@ public class SongsActivity extends AppCompatActivity {
         View contextView = itemView.findViewById(R.id.btn_playSong);
         Snackbar.make(contextView, songID, Snackbar.LENGTH_SHORT)
                 .show();
-        /*
-        Todo API
-         send songID via API to play song
-        */
+
+
+        mSpotifyAppRemote.getPlayerApi().play(songID);
+
     }
 
     //opens a dialog to confirm deleting the Song

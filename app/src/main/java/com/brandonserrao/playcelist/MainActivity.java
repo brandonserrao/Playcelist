@@ -605,27 +605,37 @@ public class MainActivity extends AppCompatActivity implements
     public void onClickCreatePlaycelist(View view) {
         AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.dialog_input, null);
+        View dialogView = inflater.inflate(R.layout.dialog_input, null);
         dialogBuilder.setView(dialogView);
-        final EditText edt = findViewById(R.id.nameInput);
+        //EditText edt = findViewById(R.id.inputET);
+        //String nameInput = edt.getText().toString();
         //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("enter a name for your playcelist");
-        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> {
-            View contextView = mapView;
-            Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                    .show();
-            //createPlaycelist(mapView, edt.getText().toString());
-        });
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> createPlaycelist("name"));
         dialogBuilder.setNeutralButton("Cancel", null);
-        AlertDialog b = dialogBuilder.create();
-        b.show();
+        AlertDialog d = dialogBuilder.create();
+        d.show();
     }
 
-    /*private void createPlaycelist(MapView mapview, String nameInput) {
-        View contextView = mapView;
-        Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                .show();
+    /*
+    @Override
+    public void buttonAction(final View v) {
+        int id = v.getId();
+        switch (id) {
+            case R.layout.dialog_input:
+                onClickCreatePlaycelist();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }*/
+
+    private void createPlaycelist(String input) {
+        //EditText edt = findViewById(R.id.inputET);
+        //String nameInput = edt.getText().toString();
+        Toast.makeText(this, input, Toast.LENGTH_LONG).show();
         /*
         ToDo
          CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
@@ -634,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements
          create list item in DB incl name and info from spotify
          (create rectangular shape on map)
         */
-    //}
+    }
 
 
     //slides in navigation drawer which handles account information (and what is displayed on the map)

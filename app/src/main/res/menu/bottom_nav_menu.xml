@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Songs"
-        android:id="@+id/btn_toSongs"
-        android:icon="@drawable/songicon"
-        android:onClick="onClickStartSongsActivity"/>
-    <item android:title="Map"
-        android:id="@+id/btn_toMap"
-        android:icon="@drawable/onmapicon"
-        android:onClick="onClickStartMainActivity"/>
-    <item android:title="Lists"
+    <item
         android:id="@+id/btn_toLists"
         android:icon="@drawable/listicon"
-        android:onClick="onClickStartListsActivity"/>
+        android:onClick="onClickStartListsActivity"
+        android:title="Lists" />
+    <item
+        android:id="@+id/btn_toMap"
+        android:icon="@drawable/onmapicon"
+        android:onClick="onClickStartMainActivity"
+        android:title="Map" />
+    <item
+        android:id="@+id/btn_toSongs"
+        android:icon="@drawable/songicon"
+        android:onClick="onClickStartSongsActivity"
+        android:title="Songs" />
 </menu>

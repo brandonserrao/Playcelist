@@ -7,8 +7,10 @@
     <color name="Primary">#EEEEEE</color>
     <color name="PrimaryVariant">#616161</color>
     <color name="OnPrimary">#000000</color>
-    <color name="Secondary">#1de9b6</color>
-    <color name="SecondaryDark">#008D61</color>
+    <color name="Secondary">#18ffff</color>
+    <!--<color name="Secondary">#1de9b6</color>-->
+    <color name="SecondaryDark">#00cbcc</color>
+    <!--<color name="SecondaryDark">#008D61</color>-->
     <!--<color name="Secondary">#FFEA00</color> YELLOW-->
     <color name="OnSecondary">#000000</color>
     <color name="Error">#CF6679</color>
@@ -18,7 +20,6 @@
 
 
     <color name="activity_background">#444444</color>
-
 
 
     <color name="colorAccent">#FF4081</color>

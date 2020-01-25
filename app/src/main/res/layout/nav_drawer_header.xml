@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="160dp"
     android:background="@color/SecondaryDark"
-    android:clickable="true"
+    android:clickable="false"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:gravity="bottom"
-    android:onClick="onClickOpenAccountDialog"
     android:orientation="vertical"
     android:padding="16dp"
     android:theme="@style/AppTheme">
+    <!--android:onClick="onClickOpenAccountDialog"-->
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/nav_header_SProfilePicture"

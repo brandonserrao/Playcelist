@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LauncherActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/Background">
+
+        <ImageView
+            android:id="@+id/logoText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:paddingTop="200dp"
+            android:paddingHorizontal="50dp"
+            android:src="@drawable/playcelist" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_marginTop="100dp"
+            android:id="@+id/btn_LogIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logoText"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:onClick="LogIntoSpotify"
+            android:text="@string/signIn" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_ToMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btn_LogIn"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:onClick="OnClickStartMainActivity"
+            android:text="@string/tomain" />
+    </RelativeLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

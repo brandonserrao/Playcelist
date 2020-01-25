@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,6 +18,8 @@ import androidx.room.Room;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +49,7 @@ public class SongsActivity extends AppCompatActivity {
 
         //create db instance for this activity
         AppDatabase database =
-                Room.databaseBuilder(this, AppDatabase.class,db_name)
+                Room.databaseBuilder(this, AppDatabase.class, db_name)
                         .allowMainThreadQueries()
                         .createFromAsset(db_name)
                         .build();
@@ -59,7 +62,6 @@ public class SongsActivity extends AppCompatActivity {
         songsAdapter = new SongsAdapter(list_values);
         recyclerView.setAdapter(songsAdapter);
     }
-
 
 
     //button functions
@@ -101,69 +103,72 @@ public class SongsActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SongsActivity.class);
         startActivity(intent);
     }
+
     public void onClickStartMainActivity(MenuItem item) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
+
     public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListsActivity.class);
         startActivity(intent);
     }
 
-    //to main activity via intent, center and zoom to list on map
+    //to main activity via intent, center and zoom to song position on map
     public void viewSongOnMap(View view) {
+        //Todo specifiy the item that was clicked on to get that specific item's lat+lng
+        // atm the tv s of the first item on the list are being returned
+        TextView lngtv = findViewById(R.id.tv3);
+        String lng = (String) lngtv.getText();
+        TextView lattv = findViewById(R.id.tv4);
+        String lat = (String) lattv.getText();
+
         View contextView = findViewById(R.id.btn_showSongOnMap);
-        Snackbar.make(contextView, R.string.showsSongOnMap, Snackbar.LENGTH_SHORT)
+        Snackbar.make(contextView, lng + "   " + lat, Snackbar.LENGTH_SHORT)
                 .show();
-        //Intent intent = new Intent(this, MainActivity.class);
-        // -
-        // -
-        //startActivity(intent);
-        // -
-        // -
-        //send id for map to center on corresponding list circle
-        // -
-        // -
+        /*
+        Todo
+         send latlng via intent to map to center and zoom
+         Intent intent = new Intent(this, MainActivity.class);
+         startActivity(intent);
+        */
     }
 
-    //sending the listID to spotify to play
+    //retrieves and sends the songID to spotify to play
     public void API_playThisSong(View view) {
+        //Todo specifiy the item that was clicked on to get that specific item's SongID
+        TextView idtv = findViewById(R.id.tv5);
+        String sID = (String) idtv.getText();
         View contextView = findViewById(R.id.btn_playSong);
-        Snackbar.make(contextView, R.string.play_song, Snackbar.LENGTH_SHORT)
+        Snackbar.make(contextView, R.string.play_song + sID, Snackbar.LENGTH_SHORT)
                 .show();
-        //actual code:
-        // get listID from db item
-        // -
-        // -
-        // -
-        // send intent(?) via API to play/shuffle list
-        // -
-        // -
-        // -
+        /*
+        Todo
+         send intent(?) via API to play song
+        */
     }
 
-    public interface delListener{
-        public void onClick();
-    }
-
-    //opens a dialog to confirm deleting the List
+    //opens a dialog to confirm deleting the Song
+    //deletes song from the DB
     public void onClickOpenSongDeleteDialog(View view) {
-        //to get the relative Layout for the item: view.getParent().getParent();
-        new MaterialAlertDialogBuilder(this, R.style.DialogTheme)
+        //todo get the correct item specifications to delete
+        TextView idTV = findViewById(R.id.tv5); //now this gets tv5 of the first item in the list...
+        String delID = (String) idTV.getText();
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setMessage("Do you want to unplayce this song?")
                 .setNeutralButton("cancel", null)
                 .setNegativeButton("delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(SongsActivity.this, R.string.btnWillDeleteSong, Toast.LENGTH_SHORT).show();
+                        songdao.deleteByID(delID);
+                        List<Song> songs = songdao.getAllSongs();
+                        songsAdapter = new SongsAdapter(songs);
+                        recyclerView.setAdapter(songsAdapter);
+                        //Todo doesn't delete anything yet...
+                        Toast.makeText(SongsActivity.this, R.string.btnWillDeleteSong + delID, Toast.LENGTH_SHORT).show();
                     }
                 })
-                // .setNegativeButtonIcon(getDrawable(R.drawable.delete))
                 .show();
-        //code to delete the list from DB & Spotify:
-        // -
-        // -
-        // -
     }
 
 }

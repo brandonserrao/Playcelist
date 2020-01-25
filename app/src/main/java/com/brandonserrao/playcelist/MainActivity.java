@@ -154,7 +154,8 @@ public class MainActivity extends AppCompatActivity implements
     public String CurrentTrackName;
     public String CurrentTrackArtist;
 
-    public String CUserName = "Please log in";
+    public String CUserName ;
+    public String CUserUpiclnk;
 
 
     // saving state
@@ -187,6 +188,14 @@ public class MainActivity extends AppCompatActivity implements
 
         CUserName = pref.getString("CUserName", "Please log in");
         Log.e("SHARED", "Name " + CUserName);
+
+
+        CUserUpiclnk = pref.getString("CUserUpiclnk", "link");
+        Log.e("SHARED", "Piclink " + CUserUpiclnk);
+
+
+        LoadUsertoNavBar();
+
 
 
         /*
@@ -769,11 +778,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    private void LoadUserPic() {
+    private void LoadUsertoNavBar() {
 
-        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
-        String url = CUser.getImages().get(0).getUrl();
-        Glide.with(Upic).load(url).into(Upic);
+       // ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+      //  Glide.with(Upic).load(CUserUpiclnk).into(Upic);
+
 
     }
 

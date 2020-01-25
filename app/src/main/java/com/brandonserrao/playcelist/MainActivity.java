@@ -137,11 +137,12 @@ public class MainActivity extends AppCompatActivity implements
 
     // spotify stufff
 
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd";
+   // public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd" - use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
-    private SpotifyAppRemote mSpotifyAppRemote;
+    public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
-    public static final int AUTH_CODE_REQUEST_CODE = 0x11;
+
     public SPUser CUser; // user profile
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
@@ -698,7 +699,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
 //connection to the Sporify APP
         Log.e("SPOTIFY", "login attemt");
-        if (isAppLoggedIn == false) {
             SpotifyAppRemote.connect(
                     getApplication(),
                     new ConnectionParams.Builder(CLIENT_ID)
@@ -718,10 +718,9 @@ public class MainActivity extends AppCompatActivity implements
                             Log.e("SPOTIFY", " APP conn fail");
                             Log.e("MyActivity", throwable.getMessage(), throwable);
                         }
-
                     });
 
-        }
+
     }
 
     @Override
@@ -733,8 +732,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // On succcesful connection to the Spotify APP
     private void connected() {
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        ;
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
         editor.putBoolean("isAppLoggedIn", true);
@@ -763,39 +761,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        cancelCall();
+
         super.onDestroy();
 
 
     }
 
-    // Requests for the SPotifyWEB
-    public void RequestCode() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.CODE);
-        AuthenticationClient.openLoginActivity(this, AUTH_CODE_REQUEST_CODE, request);
-    }
 
-    public void RequestToken() {
-        final AuthenticationRequest request = getAuthenticationRequest(AuthenticationResponse.Type.TOKEN);
-        AuthenticationClient.openLoginActivity(this, AUTH_TOKEN_REQUEST_CODE, request);
-    }
-
-    // log in SpotifyWeb
-    public void LogIntoSpotify() {
-
-
-        if (isWebLoggedIn == false) {
-            // no login
-            Log.e("SPOTIFZ", "Web-login");
-            RequestToken();
-            Log.e("SPOTIFY", "Web-login succ");
-
-        } else {
-            Toast.makeText(this, "ELSE", Toast.LENGTH_SHORT).show();
-        }
-
-
-    }
 
     public void LogOutOfSpotify(MenuItem menuItem) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://accounts.spotify.com/en/logout ")));
@@ -815,96 +787,14 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    // get user info from Sporify WEB
-    public void GetUser() {
-        if (mAccessToken != null) {
-            final Request request = new Request.Builder()
-                    .url("https://api.spotify.com/v1/me") //get user data
-                    //.url("https://api.spotify.com/v1/me/player/currently-playing") //get current song
-                    .addHeader("Authorization", "Bearer " + mAccessToken)
-                    .build();
-            cancelCall();
-            mCall = mOkHttpClient.newCall(request);
-            mCall.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    Log.e("Response", "Request fail");//Fail
-                }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-
-                        final JSONObject jsonObject = new JSONObject(response.body().string());
-                        String JsonResponse = jsonObject.toString();
-                        Gson gson = new Gson();
-                        CUser = gson.fromJson(JsonResponse, SPUser.class);
-                        TextView Username = findViewById(R.id.nav_header_SUserName);
-                        Username.setText(CUser.getDisplayName());
-                        Log.e("Response", "User" + JsonResponse);
-                        response.close();
-                        CUserName = CUser.getDisplayName();
-                        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-                        ;
-                        Editor editor = pref.edit();
-                        editor.putString("CUserName", CUserName);
-                        editor.commit();
-                        Log.e("SHARED", CUserName);
-
-
-                    } catch (JSONException e) {
-                        //Fail
-                    }
-                }
-            });
-        } else {// messagge to log in
-        }
-        ;
-    }
 
     // auth request to spotify WEB
-    private AuthenticationRequest getAuthenticationRequest(AuthenticationResponse.Type type) {
-        return new AuthenticationRequest.Builder(CLIENT_ID, type, REDIRECT_URI)
-                .setShowDialog(false)
-                .setScopes(new String[]{"user-read-email", "user-read-playback-state", "user-read-currently-playing", "user-read-private"})
-                .build();
-    }
-
-    @Override
-    // Spotify web resoinse parser
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
-
-        if (requestCode == AUTH_TOKEN_REQUEST_CODE) {
-            mAccessToken = response.getAccessToken();
-            Log.e("Token", "THere" + mAccessToken);
-            SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-            ;
-            Editor editor = pref.edit();
-            editor.putString("mAccessToken", mAccessToken);
-            editor.commit();
-            Log.e("SHARED", mAccessToken);
-            GetUser();
-            isWebLoggedIn = false;
-            editor.putBoolean("isWebLoggedIn", isWebLoggedIn);
-            editor.commit();
 
 
-        } else if (requestCode == AUTH_CODE_REQUEST_CODE) {
-            mAccessCode = response.getCode();
-            Log.e("Code", "CHere " + mAccessCode);
-            GetUser();
-        }
 
 
-    }
 
 
-    private void cancelCall() {
-        if (mCall != null) {
-            mCall.cancel();
-        }
-    }
 
 }

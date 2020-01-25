@@ -233,10 +233,7 @@ public class MainActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         if (intent.hasExtra("methodName")) {
             if (intent.getStringExtra("methodName").equals("ZoomToLatLng")) {
-                String sLat = String.valueOf(intent.getDoubleExtra("Lat", 0));
-                String sLng = String.valueOf(intent.getDoubleExtra("Lng", 0));
-                Toast.makeText(this, sLat + " " + sLng, Toast.LENGTH_LONG).show();
-                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0));
+                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getIntExtra("ZoomLevel", 0));
             }
         }
 
@@ -502,13 +499,13 @@ public class MainActivity extends AppCompatActivity implements
 
     //INTENT handler methods
     //zooms map to a given lat&lng
-    private void zoomToLatLng(Double lat, Double lng) {
+    private void zoomToLatLng(Double lat, Double lng, Integer zoomlevel) {
         LatLng focus;
         focus = new LatLng(lat, lng);
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder()
                         .target(focus)
-                        .zoom(16)
+                        .zoom(zoomlevel)
                         .build()));
     }
 
@@ -550,12 +547,7 @@ public class MainActivity extends AppCompatActivity implements
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")
                 .setNeutralButton("cancel", null)
-                .setPositiveButton("playce", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        onClickPlayceSong(mapView);
-                    }
-                })
+                .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(mapView))
                 .show();
     }
 
@@ -609,13 +601,11 @@ public class MainActivity extends AppCompatActivity implements
         //Todo somehow make clear that playcelist will be made from the songs currently shown on the map...
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("enter a name for your playcelist");
-        dialogBuilder.setPositiveButton("create playcelist", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                View contextView = mapView;
-                Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
-                        .show();
-                //createPlaycelist(mapView, edt.getText().toString());
-            }
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> {
+            View contextView = mapView;
+            Snackbar.make(contextView, R.string.btnWorking, Snackbar.LENGTH_SHORT)
+                    .show();
+            //createPlaycelist(mapView, edt.getText().toString());
         });
         dialogBuilder.setNeutralButton("Cancel", null);
         AlertDialog b = dialogBuilder.create();

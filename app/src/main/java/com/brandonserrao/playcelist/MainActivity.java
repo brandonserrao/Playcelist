@@ -749,7 +749,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // On succcesful connection to the Spotify APP
     private void connected() {
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         ;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
@@ -791,9 +791,10 @@ public class MainActivity extends AppCompatActivity implements
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         isAppLoggedIn = false;
         isWebLoggedIn = false;
-        //Todo clear name and pic
-
-
+        ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
+        Upic.setImageDrawable(null);
+        TextView Username = findViewById(R.id.nav_header_SUserName);
+        Username.setText("Please log in");
     }
 
 

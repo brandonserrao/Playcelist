@@ -55,7 +55,7 @@
                 android:layout_alignBottom="@id/mapbox"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="5dp"
-                android:onClick="onClickPlayceCurrentSongHere"
+                android:onClick="onClickPlayceSongAtGPS"
                 android:src="@drawable/plus"
                 app:fabSize="mini" />
 

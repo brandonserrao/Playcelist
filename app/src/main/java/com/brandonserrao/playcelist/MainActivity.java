@@ -221,7 +221,12 @@ public class MainActivity extends AppCompatActivity implements
                 (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-                if (location != null) {device_location = location;}
+                if (location != null) {
+                    TextView textView = findViewById(R.id.debug_textview);
+                    device_location = location;
+                    double lat = device_location.getLatitude(), lng = device_location.getLongitude();
+                    String debug_text = String.valueOf(lat) + String.valueOf(lng);
+                textView.setText(debug_text);}
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -334,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements
                             mapView.getRight(),
                             mapView.getBottom()
                     );
-                    features = mapboxMap.queryRenderedFeatures(rectF);
+                    features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID);
                     String s = "";
                     for(int i = 0; i < features.size(); i++) {
                         f = features.get(i);
@@ -342,11 +347,12 @@ public class MainActivity extends AppCompatActivity implements
                         s.concat(f.properties().toString()); //??
                     }
                     //--testing getting device current location
+                    String numberOfFeatures = String.valueOf(features.size());
                     String current_location = "Device \n Latitude: " + String.valueOf(device_location.getLatitude())
                             + "\n Longitude: " + String.valueOf(device_location.getLongitude())
                             + "\n Time: " + device_location.getTime();
                     String debug_text = current_location + "\n"
-                            + "Got rendered song features \n"
+                            + "Got " + numberOfFeatures + " rendered song features \n"
                             + s;
                     textView.setText(debug_text);
                 }

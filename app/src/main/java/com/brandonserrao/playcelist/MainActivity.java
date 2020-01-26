@@ -631,6 +631,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //navigates to main activity which shows now playing info and a map with all playced songs as Todo colorful bubbles
     public void onClickStartMainActivity(MenuItem item) {
+        //Todo refresh the map
         //Intent intent = new Intent(this, MainActivity.class);
         //startActivity(intent);
     }
@@ -638,6 +639,12 @@ public class MainActivity extends AppCompatActivity implements
     //opens Lists Activity which shows all playcelists in a recycler view
     public void onClickStartListsActivity(MenuItem item) {
         Intent intent = new Intent(this, ListsActivity.class);
+        startActivity(intent);
+    }
+
+    //redirects to the launcher Activity in case of log out etc
+    public void redirectToLauncher(MenuItem item) {
+        Intent intent = new Intent(this, LauncherActivity.class);
         startActivity(intent);
     }
 

@@ -20,8 +20,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.MyViewHolder
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv1;
         public TextView tv2;
-        //Todo delete in case we don't want a second line:
-        public TextView tv3;
         public View layout;
 
         public MyViewHolder(View v) {
@@ -29,8 +27,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.MyViewHolder
             layout = v;
             tv1 = v.findViewById(R.id.tv1);
             tv2 = v.findViewById(R.id.tv2);
-            //Todo delete in case we don't want a second line:
-            tv3 = v.findViewById(R.id.tv3);
         }
     }
 
@@ -47,8 +43,6 @@ public class ListsAdapter extends RecyclerView.Adapter<ListsAdapter.MyViewHolder
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.tv1.setText(String.valueOf(mDataset.get(position).getUID()));
         holder.tv2.setText(mDataset.get(position).getNAME());
-        //Todo delete in case we don't want a second line:
-        holder.tv3.setText(String.valueOf(mDataset.get(position).getARTIST()));
     }
 
     @Override

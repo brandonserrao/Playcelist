@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 
 /*import static com.brandonserrao.playcelist.MainActivity.db_name;
@@ -44,11 +45,11 @@ import static com.brandonserrao.playcelist.MainActivity.recorddao;*/
 
 public class SongsActivity extends AppCompatActivity {
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-
+    private boolean isAppLoggedIn = false;
 
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
@@ -90,6 +91,9 @@ public class SongsActivity extends AppCompatActivity {
             editor.apply();
         }
 
+        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
+        else Log.e("SHARED", "isAppLoggedIn0");
 
         //create db instance for this activity
         AppDatabase database =
@@ -100,6 +104,8 @@ public class SongsActivity extends AppCompatActivity {
         //setup recycler view and contents
         recorddao = database.getRecordDAO();
         song_list = recorddao.getAllSongs();
+        //reversing so most recent at top
+        Collections.reverse(song_list);
         List<Record> list_values = song_list;
         recyclerView = (RecyclerView) findViewById(R.id.recycler_songs);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -107,29 +113,36 @@ public class SongsActivity extends AppCompatActivity {
         recyclerView.setAdapter(songsAdapter);
 
 
-        Log.e("SPOTIFY", "login attemt");
-        SpotifyAppRemote.connect(
-                getApplication(),
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build(),
-                new Connector.ConnectionListener() {
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.e("SPOTIFY", " APP connected in  song list ");
+        if(isAppLoggedIn) {
+            SpotifyAppRemote.connect(
+                    getApplication(),
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build(),
+                    new Connector.ConnectionListener() {
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.e("SPOTIFY", " APP connected in  playslist list ");
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("SPOTIFY", " APP conn fail in  song list");
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("SPOTIFY", " APP conn fail in  playlist llis");
+                            Log.e("MyActivity", throwable.getMessage(), throwable);
+                        }
+                    });
 
-        // Get the SearchView and set the searchable configuration
+        }
+
+        else { redirectToLauncher();}
+
+           // Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();}
+
+
+            // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
         SearchView searchView = (SearchView) findViewById(R.id.sv_songs);
         // Assumes current activity is the searchable activity
@@ -237,7 +250,10 @@ public class SongsActivity extends AppCompatActivity {
         songsAdapter = new SongsAdapter(songs);
         recyclerView.setAdapter(songsAdapter);
     }
-
+        public void redirectToLauncher() {
+            Intent intent = new Intent(this, LauncherActivity.class);
+            startActivity(intent);
+        }
 }
 
 //Todo add albumart from Spotify?

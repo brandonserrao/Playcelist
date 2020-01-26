@@ -29,7 +29,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 /*
 import static com.brandonserrao.playcelist.MainActivity.db_name;
 import static com.brandonserrao.playcelist.MainActivity.song_list;
@@ -37,24 +46,37 @@ import static com.brandonserrao.playcelist.MainActivity.songdao;*/
 
 public class ListsActivity extends AppCompatActivity {
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-
+    public Call mCall;
 
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
     RecordDAO recorddao;
     List<Record> list_list;
+    private boolean isAppLoggedIn = false;
 
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
+    public String mAccessToken;
 
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
+        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
+        else Log.e("SHARED", "isAppLoggedIn0");
+        mAccessToken = pref.getString("mAccessToken", "");
+        Log.e("SHARED", "tk+" + mAccessToken);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
@@ -93,6 +115,8 @@ public class ListsActivity extends AppCompatActivity {
         //setup recycler view and contents
         recorddao = database.getRecordDAO();
         list_list = recorddao.getAllLists();
+        //reversing so most recent at top
+        Collections.reverse(list_list);
         List<Record> list_values = list_list;
 
         recyclerView = findViewById(R.id.recycler_list);
@@ -101,26 +125,36 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
 
         Log.e("SPOTIFY", "login attemt");
-        SpotifyAppRemote.connect(
-                getApplication(),
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build(),
-                new Connector.ConnectionListener() {
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.e("SPOTIFY", " APP connected in  playslist list ");
+        if(isAppLoggedIn) {
+            SpotifyAppRemote.connect(
+                    getApplication(),
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build(),
+                    new Connector.ConnectionListener() {
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.e("SPOTIFY", " APP connected in  playslist list ");
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("SPOTIFY", " APP conn fail in  playlist llis");
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("SPOTIFY", " APP conn fail in  playlist llis");
+                            Log.e("MyActivity", throwable.getMessage(), throwable);
+                        }
+                    });
+
+        }
+
+        else {
+
+         //   Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+           redirectToLauncher();
+
+        }
 
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
@@ -228,21 +262,60 @@ public class ListsActivity extends AppCompatActivity {
 
     //deletes selected list from db
     private void deleteRecord(String uid) {
+        String listID = recorddao.getSidByUid(uid);
+
         recorddao.deleteRecordByUID(uid);
         List<Record> lists = recorddao.getAllLists();
         listsAdapter = new ListsAdapter(lists);
         recyclerView.setAdapter(listsAdapter);
 
-        String listID = recorddao.getSidByUid(uid);
 
 
-        try {
-            mSpotifyAppRemote.getUserApi().removeFromLibrary(listID);
-        } finally {
+        final OkHttpClient mOkHttpClient = new OkHttpClient();
+        if (mAccessToken != null) {
 
+            Log.e("SPOTIFY","delete attemt id"+listID);
+            RequestBody body =RequestBody.create(null, new byte[0]);
+            final Request request = new Request.Builder()
+                    .url("https://api.spotify.com/v1/playlists/"+listID.replace("spotify:playlist:","")+"/followers") //get user data
+                    .addHeader("Authorization", "Bearer " + mAccessToken)
+                    .delete(body).build();
+            cancelCall();
+            mCall = mOkHttpClient.newCall(request);
+            mCall.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("Response", "Request fail");//Fail
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+
+
+
+
+
+                    Log.e("SPOTIFY","deleted "+response);
+                }
+
+            });
+            }
+
+    }
+
+    public void redirectToLauncher() {
+        Intent intent = new Intent(this, LauncherActivity.class);
+        startActivity(intent);
+    }
+
+
+    private void cancelCall() {
+        if (mCall != null) {
+            mCall.cancel();
         }
-        ;
     }
 }
+
+
 
 //Todo add listart picture from Spotify?

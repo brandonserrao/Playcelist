@@ -41,6 +41,7 @@ import com.brandonserrao.playcelist.SPPlaylist.SPPlaylist;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
@@ -134,8 +135,8 @@ public class MainActivity extends AppCompatActivity implements
     private boolean isWebLoggedIn = false;
 
     // spotify stufff
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
 
@@ -144,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     public String mAccessToken;
-    public String mAccessCode;
+
     public Call mCall;
 
     public String CurrentTrackID;
@@ -175,15 +176,15 @@ public class MainActivity extends AppCompatActivity implements
         mAccessToken = pref.getString("mAccessToken", "");
         Log.e("SHARED", "tk+" + mAccessToken);
 
-        //  isUpicloaded=pref.getBoolean("isUpicloaded",false);
+          isUpicloaded=pref.getBoolean("isUpicloaded",false);
         if (isUpicloaded) Log.e("SHARED", "isUpicloaded1");
         else Log.e("SHARED", "isUpicloaded0");
 
-        //isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
         else Log.e("SHARED", "isAppLoggedIn0");
 
-        //isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
+        isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
         if (isWebLoggedIn) Log.e("SHARED", "isWebLoggedIn1");
         else Log.e("SHARED", "isWebLoggedIn0");
 
@@ -423,14 +424,14 @@ public class MainActivity extends AppCompatActivity implements
                     .show();
             return true;
         });
-
+/*
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
             @Override
             public void onFling() {
                 Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_SHORT).show();
             }
         });
-
+*/
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
         SearchView searchView = (SearchView) findViewById(R.id.sv_map);
@@ -666,7 +667,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //redirects to the launcher Activity in case of log out etc
-    public void redirectToLauncher(MenuItem item) {
+    public void redirectToLauncher() {
         Intent intent = new Intent(this, LauncherActivity.class);
         startActivity(intent);
     }
@@ -782,15 +783,16 @@ public class MainActivity extends AppCompatActivity implements
         list.setIsLIST(true);
         list.setARTIST(zoom);
         recorddao.insert(list);
-
-        Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
+            Log.e("DB","Playlist created "+listName+"# "+listID);
+//    will crash    Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
     }
 
     //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
     //takes a string with several spotify IDs and creates a playlist of them on spotify
     //returns spotify ID of playlist
-    private String createPlaycelist(String name, String songIDs) {
+    private void  createPlaycelist(String name, String songIDs) {
         if (mAccessToken != null) {
+            Log.e("Spotify","creation of playlist attemt "+ name+"___"+songIDs);
             final Request request = new Request.Builder()
                     .url("https://api.spotify.com/v1/users/" + CUserID + "/playlists") //get user data
                     .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -853,6 +855,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                     Log.e("Spotify", "Songs added");
                                     Log.e("Spotify", JsonResponse);
+                                    createListItem("spotify:playlist:"+PlaylistID, name);
                                     // adding songs to the playlist
 
 
@@ -872,10 +875,13 @@ public class MainActivity extends AppCompatActivity implements
 
         } else {
 
-            //todo please log in
+    //        Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+            redirectToLauncher();
+
         }
 
-        return PlaylistID;
+
+
     }
 
 
@@ -911,27 +917,35 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         //connection to the Sporify APP
         Log.e("SPOTIFY", "login attemt");
-        SpotifyAppRemote.connect(
-                getApplication(),
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build(),
-                new Connector.ConnectionListener() {
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.e("SPOTIFY", " APP connected");
-                        connected();
-                    }
+        if (isAppLoggedIn) {
+            SpotifyAppRemote.connect(
+                    getApplication(),
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build(),
+                    new Connector.ConnectionListener() {
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.e("SPOTIFY", " APP connected");
+                            connected();
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("SPOTIFY", " APP conn fail");
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("SPOTIFY", " APP conn fail");
+                            Log.e("MyActivity", throwable.getMessage(), throwable);
+                        }
+                    });
+        }
+        else {
 
+
+
+           // Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+            redirectToLauncher();
+        }
 
     }
 
@@ -939,7 +953,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_WORLD_READABLE);
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
         editor.clear();
 
@@ -992,6 +1006,13 @@ public class MainActivity extends AppCompatActivity implements
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         isAppLoggedIn = false;
         isWebLoggedIn = false;
+
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
+        editor.putBoolean("isWebLoggedIn", isAppLoggedIn);
+        editor.commit();
+
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);

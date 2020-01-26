@@ -517,7 +517,7 @@ public class MainActivity extends AppCompatActivity implements
             mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1250);
 
         }
-        else if (query == "") {
+        else /*if (query == "")*/ {
             //get all songs,rebuild layer source, reset style
             song_list = recorddao.getAllSongs();
             for (int i = 0; i < song_list.size(); i++) {

@@ -30,8 +30,8 @@ import okhttp3.Response;
 
 public class LauncherActivity extends AppCompatActivity {
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3";
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public static final int AUTH_TOKEN_REQUEST_CODE = 0x10;
@@ -60,13 +60,15 @@ public class LauncherActivity extends AppCompatActivity {
         Log.e("SHARED", "tk+" + mAccessToken);
 
 
-        //isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
         else Log.e("SHARED", "isAppLoggedIn0");
 
-        //isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
+        isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
         if (isWebLoggedIn) Log.e("SHARED", "isWebLoggedIn1");
         else Log.e("SHARED", "isWebLoggedIn0");
+
+        if(isWebLoggedIn && isAppLoggedIn && mAccessToken!=null) { routeToMain();}
 
         CUserName = pref.getString("CUserName", "JD");
         Log.e("SHARED", "Name " + CUserName);
@@ -238,3 +240,4 @@ public class LauncherActivity extends AppCompatActivity {
                 });
     }
 }
+

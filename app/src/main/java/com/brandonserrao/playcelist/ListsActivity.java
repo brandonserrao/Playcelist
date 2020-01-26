@@ -3,6 +3,7 @@ package com.brandonserrao.playcelist;
 import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,8 +37,8 @@ import static com.brandonserrao.playcelist.MainActivity.songdao;*/
 
 public class ListsActivity extends AppCompatActivity {
 
-    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
 
@@ -46,6 +47,7 @@ public class ListsActivity extends AppCompatActivity {
     //public String db_name = "sqlstudio_db2_v5.sqlite";
     RecordDAO recorddao;
     List<Record> list_list;
+    private boolean isAppLoggedIn = false;
 
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
@@ -54,6 +56,15 @@ public class ListsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
+        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
+        else Log.e("SHARED", "isAppLoggedIn0");
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
@@ -84,26 +95,36 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
 
         Log.e("SPOTIFY", "login attemt");
-        SpotifyAppRemote.connect(
-                getApplication(),
-                new ConnectionParams.Builder(CLIENT_ID)
-                        .setRedirectUri(REDIRECT_URI)
-                        .showAuthView(true)
-                        .build(),
-                new Connector.ConnectionListener() {
-                    @Override
-                    public void onConnected(SpotifyAppRemote spotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote;
-                        Log.e("SPOTIFY", " APP connected in  playslist list ");
+        if(isAppLoggedIn) {
+            SpotifyAppRemote.connect(
+                    getApplication(),
+                    new ConnectionParams.Builder(CLIENT_ID)
+                            .setRedirectUri(REDIRECT_URI)
+                            .showAuthView(true)
+                            .build(),
+                    new Connector.ConnectionListener() {
+                        @Override
+                        public void onConnected(SpotifyAppRemote spotifyAppRemote) {
+                            mSpotifyAppRemote = spotifyAppRemote;
+                            Log.e("SPOTIFY", " APP connected in  playslist list ");
 
-                    }
+                        }
 
-                    @Override
-                    public void onFailure(Throwable throwable) {
-                        Log.e("SPOTIFY", " APP conn fail in  playlist llis");
-                        Log.e("MyActivity", throwable.getMessage(), throwable);
-                    }
-                });
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            Log.e("SPOTIFY", " APP conn fail in  playlist llis");
+                            Log.e("MyActivity", throwable.getMessage(), throwable);
+                        }
+                    });
+
+        }
+
+        else {
+
+         //   Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+           redirectToLauncher();
+
+        }
 
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
@@ -226,6 +247,14 @@ public class ListsActivity extends AppCompatActivity {
         }
         ;
     }
+
+    public void redirectToLauncher() {
+        Intent intent = new Intent(this, LauncherActivity.class);
+        startActivity(intent);
+    }
+
 }
+
+
 
 //Todo add listart picture from Spotify?

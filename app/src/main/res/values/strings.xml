@@ -15,8 +15,8 @@
     <string name="nd_lists">playcelists</string>
 
     <string name="now_playing">_song_\n_artist_</string>
-    <string name="np_song">_songfromSpotifyAPI_</string>
-    <string name="np_artist">_artistfromSpotifyAPI_</string>
+    <string name="np_song">play a Song on Spotify</string>
+    <string name="np_artist">to playce it on the map</string>
 
     <string name="SAccountName">Log in with Spotify</string>
 
@@ -34,7 +34,7 @@
     <string name="signIn">sign in with Spotify</string>
     <string name="tomain">ToMain (will be gone later)</string>
     <string name="nd_lo">log out</string>
-    <string name="nameHint">my Playcelist</string>
+    <string name="nameHint">name your playcelist</string>
 
 
 </resources>

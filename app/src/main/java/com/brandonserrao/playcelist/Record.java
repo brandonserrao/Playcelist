@@ -1,4 +1,5 @@
 package com.brandonserrao.playcelist;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
@@ -23,7 +24,9 @@ public class Record {
     float LAT;
     float LNG;
 
-    String ARTIST; //Todo zoomlevels for lists are to be saved here
+    String ARTIST;
+    //Todo extra double field for zoomlevels of lists
+    // double ZOOM
 
     String NAME;
 
@@ -67,13 +70,13 @@ public class Record {
         return ARTIST;
     }
 
-    public void setARTIST(String ARTIST) {
-        this.ARTIST = ARTIST;
-    }
+    public void setARTIST(String ARTIST) { this.ARTIST = ARTIST; }
 
-    public String getNAME() {
-        return NAME;
-    }
+    //Todo once ZOOM is established in db
+    // public double getZOOM() { return ZOOM; }
+    // public void setZOOM(double ZOOM) { this.ZOOM = ZOOM; }
+
+    public String getNAME() { return NAME; }
 
     public void setNAME(String NAME) {
         this.NAME = NAME;

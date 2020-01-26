@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.spotify.android.appremote.api.ConnectionParams;
@@ -49,10 +50,21 @@ public class ListsActivity extends AppCompatActivity {
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
+
+        //initialize the bottomNavBar
+        BottomNavigationView bottomNavigationView;
+        bottomNavigationView = this.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(myNavigationItemListener);
+        bottomNavigationView.setSelectedItemId(R.id.btn_toLists);
+        bottomNavigationView.findViewById(R.id.btn_toLists).setClickable(false);
+        bottomNavigationView.findViewById(R.id.btn_toLists).setActivated(true);
+        //Todo have the active state be represented in the style too
 
         //create db instance for this activity
         AppDatabase database =
@@ -145,8 +157,8 @@ public class ListsActivity extends AppCompatActivity {
     }
 
     public void onClickStartListsActivity(MenuItem item) {
-        Intent intent = new Intent(this, ListsActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, ListsActivity.class);
+        //startActivity(intent);
     }
 
     //to main activity via intent, center and zoom to list position on map
@@ -156,22 +168,18 @@ public class ListsActivity extends AppCompatActivity {
         String uid = (String) uidTv.getText();
         double lat = recorddao.getLatByUid(uid);
         double lng = recorddao.getLngByUid(uid);
-        //int zoomLevel = Integer.parseInt(recorddao.getZoomLevelByUid(uid));
-        int zoomLevel = 16;
+        double zoomLevel = Double.parseDouble(recorddao.getZoomLevelByUid(uid));
 
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("methodName", "ZoomToLatLng");
         intent.putExtra("Lat", lat);
         intent.putExtra("Lng", lng);
-        intent.putExtra("Zoomlevel", zoomLevel);
+        intent.putExtra("ZoomLevel", zoomLevel);
         startActivity(intent);
     }
 
     //retrieves and sends the listID to spotify to play
     public void API_playThisList(View view) {
-
-
-
         View itemView = (View) view.getParent().getParent();
         TextView uidTv = itemView.findViewById(R.id.tv1);
         String uid = (String) uidTv.getText();
@@ -215,3 +223,5 @@ public class ListsActivity extends AppCompatActivity {
         };
     }
 }
+
+//Todo add listart picture from Spotify?

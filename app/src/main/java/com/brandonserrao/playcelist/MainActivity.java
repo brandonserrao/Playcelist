@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.location.Address;
@@ -35,6 +36,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.room.Room;
 
 import com.brandonserrao.playcelist.SPPlaylist.SPPlaylist;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
@@ -92,6 +94,7 @@ import com.spotify.protocol.types.Track;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -151,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements
     public String CUserUpiclnk;
     public String CUserID;
     public String PlaylistID;
-
+    private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
 
     // saving state
@@ -214,8 +217,7 @@ public class MainActivity extends AppCompatActivity implements
         mapView.getMapAsync(this);
 
         //---testing device locating code
-        locationManager =
-                (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
@@ -287,10 +289,32 @@ public class MainActivity extends AppCompatActivity implements
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
         LoadUsertoNavBar();
+
+        //initialize the bottomNavBar
+        BottomNavigationView bottomNavigationView;
+        bottomNavigationView = this.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(myNavigationItemListener);
+        bottomNavigationView.setSelectedItemId(R.id.btn_toMap);
+        bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(false);
+        bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
+        //Todo have the active state be represented in the style too
+
+        //checks where to zoom to
+        //for viewOnMap intents, zoom to the clicked list or song
+        //for other intents zoom to current location if available
         Intent intent = getIntent();
         if (intent.hasExtra("methodName")) {
             if (intent.getStringExtra("methodName").equals("ZoomToLatLng")) {
-                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getIntExtra("ZoomLevel", 0));
+                zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getDoubleExtra("ZoomLevel", 0));
+            }
+        } else {
+            //Todo activate device_location upon creation so != null...
+            if (device_location != null) {
+                double lat = device_location.getLatitude();
+                double lng = device_location.getLongitude();
+                zoomToLatLng(lat, lng, 12.);
+            } else {
+                Toast.makeText(this, "GPS not found", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -396,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
+        //Todo add option to choose colour (if not, delete extra colours in color file)
         mapboxMap.addOnMapLongClickListener(point -> {
             double lat = point.getLatitude();
             double lng = point.getLongitude();
@@ -411,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements
         mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
             @Override
             public void onFling() {
-                Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -441,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements
                 );
     }
 
+    //Todo figure out why the pins are almost transparent when resetting the MapStyle after placing a new marker
     public void resetMapStyle() {
         //create mapstyle + adding marker image
         song_styleBuilder = new Style.Builder()
@@ -501,7 +527,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //INTENT handler methods
     //zooms map to a given lat&lng
-    private void zoomToLatLng(Double lat, Double lng, Integer zoomlevel) {
+    private void zoomToLatLng(Double lat, Double lng, double zoomlevel) {
         LatLng focus;
         focus = new LatLng(lat, lng);
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
@@ -521,8 +547,8 @@ public class MainActivity extends AppCompatActivity implements
 
     //navigates to main activity which shows now playing info and a map with all playced songs as Todo colorful bubbles
     public void onClickStartMainActivity(MenuItem item) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
     }
 
     //opens Lists Activity which shows all playcelists in a recycler view
@@ -533,6 +559,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //zooms to current GPS posittion on the map and
     //opens dialog to confirm playcing the current playing song at the current GPS position
+    //Todo add option to choose colour (if not, delete extra colours in color file)
     public void onClickPlayceSongAtGPS(View view) {
         double lat = device_location.getLatitude();
         double lng = device_location.getLongitude();
@@ -574,9 +601,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //opens a custom Dialog to ask for playcelist name input and confirmation
-    //creates list item in DB
-    //Todo this keeps crashing on clicking OK (when edt.getTect().toString() is used)
-    // check https://bhavyanshu.me/tutorials/create-custom-alert-dialog-in-android/08/20/2015/ again....
     public void onClickCreatePlaycelist(View view) {
         AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
@@ -584,52 +608,63 @@ public class MainActivity extends AppCompatActivity implements
         dialogBuilder.setView(dialogView);
         final EditText edt = dialogView.findViewById(R.id.inputET);
         dialogBuilder.setTitle("New Playcelist");
-        dialogBuilder.setMessage("enter a name for your playcelist");
+        dialogBuilder.setMessage("including all songs currently visible on the map");
         dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> onClickCreateListItem(edt.getText().toString()));
         dialogBuilder.setNeutralButton("Cancel", null);
         AlertDialog d = dialogBuilder.create();
         d.show();
     }
 
-    /*public void onClickCreatePlaycelist(View view) {
-        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
-                .setTitle("Create a new playcelist")
-                .setMessage("from currently visible songs?")
-                .setNeutralButton("cancel", null)
-                .setPositiveButton("create", (dialog, which) -> onClickCreateListItem("name"))
-                .show();
-    }*/
-
+    //retrieves all necessary information and creates list item in db
     private void onClickCreateListItem(String nameInput) {
-        double lat = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLongitude();
-        double lng = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLatitude();
-        double zoom = mapboxMap.getCameraPosition().zoom;
+        double dlat = mapboxMap.getCameraPosition().target.getLatitude();
+        double dlng = mapboxMap.getCameraPosition().target.getLongitude();
+        //double dlat = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLongitude();
+        //double dlng = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLatitude();
+        double dzoom = mapboxMap.getCameraPosition().zoom;
         String listName = nameInput;
-        //String address = getAddress(lat, lng);
+        //Todo figure out address problem
+        //String address = getAddress(dlat, dlng);
         String songIDs = getVisibleSongs();
         String listID = null;
         if (songIDs != null) {
-            createPlaycelist(listName, songIDs);
-            listID = PlaylistID;
+            listID = createPlaycelist(listName, songIDs);
+
+            //converting latlng to floats for db
+            float lat = (float) dlat;
+            float lng = (float) dlng;
+            String zoom = Double.toString(dzoom);
+
+            //creating new list entry and inserting it in db table
+            Record list = new Record();
+            list.setLNG(lng);
+            list.setLAT(lat);
+            list.setNAME(listName);
+            list.setS_ID(listID);
+            list.setIsLIST(true);
+            list.setARTIST(zoom);
+            recorddao.insert(list);
+
             Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "no visible songs", Toast.LENGTH_LONG).show();
         }
     }
 
+    //Todo fix (or delete) getaddress function crashing so far
     private String getAddress(double lat, double lng) {
-        String a = null;
         Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
         try {
             int num_results = 1;
             List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
-            a = address_list.get(0).getAddressLine(0);
+            address = address_list.get(0).getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return a;
+        return address;
     }
 
+    //checks the mapView for visible song items and creates a String including their spotify IDs
     private String getVisibleSongs() {
         RectF rectF = new RectF(
                 mapView.getLeft(),
@@ -650,28 +685,18 @@ public class MainActivity extends AppCompatActivity implements
         return songIDs;
     }
 
-
-    /*public boolean buttonAction(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.layout.dialog_input:
-                onClickCreatePlaycelist(findViewById(R.id.btn_listPlaycer));
-                return true;
-            default:
-                return super.buttonAction(v);
-        }
-        return true;
-    }*/
-
-    private void createPlaycelist(String name, String songIDs) {
+    //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
+    //takes a string with several spotify IDs and creates a playlist of them on spotify
+    //returns spotify ID of playlist
+    private String createPlaycelist(String name, String songIDs) {
         if (mAccessToken != null) {
             final Request request = new Request.Builder()
-                    .url("https://api.spotify.com/v1/users/"+CUserID+"/playlists") //get user data
+                    .url("https://api.spotify.com/v1/users/" + CUserID + "/playlists") //get user data
                     .addHeader("Authorization", "Bearer " + mAccessToken)
                     .post(RequestBody
                             .create(MediaType
                                             .parse("application/json"),
-                                    "{\"name\": \"" + name+  "\"}"
+                                    "{\"name\": \"" + name + "\"}"
                             ))
                     .build();
             cancelCall();
@@ -698,7 +723,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
                         final Request request2 = new Request.Builder()
-                                .url("https://api.spotify.com/v1/playlists/"+PlaylistID+"/tracks?uris="+songIDs) //get user data
+                                .url("https://api.spotify.com/v1/playlists/" + PlaylistID + "/tracks?uris=" + songIDs) //get user data
                                 .addHeader("Authorization", "Bearer " + mAccessToken)
                                 .post(RequestBody
                                         .create(MediaType
@@ -706,7 +731,6 @@ public class MainActivity extends AppCompatActivity implements
                                                 "{}"
                                         ))
                                 .build();
-
 
 
                         Log.e("Spotify", request2.toString());
@@ -726,47 +750,32 @@ public class MainActivity extends AppCompatActivity implements
                                     String JsonResponse = jsonObject.toString();
 
 
-
-                                    Log.e("Spotify", "Songs added" );
+                                    Log.e("Spotify", "Songs added");
                                     Log.e("Spotify", JsonResponse);
                                     // adding songs to the playlist
 
 
-                                }
-
-
-
-                                catch(JSONException e){
+                                } catch (JSONException e) {
                                     //Fail
-                                }}});
+                                }
+                            }
+                        });
 
 
-
+                    } catch (JSONException e) {
+                        //Fail
                     }
+                }
+            });
 
 
+        } else {
 
-                                catch(JSONException e){
-                            //Fail
-                        }}});
-
-
-
-
-
-
-
-
-        }
-else {
-
-    //todo please log in
+            //todo please log in
         }
 
-
+        return PlaylistID;
     }
-
-
 
 
     private void cancelCall() {
@@ -831,10 +840,8 @@ else {
     // spotify stufff
     @Override
     protected void onStart() {
-
-
         super.onStart();
-//connection to the Sporify APP
+        //connection to the Sporify APP
         Log.e("SPOTIFY", "login attemt");
         SpotifyAppRemote.connect(
                 getApplication(),
@@ -884,7 +891,8 @@ else {
 
         Log.e("SPOTIFY", "connected");
         // Subscribe to PlayerState
-        TextView Current_song = findViewById(R.id.nowplaying_info);
+        TextView Current_song = findViewById(R.id.nowplaying_info_song);
+        TextView Current_artist = findViewById(R.id.nowplaying_info_artist);
         mSpotifyAppRemote.getPlayerApi()
                 .subscribeToPlayerState()
                 .setEventCallback(playerState -> {
@@ -892,7 +900,8 @@ else {
                     final Track track = playerState.track;
                     if (track != null) {
                         Log.e("MainActivity", track.name + " by " + track.artist.name);
-                        Current_song.setText(track.name + "\n" + track.artist.name);
+                        Current_song.setText(track.name);
+                        Current_artist.setText(track.artist.name);
                         CurrentTrackID = track.uri;
                         CurrentTrackName = track.name;
                         CurrentTrackArtist = track.artist.name;
@@ -934,3 +943,13 @@ else {
 
 
 }
+
+
+//Todo make SearchView in Main functional (or get rid of it)
+
+//Todo add onclick play song functionality in map
+
+//Todo clean up code: through out unnecessary stuff
+//Todo comment the code
+//Todo arrange code in a sensible order
+//Todo at some point we wanted to update lists when playcing new songs but I guess we dropped that...

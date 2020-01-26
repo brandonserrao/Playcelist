@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -52,11 +53,21 @@ public class SongsActivity extends AppCompatActivity {
 
     SongsAdapter songsAdapter;
     RecyclerView recyclerView;
+    private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songs);
+
+        //initialize the bottomNavBar
+        BottomNavigationView bottomNavigationView;
+        bottomNavigationView = this.findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(myNavigationItemListener);
+        bottomNavigationView.setSelectedItemId(R.id.btn_toSongs);
+        bottomNavigationView.findViewById(R.id.btn_toSongs).setClickable(false);
+        bottomNavigationView.findViewById(R.id.btn_toSongs).setActivated(true);
+        //Todo have the active state be represented in the style too
 
         //create db instance for this activity
         AppDatabase database =
@@ -119,7 +130,7 @@ public class SongsActivity extends AppCompatActivity {
         //recreate();
     }
 
-    //-----obsolete db init function; from tutorials
+    //Todo-----obsolete db init function; from tutorials
     private void  copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
         OutputStream dbOut = new FileOutputStream(destinationPath);
@@ -135,8 +146,8 @@ public class SongsActivity extends AppCompatActivity {
 
     //Button Click Handlers
     public void onClickStartSongsActivity(MenuItem item) {
-        Intent intent = new Intent(this, SongsActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, SongsActivity.class);
+        //startActivity(intent);
     }
 
     public void onClickStartMainActivity(MenuItem item) {
@@ -161,7 +172,7 @@ public class SongsActivity extends AppCompatActivity {
         intent.putExtra("methodName", "ZoomToLatLng");
         intent.putExtra("Lat", lat);
         intent.putExtra("Lng", lng);
-        intent.putExtra("ZoomLevel", 16);
+        intent.putExtra("ZoomLevel", 12.);
         startActivity(intent);
     }
 
@@ -203,3 +214,5 @@ public class SongsActivity extends AppCompatActivity {
     }
 
 }
+
+//Todo add albumart from Spotify?

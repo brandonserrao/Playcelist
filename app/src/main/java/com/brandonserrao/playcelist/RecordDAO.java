@@ -59,6 +59,7 @@ public interface RecordDAO {
     public String getSidByUid(String uid);
 
     @Query("SELECT ARTIST FROM RECORDS WHERE (UID = :uid)")
+    //Todo change to ... SELECT ZOOM FROM ... once double ZOOM is in db
     public String getZoomLevelByUid(String uid);
 
 }

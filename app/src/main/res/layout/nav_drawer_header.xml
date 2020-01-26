@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_header"
     android:layout_width="match_parent"
-    android:layout_height="160dp"
+    android:layout_height="105dp"
     android:background="@color/SecondaryDark"
     android:clickable="false"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
     android:gravity="bottom"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="16dp"
     android:theme="@style/AppTheme">
     <!--android:onClick="onClickOpenAccountDialog"-->
@@ -28,9 +28,11 @@
         android:id="@+id/nav_header_SUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
         android:paddingTop="16dp"
-        android:text="@string/SAccountName"
-        android:textColor="@color/OnSecondary" />
+        android:textStyle="bold"
+        android:textColor="@color/Secondary"
+        android:text="@string/SAccountName"/>
 
 
 </LinearLayout>

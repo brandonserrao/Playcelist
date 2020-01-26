@@ -15,23 +15,22 @@
             android:id="@+id/logoText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:paddingTop="200dp"
+            android:layout_centerVertical="true"
+            android:paddingBottom="60dp"
             android:paddingHorizontal="50dp"
             android:src="@drawable/playcelist" />
 
         <com.google.android.material.button.MaterialButton
-            android:layout_marginTop="100dp"
             android:id="@+id/btn_LogIn"
-            android:layout_marginBottom="100dp"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="60dp"
             android:onClick="LogIntoSpotify"
             android:text="@string/signIn"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="@color/Secondary"/>
+            android:textColor="@color/Secondary" />
     </RelativeLayout>
 
 

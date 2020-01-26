@@ -25,13 +25,14 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_nd"
                 android:layout_width="4dp"
-                android:layout_height="160dp"
+                android:layout_height="105dp"
                 android:layout_alignTop="@id/mapbox"
                 android:layout_marginHorizontal="4dp"
                 android:background="@color/Secondary"
                 android:onClick="onClickOpenNavDrawer" />
 
             <androidx.appcompat.widget.SearchView
+                android:id="@+id/sv_map"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/btn_nd"

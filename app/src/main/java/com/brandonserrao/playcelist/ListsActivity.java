@@ -1,5 +1,6 @@
 package com.brandonserrao.playcelist;
 
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -38,8 +40,6 @@ public class ListsActivity extends AppCompatActivity {
     public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-
-
 
 
     public String db_name = "playcelist_db_v8.sqlite";
@@ -105,16 +105,38 @@ public class ListsActivity extends AppCompatActivity {
                     }
                 });
 
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) findViewById(R.id.sv_lists);
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                svSearchListsByName(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void svSearchListsByName(String query) {
+        List<Record> search_results = recorddao.searchListsByName(query);
+        listsAdapter = new ListsAdapter(search_results);
+        recyclerView.setAdapter(listsAdapter);
     }
 
 
+    /*Todo get rid of this
     //button functions
     public void searchListsByName(View view) {
         EditText et = findViewById(R.id.edittext_searchbar);
         String search_term = et.getText().toString();
-        List<Record> search_results = recorddao.searchListsByName(search_term);
-        listsAdapter = new ListsAdapter(search_results);
-        recyclerView.setAdapter(listsAdapter);
     }
 
     public void onClickDeleteResults(View view) {
@@ -128,7 +150,7 @@ public class ListsActivity extends AppCompatActivity {
         listsAdapter = new ListsAdapter(lists);
         recyclerView.setAdapter(listsAdapter);
         //recreate();
-    }
+    }*/
 
     //-----obsolete db init function; from tutorials
     private void copyDatabaseFile(String destinationPath) throws IOException {
@@ -218,9 +240,12 @@ public class ListsActivity extends AppCompatActivity {
         String listID = recorddao.getSidByUid(uid);
 
 
-        try {mSpotifyAppRemote.getUserApi().removeFromLibrary(listID); } finally {
+        try {
+            mSpotifyAppRemote.getUserApi().removeFromLibrary(listID);
+        } finally {
 
-        };
+        }
+        ;
     }
 }
 

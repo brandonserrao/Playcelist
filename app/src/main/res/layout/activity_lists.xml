@@ -5,7 +5,14 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme">
 
-    <EditText
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/sv_lists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="@color/Surface"/>
+
+    <!-- <EditText
         android:id="@+id/edittext_searchbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,23 +27,23 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:onClick="searchListsByName"
-        android:text="Search" />
+        android:text="Search" /> -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
-        android:layout_below="@+id/edittext_searchbar" />
+        android:layout_below="@+id/sv_lists" />
 
-    <!--only while working on the app-->
+    <!--only while working on the app
     <Button
         android:id="@+id/deleteResults_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/bottom_navigation"
         android:onClick="onClickDeleteResults"
-        android:text="Delete Results" />
+        android:text="Delete Results" />-->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

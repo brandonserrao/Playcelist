@@ -5,11 +5,18 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme">
 
-    <EditText
-        android:id="@+id/edittext_searchbar"
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/sv_songs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:background="@color/Surface"/>
+
+    <!-- <EditText
+        android:id="@+id/edittext_searchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sv_songs"
         android:layout_toStartOf="@+id/search_button"
         android:hint="@string/s_name" />
 
@@ -17,17 +24,17 @@
         android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/sv_songs"
         android:layout_alignParentEnd="true"
         android:onClick="searchSongsByName"
-        android:text="Search" />
+        android:text="Search" /> -->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_songs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
-        android:layout_below="@+id/edittext_searchbar" />
+        android:layout_below="@+id/sv_songs" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

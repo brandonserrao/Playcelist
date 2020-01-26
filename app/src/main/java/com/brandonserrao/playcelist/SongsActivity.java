@@ -2,6 +2,7 @@ package com.brandonserrao.playcelist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import androidx.appcompat.widget.SearchView;
+//import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,7 +48,6 @@ public class SongsActivity extends AppCompatActivity {
     public SpotifyAppRemote mSpotifyAppRemote;
 
 
-
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
     RecordDAO recorddao;
@@ -79,7 +81,7 @@ public class SongsActivity extends AppCompatActivity {
         recorddao = database.getRecordDAO();
         song_list = recorddao.getAllSongs();
         List<Record> list_values = song_list;
-        recyclerView=(RecyclerView)findViewById(R.id.recycler_songs);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_songs);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         songsAdapter = new SongsAdapter(list_values);
         recyclerView.setAdapter(songsAdapter);
@@ -107,31 +109,34 @@ public class SongsActivity extends AppCompatActivity {
                     }
                 });
 
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) findViewById(R.id.sv_songs);
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                svSearchSongsByName(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
     }
 
-
-    //button functions
-    public void searchSongsByName(View view) {
-        EditText et = findViewById(R.id.edittext_searchbar);
-        String search_term = et.getText().toString();
-        List<Record> search_results = recorddao.searchSongsByName(search_term);
+    private void svSearchSongsByName(String query) {
+        List<Record> search_results = recorddao.searchSongsByName(query);
         songsAdapter = new SongsAdapter(search_results);
         recyclerView.setAdapter(songsAdapter);
     }
 
-    public void onClickDeleteResults(View view) {
-        EditText et = findViewById(R.id.edittext_searchbar);
-        String search_term = et.getText().toString();
-        recorddao.deleteSongSearchResults(search_term);
-        et.setText("");
-        List<Record> songs = recorddao.getAllSongs();
-        songsAdapter = new SongsAdapter(songs);
-        recyclerView.setAdapter(songsAdapter);
-        //recreate();
-    }
-
     //Todo-----obsolete db init function; from tutorials
-    private void  copyDatabaseFile(String destinationPath) throws IOException {
+    private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
         OutputStream dbOut = new FileOutputStream(destinationPath);
         byte[] buffer = new byte[1024];

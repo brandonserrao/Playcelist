@@ -1,6 +1,7 @@
 package com.brandonserrao.playcelist;
 
 import android.Manifest;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,6 +31,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -439,6 +441,30 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Get the SearchView and set the searchable configuration
+        SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) findViewById(R.id.sv_map);
+        // Assumes current activity is the searchable activity
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                svSearchMap(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    private void svSearchMap(String query) {
+        List<Record> search_results = recorddao.searchRecordsByName(query);
+        //Todo do something with the query and show results on map
     }
 
 
@@ -927,7 +953,7 @@ public class MainActivity extends AppCompatActivity implements
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);
-        Username.setText("Please log in");
+        Username.setText(R.string.SAccountName);
         //Todo make sure to go back to Launcher (not main) when going back to the app.
     }
 

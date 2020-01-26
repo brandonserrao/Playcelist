@@ -18,7 +18,7 @@
     <string name="np_song">play a Song on Spotify</string>
     <string name="np_artist">to playce it on the map</string>
 
-    <string name="SAccountName">Log in with Spotify</string>
+    <string name="SAccountName">Please log in with Spotify</string>
 
     <string name="btnWorking">This button will be working soon!</string>
 
@@ -33,7 +33,7 @@
     <string name="s_name">search by name</string>
     <string name="signIn">sign in with Spotify</string>
     <string name="tomain">ToMain (will be gone later)</string>
-    <string name="nd_lo">log out</string>
+    <string name="nd_lo">log out of spotify</string>
     <string name="nameHint">name your playcelist</string>
 
 

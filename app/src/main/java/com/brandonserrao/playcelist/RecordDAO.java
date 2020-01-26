@@ -38,6 +38,8 @@ public interface RecordDAO {
     public List<Record> searchListsByName(String search_term);
 
 
+
+
     @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%') AND (isLIST = 0)")
     public void deleteSongSearchResults(String search_term);
 

@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/btn_nd"
-                android:layout_toEndOf="@id/btn_nd" />
+                android:layout_toEndOf="@id/btn_nd"/>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btn_listPlaycer"

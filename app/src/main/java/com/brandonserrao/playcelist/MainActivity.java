@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private final OkHttpClient mOkHttpClient = new OkHttpClient();
     public String mAccessToken;
-    public String mAccessCode;
+
     public Call mCall;
 
     public String CurrentTrackID;

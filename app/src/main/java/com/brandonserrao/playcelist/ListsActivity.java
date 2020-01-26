@@ -46,8 +46,8 @@ import static com.brandonserrao.playcelist.MainActivity.songdao;*/
 
 public class ListsActivity extends AppCompatActivity {
 
-    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
     public Call mCall;
@@ -76,7 +76,6 @@ public class ListsActivity extends AppCompatActivity {
         mAccessToken = pref.getString("mAccessToken", "");
         Log.e("SHARED", "tk+" + mAccessToken);
 
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
@@ -90,8 +89,6 @@ public class ListsActivity extends AppCompatActivity {
         //Todo have the active state be represented in the style too
 
         //check if this is the first creation after initial spotify log in
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
         boolean isFirstTimeLists;
         isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
         if (isFirstTimeLists) {
@@ -101,8 +98,8 @@ public class ListsActivity extends AppCompatActivity {
                     .setMessage(getString(R.string.welcomeLists))
                     .setPositiveButton("got it!", null)
                     .show();
-            editor.putBoolean("isFirstTimeLists", false);
-            editor.apply();
+            //editor.putBoolean("isFirstTimeLists", false);
+            //editor.apply();
         }
 
         //create db instance for this activity

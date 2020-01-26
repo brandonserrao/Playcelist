@@ -31,7 +31,7 @@
         android:textAlignment="textEnd"
         android:paddingTop="16dp"
         android:textStyle="bold"
-        android:textColor="@color/Secondary"
+        android:textColor="@color/Surface"
         android:text="@string/SAccountName"/>
 
 </LinearLayout>

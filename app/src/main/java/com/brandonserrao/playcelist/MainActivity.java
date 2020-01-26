@@ -129,17 +129,16 @@ public class MainActivity extends AppCompatActivity implements
     Style.Builder song_styleBuilder;
 
 
-
+    //loggedIn flags for Spotify
     private boolean isUpicloaded = false;
     private boolean isAppLoggedIn = false;
     private boolean isWebLoggedIn = false;
 
     // spotify vars ans objects
-    public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
-    //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
+    //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
+    public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-
 
     public SPUser CUser; // user profile for json parsing from http request
 
@@ -314,8 +313,6 @@ public class MainActivity extends AppCompatActivity implements
                 double lat = device_location.getLatitude();
                 double lng = device_location.getLongitude();
                 zoomToLatLng(lat, lng, 12.);
-            } else {
-                Toast.makeText(this, getString(R.string.noGPS), Toast.LENGTH_LONG).show();
             }
         }
 

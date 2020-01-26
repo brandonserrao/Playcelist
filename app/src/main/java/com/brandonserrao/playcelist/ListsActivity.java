@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 /*
 import static com.brandonserrao.playcelist.MainActivity.db_name;
@@ -87,6 +88,8 @@ public class ListsActivity extends AppCompatActivity {
         //setup recycler view and contents
         recorddao = database.getRecordDAO();
         list_list = recorddao.getAllLists();
+        //reversing so most recent at top
+        Collections.reverse(list_list);
         List<Record> list_values = list_list;
 
         recyclerView = findViewById(R.id.recycler_list);

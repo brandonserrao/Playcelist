@@ -3,6 +3,7 @@ package com.brandonserrao.playcelist;
 import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -65,6 +66,22 @@ public class ListsActivity extends AppCompatActivity {
         bottomNavigationView.findViewById(R.id.btn_toLists).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toLists).setActivated(true);
         //Todo have the active state be represented in the style too
+
+        //check if this is the first creation after initial spotify log in
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeLists;
+        isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
+        if (isFirstTimeLists) {
+            //Todo open welcome dialog
+            new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                    .setTitle("Welcome!")
+                    .setMessage(getString(R.string.welcomeLists))
+                    .setPositiveButton("got it!", null)
+                    .show();
+            editor.putBoolean("isFirstTimeLists", false);
+            editor.apply();
+        }
 
         //create db instance for this activity
         AppDatabase database =

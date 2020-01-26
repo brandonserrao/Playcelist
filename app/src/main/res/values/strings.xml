@@ -33,7 +33,12 @@
     <string name="s_name">search by name</string>
     <string name="signIn">sign in with Spotify</string>
     <string name="nd_lo">log out of spotify</string>
-    <string name="nameHint">name your playcelist</string>
+    <string name="nameHint">New Playcelist</string>
+    <string name="PleaseEnterName">please enter a name</string>
+    <string name="newPL">New Playcelist</string>
+    <string name="noGPS">GPS not found</string>
+    <string name="welcomeLists">welcomeMessageListsActivity</string>
+    <string name="welcomeSongs">welcome Message in Songs Activity</string>
 
 
 </resources>

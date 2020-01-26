@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
 import androidx.appcompat.widget.SearchView;
 //import android.widget.SearchView;
 import android.widget.TextView;
@@ -70,6 +72,24 @@ public class SongsActivity extends AppCompatActivity {
         bottomNavigationView.findViewById(R.id.btn_toSongs).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toSongs).setActivated(true);
         //Todo have the active state be represented in the style too
+
+        //check if this is the first creation after initial spotify log in
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeSongs;
+        isFirstTimeSongs = pref.getBoolean("isFirstTimeSongs", true);
+        if (isFirstTimeSongs) {
+            //Todo edit welcome dialog
+            new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                    .setTitle("Welcome!")
+                    .setMessage(getString(R.string.welcomeSongs))
+                    .setPositiveButton("got it!", null)
+                    .show();
+
+            editor.putBoolean("isFirstTimeSongs", false);
+            editor.apply();
+        }
+
 
         //create db instance for this activity
         AppDatabase database =

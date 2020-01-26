@@ -99,8 +99,6 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 
-
-
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
 
@@ -158,8 +156,6 @@ public class MainActivity extends AppCompatActivity implements
     public String CUserID;
     public String PlaylistID;
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
-
-
 
 
     // saving state
@@ -702,59 +698,26 @@ public class MainActivity extends AppCompatActivity implements
         final EditText edt = dialogView.findViewById(R.id.inputET);
         dialogBuilder.setTitle("New Playcelist");
         dialogBuilder.setMessage("including all songs currently visible on the map");
-        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> onClickCreateListItem(edt.getText().toString()));
+        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> onClickPrepareListForAPI(edt.getText().toString()));
         dialogBuilder.setNeutralButton("Cancel", null);
         AlertDialog d = dialogBuilder.create();
         d.show();
     }
 
-    //retrieves all necessary information and creates list item in db
-    private void onClickCreateListItem(String nameInput) {
+    //prepares a information to be sent to Spotify to create a playlist
+    private void onClickPrepareListForAPI(String nameInput) {
         double dlat = mapboxMap.getCameraPosition().target.getLatitude();
         double dlng = mapboxMap.getCameraPosition().target.getLongitude();
-        //double dlat = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLongitude();
-        //double dlng = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLatitude();
         double dzoom = mapboxMap.getCameraPosition().zoom;
         String listName = nameInput;
-        //Todo figure out address problem
-        //String address = getAddress(dlat, dlng);
         String songIDs = getVisibleSongs();
         String listID = null;
         if (songIDs != null) {
-            listID = createPlaycelist(listName, songIDs);
-
-            //converting latlng to floats for db
-            float lat = (float) dlat;
-            float lng = (float) dlng;
-            String zoom = Double.toString(dzoom);
-
-            //creating new list entry and inserting it in db table
-            Record list = new Record();
-            list.setLNG(lng);
-            list.setLAT(lat);
-            list.setNAME(listName);
-            list.setS_ID(listID);
-            list.setIsLIST(true);
-            list.setARTIST(zoom);
-            recorddao.insert(list);
-
+            createPlaycelist(listName, songIDs);
             Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "no visible songs", Toast.LENGTH_LONG).show();
         }
-    }
-
-    //Todo fix (or delete) getaddress function crashing so far
-    private String getAddress(double lat, double lng) {
-        Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-        try {
-            int num_results = 1;
-            List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
-            address = address_list.get(0).getAddressLine(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return address;
     }
 
     //checks the mapView for visible song items and creates a String including their spotify IDs
@@ -778,6 +741,29 @@ public class MainActivity extends AppCompatActivity implements
         return songIDs;
     }
 
+    //retrieves all necessary information and creates list item in db
+    //Todo call this upon receiving the listID from Spotify
+    private void createListItem(String listID, String listName) {
+        double dlat = mapboxMap.getCameraPosition().target.getLatitude();
+        double dlng = mapboxMap.getCameraPosition().target.getLongitude();
+        double dzoom = mapboxMap.getCameraPosition().zoom;
+        //converting latlng to floats for db
+        float lat = (float) dlat;
+        float lng = (float) dlng;
+        String zoom = Double.toString(dzoom);
+
+        //creating new list entry and inserting it in db table
+        Record list = new Record();
+        list.setLNG(lng);
+        list.setLAT(lat);
+        list.setNAME(listName);
+        list.setS_ID(listID);
+        list.setIsLIST(true);
+        list.setARTIST(zoom);
+        recorddao.insert(list);
+
+        Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
+    }
 
     //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
     //takes a string with several spotify IDs and creates a playlist of them on spotify
@@ -1007,5 +993,8 @@ public class MainActivity extends AppCompatActivity implements
 }
 
 //Todo add onclick play song functionality in map
+
+//Todo clean up code: through out unnecessary stuff
+//Todo comment the code
+//Todo arrange code in a sensible order
 //Todo at some point we wanted to update lists when playcing new songs but I guess we dropped that...
-    //probably through database update

@@ -129,37 +129,38 @@ public class MainActivity extends AppCompatActivity implements
     Style.Builder song_styleBuilder;
 
 
-    //we should find a way to be able to use a loggedIn flag...
+
     private boolean isUpicloaded = false;
     private boolean isAppLoggedIn = false;
     private boolean isWebLoggedIn = false;
 
-    // spotify stufff
+    // spotify vars ans objects
     public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
     //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
 
 
-    public SPUser CUser; // user profile
+    public SPUser CUser; // user profile for json parsing from http request
 
-    private final OkHttpClient mOkHttpClient = new OkHttpClient();
-    public String mAccessToken;
+    private final OkHttpClient mOkHttpClient = new OkHttpClient();// okhhtp clients
+    public Call mCall;  // okhhtp calls
 
-    public Call mCall;
 
-    public String CurrentTrackID;
+    public String mAccessToken; //access token for web app
+
+    public String CurrentTrackID; // spotify ID
     public String CurrentTrackName;
     public String CurrentTrackArtist;
 
     public String CUserName;
     public String CUserUpiclnk;
-    public String CUserID;
-    public String PlaylistID;
+    public String CUserID;// spotify ID
+    public String PlaylistID;// spotify ID
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
 
-    // saving state
+
 
 
     @Override
@@ -637,6 +638,8 @@ public class MainActivity extends AppCompatActivity implements
     //refreshes the map (cleans searchbar)
     public void onClickStartMainActivity(MenuItem item) {
         //get all songs,rebuild layer source, reset style
+        if(isAppLoggedIn==false || isWebLoggedIn==false){
+        redirectToLauncher();}
         song_list = recorddao.getAllSongs();
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
@@ -657,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements
     //redirects to the launcher Activity in case of log out etc
     public void redirectToLauncher() {
         Intent intent = new Intent(this, LauncherActivity.class);
-        startActivity(intent);
+       startActivity(intent);
     }
 
     //zooms to current GPS posittion on the map and
@@ -756,7 +759,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //retrieves all necessary information and creates list item in db
-    //Todo call this upon receiving the listID from Spotify
     private void createListItem(String listID, String listName) {
         double dlat = mapboxMap.getCameraPosition().target.getLatitude();
         double dlng = mapboxMap.getCameraPosition().target.getLongitude();
@@ -775,16 +777,18 @@ public class MainActivity extends AppCompatActivity implements
         list.setIsLIST(true);
         list.setARTIST(zoom);
         recorddao.insert(list);
-            Log.e("DB","Playlist created "+listName+"# "+listID);
-//    will crash    Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
+        Log.e("DB","Playlist created "+listName+"# "+listID);
+
     }
 
     //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
-    //takes a string with several spotify IDs and creates a playlist of them on spotify
-    //returns spotify ID of playlist
+
+
     private void  createPlaycelist(String name, String songIDs) {
         if (mAccessToken != null) {
             Log.e("Spotify","creation of playlist attemt "+ name+"___"+songIDs);
+
+            //creation of playlist request
             final Request request = new Request.Builder()
                     .url("https://api.spotify.com/v1/users/" + CUserID + "/playlists") //get user data
                     .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -814,9 +818,8 @@ public class MainActivity extends AppCompatActivity implements
 
                         Log.e("Spotify", "Playlist created, id:" + PlaylistID);
                         Log.e("Spotify", JsonResponse);
-                        // adding songs to the playlist
 
-
+                        // adding songs to the playlist request
                         final Request request2 = new Request.Builder()
                                 .url("https://api.spotify.com/v1/playlists/" + PlaylistID + "/tracks?uris=" + songIDs) //get user data
                                 .addHeader("Authorization", "Bearer " + mAccessToken)
@@ -826,8 +829,6 @@ public class MainActivity extends AppCompatActivity implements
                                                 "{}"
                                         ))
                                 .build();
-
-
                         Log.e("Spotify", request2.toString());
                         Log.e("Spotify", request2.body().toString());
                         cancelCall();
@@ -837,18 +838,16 @@ public class MainActivity extends AppCompatActivity implements
                             public void onFailure(Call call, IOException e) {
                                 Log.e("Response", "Request fail");//Fail
                             }
-
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
                                 try {
                                     final JSONObject jsonObject = new JSONObject(response.body().string());
                                     String JsonResponse = jsonObject.toString();
 
-
                                     Log.e("Spotify", "Songs added");
                                     Log.e("Spotify", JsonResponse);
+                                    // adding database entty
                                     createListItem("spotify:playlist:"+PlaylistID, name);
-                                    // adding songs to the playlist
 
 
                                 } catch (JSONException e) {
@@ -856,15 +855,11 @@ public class MainActivity extends AppCompatActivity implements
                                 }
                             }
                         });
-
-
                     } catch (JSONException e) {
                         //Fail
                     }
                 }
             });
-
-
         } else {
 
     //        Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
@@ -876,7 +871,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
+// cancel http call
     private void cancelCall() {
         if (mCall != null) {
             mCall.cancel();
@@ -903,7 +898,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    // spotify stufff
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -921,6 +916,8 @@ public class MainActivity extends AppCompatActivity implements
                         public void onConnected(SpotifyAppRemote spotifyAppRemote) {
                             mSpotifyAppRemote = spotifyAppRemote;
                             Log.e("SPOTIFY", " APP connected");
+
+                            // redirecting in case if succsesfull connection
                             connected();
                         }
 
@@ -935,8 +932,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-           // Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
-            redirectToLauncher();
+            Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+           //
         }
 
     }
@@ -945,17 +942,19 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
+      // cleaning xml
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
         editor.clear();
+
 
 
     }
 
     // On succcesful connection to the Spotify APP
     private void connected() {
+        // saving login flag to xml
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        ;
         Editor editor = pref.edit();
         isAppLoggedIn = true;
         editor.putBoolean("isAppLoggedIn", true);
@@ -974,6 +973,8 @@ public class MainActivity extends AppCompatActivity implements
                     final Track track = playerState.track;
                     if (track != null) {
                         Log.e("MainActivity", track.name + " by " + track.artist.name);
+
+                    //saving current song data
                         Current_song.setText(track.name);
                         Current_artist.setText(track.artist.name);
                         CurrentTrackID = track.uri;
@@ -998,13 +999,13 @@ public class MainActivity extends AppCompatActivity implements
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
         isAppLoggedIn = false;
         isWebLoggedIn = false;
-
+//saving state of booleans to the xml
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
         editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
         editor.putBoolean("isWebLoggedIn", isAppLoggedIn);
         editor.commit();
-
+//cleaning upic and username
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);
@@ -1018,8 +1019,6 @@ public class MainActivity extends AppCompatActivity implements
         Username.setText(CUserName);
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Glide.with(Upic).load(CUserUpiclnk).into(Upic);
-
-
     }
 
 

@@ -226,6 +226,7 @@ public class LauncherActivity extends AppCompatActivity {
                         mSpotifyAppRemote = spotifyAppRemote;
                         Log.e("SPOTIFY", " APP splash connected");
                         isAppLoggedIn = true;
+                        Log.e("SPOTIFY", " APP splash flag");
                         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putBoolean("isAppLoggedIn", isAppLoggedIn);

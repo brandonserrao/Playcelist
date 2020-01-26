@@ -447,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements
                 return false;
             }
         });
+        //searchView.setOnSearchClickListener();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -455,7 +456,8 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(String query) {
+                //svSearchMap(query);
                 return false;
             }
         });
@@ -463,6 +465,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void svSearchMap(String query) {
         if (!query.isEmpty()) {
+
             //search for songs, apply different pin icon
 
             //init storage for bounds values
@@ -475,12 +478,23 @@ public class MainActivity extends AppCompatActivity implements
                 Record song = song_list.get(i);
                 addSongToFeaturelist(song, featurelist_songlayer);
 
-                //check and store max coord bounds
                 double lat = song.getLAT(), lng = song.getLNG();
-                if (lat > latNorth) {latNorth = lat;}
-                else if (lat < latSouth) {latSouth = lat;}
-                if (lng > lonEast) {lonEast = lng;}
-                else if (lng > lonWest) {lonWest = lng;}
+                //check and store max coord bounds
+                if (i>0) {
+                    if (lat > latNorth) {
+                        latNorth = lat;
+                    } else if (lat < latSouth) {
+                        latSouth = lat;
+                    }
+                    if (lng > lonEast) {
+                        lonEast = lng;
+                    } else if (lng > lonWest) {
+                        lonWest = lng;
+                    }
+                } else if (i == 0) {
+                    latNorth = lat; latSouth = lat;
+                    lonEast = lng; lonWest = lng;
+                }
             }
 
             updateLayerSources();
@@ -494,15 +508,16 @@ public class MainActivity extends AppCompatActivity implements
                     .withLayer(song_symbolLayer);
             mapboxMap.setStyle(song_styleBuilder);
 
-
+/*          //debug
+            Toast.makeText(this, String.valueOf(latNorth)+"\n"+String.valueOf(latSouth)+"\n"+String.valueOf(lonEast)+"\n"+String.valueOf(lonWest),
+                    Toast.LENGTH_LONG).show();*/
             //make bounds for search results view
             LatLngBounds bounds = LatLngBounds.from(latNorth, lonEast, latSouth, lonWest);
-            //Todo animate camera position using determined bounding box of results points
 
             mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1250);
 
         }
-        else if (query.isEmpty()) {
+        else /*if (query == "")*/ {
             //get all songs,rebuild layer source, reset style
             song_list = recorddao.getAllSongs();
             for (int i = 0; i < song_list.size(); i++) {
@@ -511,16 +526,6 @@ public class MainActivity extends AppCompatActivity implements
             }
             updateLayerSources();
             resetMapStyle();
-        }
-        else if (query == null) {
-/*            //get all songs,rebuild layer source, reset style
-            song_list = recorddao.getAllSongs();
-            for (int i = 0; i < song_list.size(); i++) {
-                Record song = song_list.get(i);
-                addSongToFeaturelist(song, featurelist_songlayer);
-            }
-            updateLayerSources();
-            resetMapStyle();*/
         }
     }
 

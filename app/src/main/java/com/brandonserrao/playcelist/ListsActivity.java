@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.Call;
@@ -88,6 +89,22 @@ public class ListsActivity extends AppCompatActivity {
         bottomNavigationView.findViewById(R.id.btn_toLists).setActivated(true);
         //Todo have the active state be represented in the style too
 
+        //check if this is the first creation after initial spotify log in
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeLists;
+        isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
+        if (isFirstTimeLists) {
+            //Todo open welcome dialog
+            new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                    .setTitle("Welcome!")
+                    .setMessage(getString(R.string.welcomeLists))
+                    .setPositiveButton("got it!", null)
+                    .show();
+            editor.putBoolean("isFirstTimeLists", false);
+            editor.apply();
+        }
+
         //create db instance for this activity
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class, db_name)
@@ -98,6 +115,8 @@ public class ListsActivity extends AppCompatActivity {
         //setup recycler view and contents
         recorddao = database.getRecordDAO();
         list_list = recorddao.getAllLists();
+        //reversing so most recent at top
+        Collections.reverse(list_list);
         List<Record> list_values = list_list;
 
         recyclerView = findViewById(R.id.recycler_list);

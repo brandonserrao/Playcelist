@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+
 import androidx.appcompat.widget.SearchView;
 //import android.widget.SearchView;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collections;
 import java.util.List;
 
 /*import static com.brandonserrao.playcelist.MainActivity.db_name;
@@ -60,8 +62,6 @@ public class SongsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songs);
 
@@ -74,9 +74,22 @@ public class SongsActivity extends AppCompatActivity {
         bottomNavigationView.findViewById(R.id.btn_toSongs).setActivated(true);
         //Todo have the active state be represented in the style too
 
-
+        //check if this is the first creation after initial spotify log in
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeSongs;
+        isFirstTimeSongs = pref.getBoolean("isFirstTimeSongs", true);
+        if (isFirstTimeSongs) {
+            //Todo edit welcome dialog
+            new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                    .setTitle("Welcome!")
+                    .setMessage(getString(R.string.welcomeSongs))
+                    .setPositiveButton("got it!", null)
+                    .show();
+
+            editor.putBoolean("isFirstTimeSongs", false);
+            editor.apply();
+        }
 
         isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
@@ -91,6 +104,8 @@ public class SongsActivity extends AppCompatActivity {
         //setup recycler view and contents
         recorddao = database.getRecordDAO();
         song_list = recorddao.getAllSongs();
+        //reversing so most recent at top
+        Collections.reverse(song_list);
         List<Record> list_values = song_list;
         recyclerView = (RecyclerView) findViewById(R.id.recycler_songs);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

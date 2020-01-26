@@ -36,7 +36,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignTop="@id/btn_nd"
-                android:layout_toEndOf="@id/btn_nd"/>
+                android:layout_marginRight="40dp"
+                android:layout_toEndOf="@id/btn_nd" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/btn_whereAmI"
+                android:onClick="onClickWhereAmI"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignBottom="@id/mapbox"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="4dp"
+                android:background="@color/Surface" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btn_listPlaycer"
@@ -60,23 +71,6 @@
                 android:src="@drawable/plus"
                 app:fabSize="mini" />
 
-            <ScrollView
-                android:id="@+id/debug_scrollview"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_above="@id/btn_listPlaycer"
-                android:layout_marginBottom="20dp"
-                android:background="@color/cardview_dark_background"
-                android:scrollbarStyle="outsideInset">
-
-                <TextView
-                    android:id="@+id/debug_textview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:hint="Wait a few seconds for device GPS coordinates\n" />
-            </ScrollView>
-
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/nowplaying_info_song"
                 android:layout_width="match_parent"
@@ -86,7 +80,7 @@
                 android:paddingVertical="4dp"
                 android:text="@string/np_song"
                 android:textAlignment="center"
-                android:textColor="@color/OnSurface"/>
+                android:textColor="@color/OnSurface" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/nowplaying_info_artist"

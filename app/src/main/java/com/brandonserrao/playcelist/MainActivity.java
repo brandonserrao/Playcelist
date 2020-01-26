@@ -168,8 +168,6 @@ public class MainActivity extends AppCompatActivity implements
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
-        //Todo somehow select the right bottom navigation item in main, lists and songs activities.
-
         Log.e("MAIN", "the are in the main");
         // restoring important variables state
 
@@ -227,10 +225,10 @@ public class MainActivity extends AppCompatActivity implements
                 if (location != null) {
                     device_location = location;
                     //--displaying gps location for debugging
-                    TextView textView = findViewById(R.id.debug_textview);
+                    //TextView textView = findViewById(R.id.debug_textview);
                     double lat = device_location.getLatitude(), lng = device_location.getLongitude();
                     String debug_text = String.valueOf(lat) + String.valueOf(lng);
-                    textView.setText(debug_text);
+                    //textView.setText(debug_text);
 
                     //getting reverse geocoded address for potential use in playlist placement
                     Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
@@ -317,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements
                 double lng = device_location.getLongitude();
                 zoomToLatLng(lat, lng, 12.);
             } else {
-                Toast.makeText(this, "GPS not found", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.noGPS), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -373,16 +371,16 @@ public class MainActivity extends AppCompatActivity implements
                 //conv latlng to screen pixel + check rendered feats there
                 final PointF pixel = mapboxMap.getProjection().toScreenLocation(point);
                 List<Feature> features = mapboxMap.queryRenderedFeatures(pixel, SONGS_LAYER_ID);
-                TextView textView = findViewById(R.id.debug_textview);
+                //TextView textView = findViewById(R.id.debug_textview);
                 Feature f;
                 //get topmost feature of query results
                 if (features.size() > 0) { //if any features found
                     f = features.get(0); //get topmost
                     //check for feature properties; return properties
                     if (f.properties() != null) {
-                        textView.setText(f.toJson());
+                        //textView.setText(f.toJson());
                     } else {
-                        textView.setText("no feature properties ie. is null");
+                        //textView.setText("no feature properties ie. is null");
                     }
                 } else {//get all visible/rendered markers
                     RectF rectF = new RectF(
@@ -407,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements
                             + "Got " + numberOfFeatures + " rendered song features \n"
                             //+ features.toString()
                             + s;
-                    textView.setText(debug_text);
+                    //textView.setText(debug_text);
                 }
 
                 Toast.makeText(MainActivity.this, "onClick: testing mapbox map query", Toast.LENGTH_LONG).show();
@@ -416,7 +414,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
-        //Todo add option to choose colour (if not, delete extra colours in color file)???
         mapboxMap.addOnMapLongClickListener(point -> {
             double lat = point.getLatitude();
             double lng = point.getLongitude();
@@ -507,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements
                     .fromUri(getResources().getString(R.string.darkstyleURL))
                     .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                             MainActivity.this.getResources(),
-                            R.drawable.pin_highlighted)) //Todo change selection marker
+                            R.drawable.pin_highlighted))
                     .withSource(song_source)
                     .withLayer(song_symbolLayer);
             mapboxMap.setStyle(song_styleBuilder);
@@ -615,6 +612,21 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+
+    public void onClickWhereAmI(View view) {
+        zoomToCurrentLocation();
+    }
+
+    public void zoomToCurrentLocation() {
+        if (device_location != null) {
+            double lat = device_location.getLatitude();
+            double lng = device_location.getLongitude();
+            zoomToLatLng(lat, lng, 16);
+        } else {
+            Toast.makeText(this, getString(R.string.noGPS), Toast.LENGTH_LONG).show();
+        }
+    }
+
     //INTENT handler methods
     //zooms map to a given lat&lng
     private void zoomToLatLng(Double lat, Double lng, double zoomlevel) {
@@ -665,11 +677,10 @@ public class MainActivity extends AppCompatActivity implements
 
     //zooms to current GPS posittion on the map and
     //opens dialog to confirm playcing the current playing song at the current GPS position
-    //Todo add option to choose colour (if not, delete extra colours in color file)
     public void onClickPlayceSongAtGPS(View view) {
+        zoomToCurrentLocation();
         double lat = device_location.getLatitude();
         double lng = device_location.getLongitude();
-        zoomToLatLng(lat, lng, 16);
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")
@@ -713,25 +724,22 @@ public class MainActivity extends AppCompatActivity implements
         final View dialogView = inflater.inflate(R.layout.dialog_input, null);
         dialogBuilder.setView(dialogView);
         final EditText edt = dialogView.findViewById(R.id.inputET);
-        dialogBuilder.setTitle("New Playcelist");
-        dialogBuilder.setMessage("including all songs currently visible on the map");
-        dialogBuilder.setPositiveButton("create playcelist", (dialog, whichButton) -> onClickPrepareListForAPI(edt.getText().toString()));
-        dialogBuilder.setNeutralButton("Cancel", null);
+        dialogBuilder.setTitle(getString(R.string.newPL));
+        dialogBuilder.setMessage(getString(R.string.PleaseEnterName));
+        dialogBuilder.setPositiveButton("create", (dialog, whichButton) -> onClickPrepareListForAPI(edt.getText().toString()));
+        dialogBuilder.setNeutralButton("cancel", null);
         AlertDialog d = dialogBuilder.create();
         d.show();
     }
 
     //prepares a information to be sent to Spotify to create a playlist
     private void onClickPrepareListForAPI(String nameInput) {
-        double dlat = mapboxMap.getCameraPosition().target.getLatitude();
-        double dlng = mapboxMap.getCameraPosition().target.getLongitude();
-        double dzoom = mapboxMap.getCameraPosition().zoom;
-        String listName = nameInput;
         String songIDs = getVisibleSongs();
-        String listID = null;
         if (songIDs != null) {
-            createPlaycelist(listName, songIDs);
-            Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
+            if (nameInput == null || nameInput.equals("")) {
+                nameInput = getString(R.string.newPL);
+            }
+            createPlaycelist(nameInput, songIDs);
         } else {
             Toast.makeText(this, "no visible songs", Toast.LENGTH_LONG).show();
         }
@@ -1030,3 +1038,4 @@ public class MainActivity extends AppCompatActivity implements
 //Todo comment the code
 //Todo arrange code in a sensible order
 //Todo at some point we wanted to update lists when playcing new songs but I guess we dropped that...
+//Todo change where am I icon

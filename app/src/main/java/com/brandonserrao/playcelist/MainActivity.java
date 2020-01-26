@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView = this.findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(myNavigationItemListener);
         bottomNavigationView.setSelectedItemId(R.id.btn_toMap);
-        bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(false);
+        bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(true);
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
         //Todo have the active state be represented in the style too
 
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements
             //search for songs, apply different pin icon
 
             //init storage for bounds values
-            double latSouth=0, latNorth=0, lonWest=0, lonEast=0;
+            double latSouth = 0, latNorth = 0, lonWest = 0, lonEast = 0;
 
             song_list = recorddao.searchSongsByName(query);
             featurelist_songlayer.clear();
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 double lat = song.getLAT(), lng = song.getLNG();
                 //check and store max coord bounds
-                if (i>0) {
+                if (i > 0) {
                     if (lat > latNorth) {
                         latNorth = lat;
                     } else if (lat < latSouth) {
@@ -492,8 +492,10 @@ public class MainActivity extends AppCompatActivity implements
                         lonWest = lng;
                     }
                 } else if (i == 0) {
-                    latNorth = lat; latSouth = lat;
-                    lonEast = lng; lonWest = lng;
+                    latNorth = lat;
+                    latSouth = lat;
+                    lonEast = lng;
+                    lonWest = lng;
                 }
             }
 
@@ -503,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements
                     .fromUri(getResources().getString(R.string.darkstyleURL))
                     .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
                             MainActivity.this.getResources(),
-                            R.drawable.red_marker)) //Todo change selection marker
+                            R.drawable.pin_highlighted)) //Todo change selection marker
                     .withSource(song_source)
                     .withLayer(song_symbolLayer);
             mapboxMap.setStyle(song_styleBuilder);
@@ -516,8 +518,7 @@ public class MainActivity extends AppCompatActivity implements
 
             mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1250);
 
-        }
-        else /*if (query == "")*/ {
+        } else /*if (query == "")*/ {
             //get all songs,rebuild layer source, reset style
             song_list = recorddao.getAllSongs();
             for (int i = 0; i < song_list.size(); i++) {
@@ -528,7 +529,6 @@ public class MainActivity extends AppCompatActivity implements
             resetMapStyle();
         }
     }
-
 
 
     public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
@@ -555,7 +555,6 @@ public class MainActivity extends AppCompatActivity implements
                 );
     }
 
-    //Todo figure out why the pins are almost transparent when resetting the MapStyle after placing a new marker
     public void resetMapStyle() {
         //create mapstyle + adding marker image
         song_styleBuilder = new Style.Builder()
@@ -634,11 +633,18 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(intent);
     }
 
-    //navigates to main activity which shows now playing info and a map with all playced songs as Todo colorful bubbles
+    //refreshes the map (cleans searchbar)
     public void onClickStartMainActivity(MenuItem item) {
-        //Todo refresh the map
-        //Intent intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
+        //get all songs,rebuild layer source, reset style
+        song_list = recorddao.getAllSongs();
+        for (int i = 0; i < song_list.size(); i++) {
+            Record song = song_list.get(i);
+            addSongToFeaturelist(song, featurelist_songlayer);
+            updateLayerSources();
+            resetMapStyle();
+        }
+        SearchView searchView = findViewById(R.id.sv_map);
+        searchView.setIconified(true);
     }
 
     //opens Lists Activity which shows all playcelists in a recycler view
@@ -876,7 +882,6 @@ public class MainActivity extends AppCompatActivity implements
         DrawerLayout mDrawer = findViewById(R.id.mDrawer);
         mDrawer.openDrawer(findViewById(R.id.nav_drawer));
     }
-
 
 
     private void copyDatabaseFile(String destinationPath) throws IOException {

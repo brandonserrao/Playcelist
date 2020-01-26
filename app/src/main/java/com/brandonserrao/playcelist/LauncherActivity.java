@@ -80,16 +80,19 @@ public class LauncherActivity extends AppCompatActivity {
         Log.e("SHARED", "CUserID " + CUserID);
 
 
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
     }
 
     public void routeToMain() {
         // Example routing
-        if (isWebLoggedIn) {
+        if (isWebLoggedIn && isAppLoggedIn) {
             Intent intent = new Intent(this, MainActivity.class);
           startActivity(intent);
-        }
+        } else
+            { if (isWebLoggedIn) AppLogin(); else RequestToken();}
     }
 
     // log in SpotifyWeb
@@ -139,8 +142,8 @@ public class LauncherActivity extends AppCompatActivity {
 //            Log.e("SHARED", mAccessToken);
             GetUser();
             isWebLoggedIn = true;
-            AppLogin();
             routeToMain();
+
             editor.putBoolean("isWebLoggedIn", isWebLoggedIn);
             editor.commit();
 
@@ -149,6 +152,8 @@ public class LauncherActivity extends AppCompatActivity {
             mAccessCode = response.getCode();
             Log.e("Code", "CHere " + mAccessCode);
             GetUser();
+            routeToMain();
+
         }
 
 
@@ -193,14 +198,15 @@ public class LauncherActivity extends AppCompatActivity {
                         editor.commit();
                         Log.e("SHARED", CUserName);
                         Log.e("SHARED", CUserUpiclnk);
-
+                       // routeToMain();
 
                     } catch (JSONException e) {
                         //Fail
                     }
                 }
             });
-        } else {// todo messagge to log in
+        } else {
+
         }
         ;
     }
@@ -231,6 +237,7 @@ public class LauncherActivity extends AppCompatActivity {
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
                         editor.commit();
+                        routeToMain();
                     }
 
                     @Override

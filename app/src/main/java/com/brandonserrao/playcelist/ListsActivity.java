@@ -89,6 +89,8 @@ public class ListsActivity extends AppCompatActivity {
         //Todo have the active state be represented in the style too
 
         //check if this is the first creation after initial spotify log in
+
+
         boolean isFirstTimeLists;
         isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
         if (isFirstTimeLists) {

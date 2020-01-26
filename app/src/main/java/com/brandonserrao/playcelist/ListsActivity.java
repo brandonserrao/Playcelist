@@ -90,8 +90,8 @@ public class ListsActivity extends AppCompatActivity {
         //Todo have the active state be represented in the style too
 
         //check if this is the first creation after initial spotify log in
-        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
+
+
         boolean isFirstTimeLists;
         isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
         if (isFirstTimeLists) {

@@ -362,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements
 
         //Map Listeners
 
+/*  //mapclick listener for debugging markers and marker queries
         mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
             @Override
             public boolean onMapClick(@NonNull LatLng point) {
@@ -408,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements
                 Toast.makeText(MainActivity.this, "onClick: testing mapbox map query", Toast.LENGTH_LONG).show();
                 return false;
             }
-        });
+        });*/
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
         mapboxMap.addOnMapLongClickListener(point -> {

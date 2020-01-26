@@ -251,7 +251,7 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
 
 
-        //todo delete playlist here
+
         final OkHttpClient mOkHttpClient = new OkHttpClient();
         if (mAccessToken != null) {
 

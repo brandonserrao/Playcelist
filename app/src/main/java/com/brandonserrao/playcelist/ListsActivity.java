@@ -131,27 +131,6 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
     }
 
-
-    /*Todo get rid of this
-    //button functions
-    public void searchListsByName(View view) {
-        EditText et = findViewById(R.id.edittext_searchbar);
-        String search_term = et.getText().toString();
-    }
-
-    public void onClickDeleteResults(View view) {
-        EditText et = findViewById(R.id.edittext_searchbar);
-        String search_term = et.getText().toString();
-        recorddao.deleteListSearchResults(search_term);
-        et.setText("");
-
-        List<Record> lists = recorddao.getAllLists();
-
-        listsAdapter = new ListsAdapter(lists);
-        recyclerView.setAdapter(listsAdapter);
-        //recreate();
-    }*/
-
     //-----obsolete db init function; from tutorials
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);

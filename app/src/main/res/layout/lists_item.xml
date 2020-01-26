@@ -29,15 +29,16 @@
         android:paddingEnd="16dp">
 
         <RelativeLayout
-            android:id="@+id/line1"
             android:layout_width="match_parent"
-            android:layout_height="16dp">
+            android:layout_height="40dp"
+            android:paddingVertical="8dp">
 
             <!-- uid -->
             <TextView
                 android:id="@+id/tv1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:text="pht1"
                 android:textColor="@color/OnSurface" />
 
@@ -46,29 +47,12 @@
                 android:id="@+id/tv2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
                 android:layout_toEndOf="@+id/tv1"
                 android:text="pht2"
                 android:textColor="@color/OnSurface"
+                android:textSize="18dp"
                 android:textStyle="normal" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/line2"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_below="@+id/line1"
-            android:layout_alignParentBottom="true"
-            android:paddingTop="10dp">
-
-            <!-- zoomlevel -->
-            <TextView
-                android:id="@+id/tv3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:text="pht3"
-                android:textSize="12sp"
-                android:textStyle="bold" />
         </RelativeLayout>
     </RelativeLayout>
 

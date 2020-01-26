@@ -31,6 +31,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 /*
 import static com.brandonserrao.playcelist.MainActivity.db_name;
 import static com.brandonserrao.playcelist.MainActivity.song_list;
@@ -42,7 +50,7 @@ public class ListsActivity extends AppCompatActivity {
     //public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
     public SpotifyAppRemote mSpotifyAppRemote;
-
+    public Call mCall;
 
     public String db_name = "playcelist_db_v8.sqlite";
     //public String db_name = "sqlstudio_db2_v5.sqlite";
@@ -52,6 +60,7 @@ public class ListsActivity extends AppCompatActivity {
 
     ListsAdapter listsAdapter;
     RecyclerView recyclerView;
+    public String mAccessToken;
 
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
@@ -64,6 +73,8 @@ public class ListsActivity extends AppCompatActivity {
         isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
         else Log.e("SHARED", "isAppLoggedIn0");
+        mAccessToken = pref.getString("mAccessToken", "");
+        Log.e("SHARED", "tk+" + mAccessToken);
 
 
         super.onCreate(savedInstanceState);
@@ -235,20 +246,45 @@ public class ListsActivity extends AppCompatActivity {
 
     //deletes selected list from db
     private void deleteRecord(String uid) {
+        String listID = recorddao.getSidByUid(uid);
+
         recorddao.deleteRecordByUID(uid);
         List<Record> lists = recorddao.getAllLists();
         listsAdapter = new ListsAdapter(lists);
         recyclerView.setAdapter(listsAdapter);
 
-        String listID = recorddao.getSidByUid(uid);
 
 
-        try {
-            mSpotifyAppRemote.getUserApi().removeFromLibrary(listID);
-        } finally {
+        final OkHttpClient mOkHttpClient = new OkHttpClient();
+        if (mAccessToken != null) {
 
-        }
-        ;
+            Log.e("SPOTIFY","delete attemt id"+listID);
+            RequestBody body =RequestBody.create(null, new byte[0]);
+            final Request request = new Request.Builder()
+                    .url("https://api.spotify.com/v1/playlists/"+listID.replace("spotify:playlist:","")+"/followers") //get user data
+                    .addHeader("Authorization", "Bearer " + mAccessToken)
+                    .delete(body).build();
+            cancelCall();
+            mCall = mOkHttpClient.newCall(request);
+            mCall.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.e("Response", "Request fail");//Fail
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) {
+
+
+
+
+
+                    Log.e("SPOTIFY","deleted "+response);
+                }
+
+            });
+            }
+
     }
 
     public void redirectToLauncher() {
@@ -256,6 +292,12 @@ public class ListsActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    private void cancelCall() {
+        if (mCall != null) {
+            mCall.cancel();
+        }
+    }
 }
 
 

@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements
 
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
-    //public String db_name = "sqlstudio_db2_v5.sqlite";
     public RecordDAO recorddao;
     public List<Record> song_list; //to hold Song objects from db queries
 
@@ -376,17 +375,10 @@ public class MainActivity extends AppCompatActivity implements
                 Feature f;
                 //get topmost feature of query results
                 if (features.size() > 0) { //if any features found
-                    /*Feature*/
                     f = features.get(0); //get topmost
                     //check for feature properties; return properties
-                    if (f.properties() != null) { //if there are any
+                    if (f.properties() != null) {
                         textView.setText(f.toJson());
-/*                        for (Map.Entry<String, JsonElement> entry: feature.properties().entrySet()) {
-                            textView.setText(String.format(
-                                    "%s = %s",
-                                    entry.getKey(),entry.getValue()
-                            ));
-                        }*/
                     } else {
                         textView.setText("no feature properties ie. is null");
                     }
@@ -422,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
-        //Todo add option to choose colour (if not, delete extra colours in color file)
+        //Todo add option to choose colour (if not, delete extra colours in color file)???
         mapboxMap.addOnMapLongClickListener(point -> {
             double lat = point.getLatitude();
             double lng = point.getLongitude();
@@ -470,9 +462,68 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void svSearchMap(String query) {
-        List<Record> search_results = recorddao.searchRecordsByName(query);
-        //Todo do something with the query and show results on map
+        if (!query.isEmpty()) {
+            //search for songs, apply different pin icon
+
+            //init storage for bounds values
+            double latSouth=0, latNorth=0, lonWest=0, lonEast=0;
+
+            song_list = recorddao.searchSongsByName(query);
+            featurelist_songlayer.clear();
+
+            for (int i = 0; i < song_list.size(); i++) {
+                Record song = song_list.get(i);
+                addSongToFeaturelist(song, featurelist_songlayer);
+
+                //check and store max coord bounds
+                double lat = song.getLAT(), lng = song.getLNG();
+                if (lat > latNorth) {latNorth = lat;}
+                else if (lat < latSouth) {latSouth = lat;}
+                if (lng > lonEast) {lonEast = lng;}
+                else if (lng > lonWest) {lonWest = lng;}
+            }
+
+            updateLayerSources();
+            //resetting mapstyle//to selection pin instead
+            song_styleBuilder = new Style.Builder()
+                    .fromUri(getResources().getString(R.string.darkstyleURL))
+                    .withImage(SONGS_ICON_ID, BitmapFactory.decodeResource(
+                            MainActivity.this.getResources(),
+                            R.drawable.red_marker)) //Todo change selection marker
+                    .withSource(song_source)
+                    .withLayer(song_symbolLayer);
+            mapboxMap.setStyle(song_styleBuilder);
+
+
+            //make bounds for search results view
+            LatLngBounds bounds = LatLngBounds.from(latNorth, lonEast, latSouth, lonWest);
+            //Todo animate camera position using determined bounding box of results points
+
+            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1250);
+
+        }
+        else if (query.isEmpty()) {
+            //get all songs,rebuild layer source, reset style
+            song_list = recorddao.getAllSongs();
+            for (int i = 0; i < song_list.size(); i++) {
+                Record song = song_list.get(i);
+                addSongToFeaturelist(song, featurelist_songlayer);
+            }
+            updateLayerSources();
+            resetMapStyle();
+        }
+        else if (query == null) {
+/*            //get all songs,rebuild layer source, reset style
+            song_list = recorddao.getAllSongs();
+            for (int i = 0; i < song_list.size(); i++) {
+                Record song = song_list.get(i);
+                addSongToFeaturelist(song, featurelist_songlayer);
+            }
+            updateLayerSources();
+            resetMapStyle();*/
+        }
     }
+
 
 
     public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
@@ -815,38 +866,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    //nav drawer checkbox handlers
-    /*public void onClickCheckBox1(MenuItem item) {
-        NavigationView navDrawer = findViewById(R.id.nav_drawer);
-        MenuItem menuItem1 = navDrawer.getMenu().findItem(R.id.check_SongsOnMap);
-        CompoundButton checkbox1 = (CompoundButton) menuItem1.getActionView();
-        boolean checked = checkbox1.isChecked();
-        if (checked) {
-            checkbox1.setChecked(false);
-        } else {
-            checkbox1.setChecked(true);
-        }
-        //align with map content
-        // -
-        // -
-        // -
-    }
-
-    public void onClickCheckBox2(MenuItem item) {
-        NavigationView navDrawer = findViewById(R.id.nav_drawer);
-        MenuItem menuItem2 = navDrawer.getMenu().findItem(R.id.check_listsOnMap);
-        CompoundButton checkbox2 = (CompoundButton) menuItem2.getActionView();
-        boolean checked = checkbox2.isChecked();
-        if (checked) {
-            checkbox2.setChecked(false);
-        } else {
-            checkbox2.setChecked(true);
-        }
-        //align with map content
-        // -
-        // -
-        // -
-    }*/
 
     private void copyDatabaseFile(String destinationPath) throws IOException {
         InputStream assetsDB = this.getAssets().open(db_name);
@@ -967,9 +986,6 @@ public class MainActivity extends AppCompatActivity implements
 
 
 }
-
-
-//Todo make SearchView in Main functional (or get rid of it)
 
 //Todo add onclick play song functionality in map
 

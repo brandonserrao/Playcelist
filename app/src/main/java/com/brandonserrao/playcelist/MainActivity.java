@@ -605,11 +605,13 @@ public class MainActivity extends AppCompatActivity implements
         double lng = mapboxMap.getProjection().getVisibleRegion().latLngBounds.getCenter().getLatitude();
         double zoom = mapboxMap.getCameraPosition().zoom;
         String listName = nameInput;
-        String address = getAddress(lat, lng);
+        //String address = getAddress(lat, lng);
         String songIDs = getVisibleSongs();
+        String listID = null;
         if (songIDs != null) {
-            //createPlaycelist(name, songIDs);
-            Toast.makeText(this, listName + "\n" + songIDs, Toast.LENGTH_LONG).show();
+            createPlaycelist(listName, songIDs);
+            listID = PlaylistID;
+            Toast.makeText(this, listName + "\n" + listID, Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this, "no visible songs", Toast.LENGTH_LONG).show();
         }
@@ -641,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements
             songIDs = features.get(0).getProperty("S_ID").getAsString();
             if (features.size() > 1) {
                 for (int i = 1; i < features.size(); i++) {
-                    songIDs = songIDs + "\n" + features.get(i).getProperty("S_ID").getAsString();
+                    songIDs = songIDs + "," + features.get(i).getProperty("S_ID").getAsString();
                 }
             }
         }
@@ -661,25 +663,8 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }*/
 
-    private void createPlaycelist(String name , String songIDs ) {
-        //EditText edt = findViewById(R.id.inputET);
-        //String nameInput = edt.getText().toString();
-       // Toast.makeText(this, input, Toast.LENGTH_LONG).show();
-
-        /*
-        ToDo
-         CODE TO CREATE PLAYCELIST INCLUDING THE SONGS SHOWN ATM
-         send array with currently shown songs and the chosen name to spotify to create a playlist
-         get list ID
-         create list item in DB incl name and info from spotify
-         (create rectangular shape on map)
-        */
-
-
+    private void createPlaycelist(String name, String songIDs) {
         if (mAccessToken != null) {
-
-
-
             final Request request = new Request.Builder()
                     .url("https://api.spotify.com/v1/users/"+CUserID+"/playlists") //get user data
                     .addHeader("Authorization", "Bearer " + mAccessToken)

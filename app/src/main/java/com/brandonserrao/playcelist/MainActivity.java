@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+
         //---testing device locating code
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -280,12 +281,61 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
+    ////--for mapbox location manager
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionsManager.onRequestPermissionsResult(requestCode,
+                permissions, grantResults);
+    }
+
+    @Override
+    public void onExplanationNeeded(List<String> permissionsToExplain) {
+        Toast.makeText(this, "user_location_permission_explanation",
+                Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onPermissionResult(boolean granted) {
+        if (granted) {
+            mapboxMap.getStyle(new Style.OnStyleLoaded() {
+                @Override
+                public void onStyleLoaded(@NonNull Style style) {
+                    enableLocationComponent(style);
+                }
+            });
+        } else {
+            Toast.makeText(this, "user_location_permission_not_granted",
+                    Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            LocationComponent locationComponent = mapboxMap.getLocationComponent();
+            locationComponent
+                    .activateLocationComponent(
+                            LocationComponentActivationOptions.builder(this,
+                                    loadedMapStyle).build());
+            locationComponent.setLocationComponentEnabled(true);
+            //locationComponent.setRenderMode(RenderMode.NORMAL);
+            //locationComponent.setRenderMode(RenderMode.COMPASS);
+            locationComponent.setRenderMode(RenderMode.GPS);
+        } else {
+            permissionsManager = new PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(this);
+        }
+    }
+    ////
+
 
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         //started on successful map creation; main activities start here
         MainActivity.this.mapboxMap = mapboxMap;
+
         LoadUsertoNavBar();
 
         //initialize the bottomNavBar
@@ -323,7 +373,8 @@ public class MainActivity extends AppCompatActivity implements
                 zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getDoubleExtra("ZoomLevel", 0));
             }
         } else {
-            //Todo activate device_location upon creation so != null...
+            //
+            // ??Todo activate device_location upon creation so != null...
             if (device_location != null) {
                 double lat = device_location.getLatitude();
                 double lng = device_location.getLongitude();
@@ -363,15 +414,14 @@ public class MainActivity extends AppCompatActivity implements
                         //Map setup+style load completed;
                         //add extra data and perform further adjustments here
 
-
-                        //----demonstration of shift map focus
-/*                        LatLng focus = new LatLng(51.051877, 13.741517);
-                        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                                new CameraPosition.Builder()
-                                        .target(focus)
-                                        .zoom(12)
-                                        .build()));*/
-
+                        //--testing
+                        enableLocationComponent(style);//functionality to get device location enabled
+                        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                        device_location = locationComponent.getLastKnownLocation();
+                        mapboxMap.easeCamera(
+                                CameraUpdateFactory.newLatLng(
+                                        new LatLng(device_location.getLatitude(),device_location.getLongitude()))
+                        );
                     }
                 });
 
@@ -593,52 +643,8 @@ public class MainActivity extends AppCompatActivity implements
         mapboxMap.setStyle(song_styleBuilder);
     }
 
-    private void enableLocationComponent(@NonNull Style loadedMapStyle) {
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            LocationComponent locationComponent = mapboxMap.getLocationComponent();
-            locationComponent
-                    .activateLocationComponent(
-                            LocationComponentActivationOptions.builder(this,
-                                    loadedMapStyle).build());
-            locationComponent.setLocationComponentEnabled(true);
-            locationComponent.setRenderMode(RenderMode.NORMAL);
-        } else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-    }
 
     //HANDLERS
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionsManager.onRequestPermissionsResult(requestCode,
-                permissions, grantResults);
-    }
-
-    @Override
-    public void onExplanationNeeded(List<String> permissionsToExplain) {
-        Toast.makeText(this, "user_location_permission_explanation",
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onPermissionResult(boolean granted) {
-        if (granted) {
-            mapboxMap.getStyle(new Style.OnStyleLoaded() {
-                @Override
-                public void onStyleLoaded(@NonNull Style style) {
-                    enableLocationComponent(style);
-                }
-            });
-        } else {
-            Toast.makeText(this, "user_location_permission_not_granted",
-                    Toast.LENGTH_LONG).show();
-            finish();
-        }
-    }
-
 
     public void onClickWhereAmI(View view) {
         zoomToCurrentLocation();

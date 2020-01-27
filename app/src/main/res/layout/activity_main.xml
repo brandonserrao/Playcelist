@@ -38,6 +38,14 @@
                 android:layout_alignTop="@id/btn_nd"
                 android:layout_marginRight="40dp"
                 android:layout_toEndOf="@id/btn_nd" />
+            <Button
+                android:id="@+id/show_AllSongs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickShowAllSongs"
+                android:text="Show All"
+                android:layout_below="@id/sv_map"
+                android:layout_alignLeft="@id/sv_map"/>
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/btn_whereAmI"

@@ -478,12 +478,12 @@ public class MainActivity extends AppCompatActivity implements
         if (!query.isEmpty()) {
 
             //search for songs, apply different pin icon
+            song_list = recorddao.searchSongsByName(query);
+            featurelist_songlayer.clear();
+            resetMapStyle();
 
             //init storage for bounds values
             double latSouth = 0, latNorth = 0, lonWest = 0, lonEast = 0;
-
-            song_list = recorddao.searchSongsByName(query);
-            featurelist_songlayer.clear();
 
             for (int i = 0; i < song_list.size(); i++) {
                 Record song = song_list.get(i);
@@ -527,10 +527,16 @@ public class MainActivity extends AppCompatActivity implements
             //make bounds for search results view
             LatLngBounds bounds = LatLngBounds.from(latNorth, lonEast, latSouth, lonWest);
 
-            mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 1250);
+            if (song_list.size() == 1) { //if only one result,
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLng(new LatLng(latNorth, lonWest)), 2500);
+            } else if (song_list.size() > 1) {
+                mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 2500);
+            }
 
         } else /*if (query == "")*/ {
             //get all songs,rebuild layer source, reset style
+            song_list.clear(); //empty the source and refill with all songs from database
+            resetMapStyle();
             song_list = recorddao.getAllSongs();
             for (int i = 0; i < song_list.size(); i++) {
                 Record song = song_list.get(i);
@@ -539,6 +545,10 @@ public class MainActivity extends AppCompatActivity implements
             updateLayerSources();
             resetMapStyle();
         }
+    }
+
+    public void onClickShowAllSongs(View view) {
+        svSearchMap("");
     }
 
 

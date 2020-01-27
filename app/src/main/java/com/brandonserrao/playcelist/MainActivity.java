@@ -51,6 +51,7 @@ import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
 import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.LocationComponentOptions;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -206,8 +207,6 @@ public class MainActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        //Todo current location _ use pin_current_location
-
         //---testing device locating code
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -275,6 +274,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
+
     ////--for mapbox location manager
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -316,14 +316,12 @@ public class MainActivity extends AppCompatActivity implements
             //locationComponent.setRenderMode(RenderMode.NORMAL);
             locationComponent.setRenderMode(RenderMode.COMPASS);
             //locationComponent.setRenderMode(RenderMode.GPS);
+            //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
         }
     }
-    ////
-
-
 
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
@@ -363,8 +361,7 @@ public class MainActivity extends AppCompatActivity implements
                 zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getDoubleExtra("ZoomLevel", 0));
             }
         } else {
-            //
-            // ??Todo activate device_location upon creation so != null...
+            // ??Todo activate device_location upon creation so != null... / unnecessary?
             if (device_location != null) {
                 double lat = device_location.getLatitude();
                 double lng = device_location.getLongitude();

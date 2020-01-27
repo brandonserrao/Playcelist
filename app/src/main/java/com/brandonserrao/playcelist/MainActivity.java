@@ -1,16 +1,12 @@
 package com.brandonserrao.playcelist;
 
 import android.Manifest;
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.location.Address;
 import android.location.Geocoder;
@@ -31,7 +27,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -41,11 +36,9 @@ import com.brandonserrao.playcelist.SPPlaylist.SPPlaylist;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.geojson.BoundingBox;
 import com.mapbox.geojson.Feature;
 import com.mapbox.geojson.FeatureCollection;
 import com.mapbox.geojson.Point;
@@ -72,13 +65,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -97,7 +87,6 @@ import com.spotify.protocol.types.Track;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -213,6 +202,8 @@ public class MainActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        //Todo current location _ use pin_current_location
+
         //---testing device locating code
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -292,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView = this.findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(myNavigationItemListener);
         bottomNavigationView.setSelectedItemId(R.id.btn_toMap);
-        bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(true);
+        bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
         //Todo have the active state be represented in the style too
 
@@ -302,15 +293,11 @@ public class MainActivity extends AppCompatActivity implements
         boolean isFirstTimeMap;
         isFirstTimeMap = pref.getBoolean("isFirstTimeMap", true);
         if (isFirstTimeMap) {
-            //Todo open welcome dialog
             new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                     .setTitle("Welcome!")
                     .setMessage(getString(R.string.welcomeMap))
-                    .setPositiveButton("got it!", null)
+                    .setPositiveButton("got it!", (dialog, which) -> onClickChangeFirstTimeFlag())
                     .show();
-            //Todo needs to be changed at a later point because of multiple main creations at first use.
-            editor.putBoolean("isFirstTimeMap", false);
-            editor.apply();
         }
 
         //checks where to zoom to
@@ -427,6 +414,9 @@ public class MainActivity extends AppCompatActivity implements
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
         mapboxMap.addOnMapLongClickListener(point -> {
+            if (isAppLoggedIn == false || isWebLoggedIn == false) {
+                redirectToLauncher();
+            }
             double lat = point.getLatitude();
             double lng = point.getLongitude();
             new MaterialAlertDialogBuilder(MainActivity.this, R.style.AppTheme_Dialog)
@@ -445,20 +435,21 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 */
-        // Get the SearchView and set the searchable configuration
+
+        /*// Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
         SearchView searchView = (SearchView) findViewById(R.id.sv_map);
         // Assumes current activity is the searchable activity
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        searchView.setIconifiedByDefault(true); // Do not iconify the widget; expand it by default
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
                 svSearchMap("");
                 return false;
             }
-        });
-        //searchView.setOnSearchClickListener();
+        });*/
+        /*//searchView.setOnSearchClickListener();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -471,7 +462,14 @@ public class MainActivity extends AppCompatActivity implements
                 //svSearchMap(query);
                 return false;
             }
-        });
+        });*/
+    }
+
+    private void onClickChangeFirstTimeFlag() {
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.putBoolean("isFirstTimeMap", false);
+        editor.apply();
     }
 
     private void svSearchMap(String query) {
@@ -676,19 +674,7 @@ public class MainActivity extends AppCompatActivity implements
 
     //refreshes the map (cleans searchbar)
     public void onClickStartMainActivity(MenuItem item) {
-        //get all songs,rebuild layer source, reset style
-        if (isAppLoggedIn == false || isWebLoggedIn == false) {
-            redirectToLauncher();
-        }
-        song_list = recorddao.getAllSongs();
-        for (int i = 0; i < song_list.size(); i++) {
-            Record song = song_list.get(i);
-            addSongToFeaturelist(song, featurelist_songlayer);
-            updateLayerSources();
-            resetMapStyle();
-        }
-        SearchView searchView = findViewById(R.id.sv_map);
-        searchView.setIconified(true);
+        //disabled here
     }
 
     //opens Lists Activity which shows all playcelists in a recycler view
@@ -706,6 +692,9 @@ public class MainActivity extends AppCompatActivity implements
     //zooms to current GPS posittion on the map and
     //opens dialog to confirm playcing the current playing song at the current GPS position
     public void onClickPlayceSongAtGPS(View view) {
+        if (isAppLoggedIn == false || isWebLoggedIn == false) {
+            redirectToLauncher();
+        }
         zoomToCurrentLocation();
         double lat = device_location.getLatitude();
         double lng = device_location.getLongitude();
@@ -757,6 +746,9 @@ public class MainActivity extends AppCompatActivity implements
 
     //opens a custom Dialog to ask for playcelist name input and confirmation
     public void onClickCreatePlaycelist(View view) {
+        if (isAppLoggedIn == false || isWebLoggedIn == false) {
+            redirectToLauncher();
+        }
         AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.dialog_input, null);
@@ -1075,6 +1067,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    public void onClickOpenHelpDialog(View view) {
+        new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                .setTitle("Welcome!")
+                .setMessage(getString(R.string.welcomeMap))
+                .setPositiveButton("got it!", null)
+                .show();
+    }
 }
 
 //Todo add onclick play song functionality in map

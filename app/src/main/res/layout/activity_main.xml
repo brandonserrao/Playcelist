@@ -31,23 +31,34 @@
                 android:background="@color/Secondary"
                 android:onClick="onClickOpenNavDrawer" />
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/sv_map"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@id/btn_nd"
-                android:layout_marginRight="40dp"
-                android:layout_toEndOf="@id/btn_nd" />
-            <Button
+            <ImageView
                 android:id="@+id/show_AllSongs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickShowAllSongs"
-                android:text="Show All"
-                android:layout_below="@id/sv_map"
-                android:layout_alignLeft="@id/sv_map"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:layout_toEndOf="@+id/btn_nd"
+                android:onClick="onClickOpenHelpDialog"
+                android:src="@drawable/help" />
 
-            <com.google.android.material.imageview.ShapeableImageView
+            <!--           <androidx.appcompat.widget.SearchView
+                           android:id="@+id/sv_map"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignTop="@id/btn_nd"
+                           android:layout_marginRight="40dp"
+                           android:layout_toEndOf="@id/btn_nd" />
+
+                       <com.google.android.material.imageview.ShapeableImageView
+                           android:id="@+id/show_AllSongs"
+                           android:layout_width="40dp"
+                           android:layout_height="40dp"
+                           android:layout_alignBottom="@+id/sv_map"
+                           android:layout_alignParentRight="true"
+                           android:layout_marginRight="50dp"
+                           android:onClick="onClickShowAllSongs"
+                           android:src="@drawable/cross" />
+           -->
+            <ImageView
                 android:id="@+id/btn_whereAmI"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

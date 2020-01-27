@@ -96,7 +96,7 @@ public class ListsActivity extends AppCompatActivity {
             new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                     .setTitle("Welcome!")
                     .setMessage(getString(R.string.welcomeLists))
-                    .setPositiveButton("got it!", null)
+                    .setPositiveButton("got it!", ((dialog, which) -> onClickChangeFirstTimeFlag()))
                     .show();
         }
 
@@ -171,6 +171,19 @@ public class ListsActivity extends AppCompatActivity {
         });
     }
 
+    //sets the firstTimeFlag to false.
+    private void onClickChangeFirstTimeFlag() {
+        //change flag to indicate the welcome dialog doesn't have to show again
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeLists;
+        isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
+        if (isFirstTimeLists) {
+            editor.putBoolean("isFirstTimeLists", false);
+            editor.apply();
+        }
+    }
+
     private void svSearchListsByName(String query) {
         List<Record> search_results = recorddao.searchListsByName(query);
         listsAdapter = new ListsAdapter(search_results);
@@ -199,6 +212,9 @@ public class ListsActivity extends AppCompatActivity {
     }
 
     public void onClickStartMainActivity(MenuItem item) {
+        if (isAppLoggedIn == false || mAccessToken != null) {
+            redirectToLauncher();
+        }
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

@@ -60,6 +60,8 @@ public class SongsActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
+    public String mAccessToken;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,12 +81,12 @@ public class SongsActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = pref.edit();
         boolean isFirstTimeSongs;
         isFirstTimeSongs = pref.getBoolean("isFirstTimeSongs", true);
+        mAccessToken = pref.getString("mAccessToken", null);
         if (isFirstTimeSongs) {
-            //Todo edit welcome dialog
             new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                     .setTitle("Welcome!")
                     .setMessage(getString(R.string.welcomeSongs))
-                    .setPositiveButton("got it!", null)
+                    .setPositiveButton("got it!", ((dialog, which) -> onClickChangeFirstTimeFlag()))
                     .show();
         }
 
@@ -159,6 +161,19 @@ public class SongsActivity extends AppCompatActivity {
         });
     }
 
+    //sets the firstTimeFlag to false.
+    private void onClickChangeFirstTimeFlag() {
+        //change flag to indicate that the welcome dialog doesn't have to show again
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeSongs;
+        isFirstTimeSongs = pref.getBoolean("isFirstTimeSongs", true);
+        if (isFirstTimeSongs) {
+            editor.putBoolean("isFirstTimeSongs", false);
+            editor.apply();
+        }
+    }
+
     private void svSearchSongsByName(String query) {
         List<Record> search_results = recorddao.searchSongsByName(query);
         songsAdapter = new SongsAdapter(search_results);
@@ -186,6 +201,9 @@ public class SongsActivity extends AppCompatActivity {
     }
 
     public void onClickStartMainActivity(MenuItem item) {
+        if (isAppLoggedIn == false || mAccessToken != null) {
+            redirectToLauncher();
+        }
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

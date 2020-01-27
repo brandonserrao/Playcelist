@@ -480,6 +480,8 @@ public class MainActivity extends AppCompatActivity implements
             //search for songs, apply different pin icon
             song_list = recorddao.searchSongsByName(query);
             featurelist_songlayer.clear();
+            //clear source+markers then redraw to prevent cumulative rendering
+            updateLayerSources();
             resetMapStyle();
 
             //init storage for bounds values
@@ -535,7 +537,9 @@ public class MainActivity extends AppCompatActivity implements
 
         } else /*if (query == "")*/ {
             //get all songs,rebuild layer source, reset style
-            song_list.clear(); //empty the source and refill with all songs from database
+            featurelist_songlayer.clear(); //empty the source and refill with all songs from database
+            //clear source+markers then redraw to prevent cumulative rendering
+            updateLayerSources();
             resetMapStyle();
             song_list = recorddao.getAllSongs();
             for (int i = 0; i < song_list.size(); i++) {

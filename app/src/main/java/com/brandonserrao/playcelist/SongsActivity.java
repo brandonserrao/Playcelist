@@ -262,6 +262,12 @@ public class SongsActivity extends AppCompatActivity {
             Intent intent = new Intent(this, LauncherActivity.class);
             startActivity(intent);
         }
+
+    public void onClickClearSearch(View view) {
+        List<Record> allSongs = recorddao.getAllSongs();
+        songsAdapter = new SongsAdapter(allSongs);
+        recyclerView.setAdapter(songsAdapter);
+    }
 }
 
 //Todo add albumart from Spotify?

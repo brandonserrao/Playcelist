@@ -310,8 +310,8 @@ public class MainActivity extends AppCompatActivity implements
                                     loadedMapStyle).build());
             locationComponent.setLocationComponentEnabled(true);
             //locationComponent.setRenderMode(RenderMode.NORMAL);
-            //locationComponent.setRenderMode(RenderMode.COMPASS);
-            locationComponent.setRenderMode(RenderMode.GPS);
+            locationComponent.setRenderMode(RenderMode.COMPASS);
+            //locationComponent.setRenderMode(RenderMode.GPS);
         } else {
             permissionsManager = new PermissionsManager(this);
             permissionsManager.requestLocationPermissions(this);
@@ -400,9 +400,12 @@ public class MainActivity extends AppCompatActivity implements
                         //Map setup+style load completed;
                         //add extra data and perform further adjustments here
 
-                        //--testing
-                        enableLocationComponent(style);//functionality to get device location enabled
+                        //functionality to get device location enabled
+                        enableLocationComponent(style);//will show device location on map
                         LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                        //customize icon
+                        //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
+                        //focus to current location
                         device_location = locationComponent.getLastKnownLocation();
                         mapboxMap.easeCamera(
                                 CameraUpdateFactory.newLatLng(

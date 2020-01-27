@@ -104,8 +104,7 @@ public class MainActivity extends AppCompatActivity implements
     public LocationManager locationManager;
     public LocationListener locationListener;
     public Location device_location;
-    //Todo set initial location value so list building doesn't break
-    public String address;
+    //public String address;//unused//for geocoding songs locations for humans
 
     //database implementation variables
     public /*static*/ String db_name = "playcelist_db_v8.sqlite";
@@ -393,13 +392,6 @@ public class MainActivity extends AppCompatActivity implements
 
                         //functionality to get device location enabled
                         enableLocationComponent(style);//will show device location on map
-                        LocationComponent locationComponent = mapboxMap.getLocationComponent();
-
-                        //customize icon
-                        //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
-
-                        //focus to current location
-                        device_location = locationComponent.getLastKnownLocation();
 
                     }
                 });
@@ -614,11 +606,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void updateLayerSources() {
-/*        // "proper" method from stackoverflow response
-        GeoJsonSource song_source = mapboxMap.getSourceAs(SONGS_SOURCE_ID); //mapboxMap.getSourceAs() doesn't exist
-        song_source.setGeoJson(song_featureCollection);*/
-
-        //my method
         //List<Feature> to FeatureCollection to GeoJsonSource as source
         song_featureCollection = FeatureCollection.fromFeatures(featurelist_songlayer);
         song_source = new GeoJsonSource(SONGS_SOURCE_ID, song_featureCollection);
@@ -803,15 +790,12 @@ public class MainActivity extends AppCompatActivity implements
                 mapView.getBottom()
         );
         String songIDs = null;
-        //??String list_items = null;
         List<Feature> features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
         if (features.size() > 0) {
             songIDs = features.get(0).getProperty("S_ID").getAsString();
-            //??list_items = features.get(0).getProperty("LIST_ITEMS").getAsString();
             if (features.size() > 1) {
                 for (int i = 1; i < features.size(); i++) {
                     songIDs = songIDs + "," + features.get(i).getProperty("S_ID").getAsString();
-                    //??list_items = list_items + "\n"
                 }
             }
         }

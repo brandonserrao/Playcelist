@@ -674,13 +674,13 @@ public class MainActivity extends AppCompatActivity implements
 
     //INTENT handler methods
     //zooms map to a given lat&lng
-    private void zoomToLatLng(Double lat, Double lng, double zoomlevel) {
+    private void zoomToLatLng(Double lat, Double lng, double zoom) {
         LatLng focus;
         focus = new LatLng(lat, lng);
         mapboxMap.easeCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder()
                         .target(focus)
-                        .zoom(zoomlevel)
+                        .zoom(zoom)
                         .build()),
                 1250);
     }

@@ -317,6 +317,12 @@ public class ListsActivity extends AppCompatActivity {
             mCall.cancel();
         }
     }
+
+    public void onClickClearSearch(View view) {
+        List<Record> allLists = recorddao.getAllLists();
+        listsAdapter = new ListsAdapter(allLists);
+        recyclerView.setAdapter(listsAdapter);
+    }
 }
 
 

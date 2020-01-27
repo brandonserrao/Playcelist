@@ -15,6 +15,7 @@
             android:layout_height="match_parent"
             android:theme="@style/AppTheme">
 
+
             <com.mapbox.mapboxsdk.maps.MapView
                 android:id="@+id/mapbox"
                 android:layout_width="match_parent"
@@ -86,6 +87,17 @@
                 android:layout_marginBottom="8dp"
                 android:onClick="onClickWhereAmI"
                 android:src="@drawable/mylocation" />
+
+            <ImageView
+                android:id="@+id/gps_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/mapbox"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/pin_highlighted" />
+
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btn_listPlaycer"

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.location.Address;
@@ -219,7 +220,11 @@ public class MainActivity extends AppCompatActivity implements
             public void onLocationChanged(Location location) {
                 //updating the user location on change
                 if (location != null) {
-                    device_location = location;
+                    LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                    device_location = locationComponent.getLastKnownLocation();
+                    ImageView imageView = findViewById(R.id.gps_indicator);
+                    imageView.setImageResource(R.drawable.red_marker);
+                    //device_location = location;
 
                     //--For Debugging: displaying gps location for debugging
                     /*
@@ -241,6 +246,10 @@ public class MainActivity extends AppCompatActivity implements
                     //Location lastKnownLocation = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
                 }*/
+                }
+                else {
+                    ImageView imageView = findViewById(R.id.gps_indicator);
+                    imageView.setImageResource(R.drawable.pin_current_location);
                 }
             }
 
@@ -352,9 +361,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else {
             //refocus map to user location on creation
-            if (device_location != null) {
+            if (device_location != null) {/*
                 double lat = device_location.getLatitude();
-                double lng = device_location.getLongitude();
+                double lng = device_location.getLongitude();*/
+                LocationComponent locationComponent = mapboxMap.getLocationComponent();
+                Location last_location = locationComponent.getLastKnownLocation();
+                double lat = last_location.getLatitude(), lng = last_location.getLongitude();
+
                 zoomToLatLng(lat, lng, 12.);
             }
         }
@@ -632,7 +645,6 @@ public class MainActivity extends AppCompatActivity implements
 
     //HANDLERS
     public void startTrackUser(@Nullable View view) {
-        //--testing tracking user code
         LocationComponent locationComponent = mapboxMap.getLocationComponent();
         locationComponent.setCameraMode(CameraMode.TRACKING);
         bool_trackingUser = true;
@@ -650,9 +662,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void zoomToCurrentLocation() {
-        if (device_location != null) {
+        if (device_location != null) {/*
             double lat = device_location.getLatitude();
-            double lng = device_location.getLongitude();
+            double lng = device_location.getLongitude();*/
+            LocationComponent locationComponent = mapboxMap.getLocationComponent();
+            Location last_location = locationComponent.getLastKnownLocation();
+            double lat = last_location.getLatitude(), lng = last_location.getLongitude();
             zoomToLatLng(lat, lng, 16);
         } else {
             Toast.makeText(this, getString(R.string.noGPS), Toast.LENGTH_LONG).show();
@@ -703,9 +718,13 @@ public class MainActivity extends AppCompatActivity implements
         if (isAppLoggedIn == false || isWebLoggedIn == false) {
             redirectToLauncher();
         }
-        zoomToCurrentLocation();
+        zoomToCurrentLocation();/*
         double lat = device_location.getLatitude();
-        double lng = device_location.getLongitude();
+        double lng = device_location.getLongitude();*/
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+        Location last_location = locationComponent.getLastKnownLocation();
+        double lat = last_location.getLatitude(), lng = last_location.getLongitude();
+
         new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                 .setTitle("Playce currently playing song")
                 .setMessage("at your current GPS position?")

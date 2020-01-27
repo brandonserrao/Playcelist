@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -49,6 +50,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.geometry.LatLngBounds;
 import com.mapbox.mapboxsdk.location.LocationComponent;
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
 import com.mapbox.mapboxsdk.location.modes.RenderMode;
 import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
@@ -146,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements
     public String CUserID;// spotify ID
     public String PlaylistID;// spotify ID
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
+
+    public boolean bool_trackingUser;
 
 
     @Override
@@ -407,10 +411,10 @@ public class MainActivity extends AppCompatActivity implements
                         //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
                         //focus to current location
                         device_location = locationComponent.getLastKnownLocation();
-                        mapboxMap.easeCamera(
+/*                        mapboxMap.easeCamera(
                                 CameraUpdateFactory.newLatLng(
                                         new LatLng(device_location.getLatitude(),device_location.getLongitude()))
-                        );
+                        );*/
                     }
                 });
 
@@ -464,6 +468,17 @@ public class MainActivity extends AppCompatActivity implements
                 return false;
             }
         });*/
+
+        mapboxMap.addOnMapClickListener(
+                new MapboxMap.OnMapClickListener() {
+                    @Override
+                    public boolean onMapClick(@NonNull LatLng point) {
+                        stopTrackUser(null);
+
+                        return false;
+                    }
+                }
+                );
 
         //when longclicking on the map, a dialog opens and the currently playing song can be playced
         mapboxMap.addOnMapLongClickListener(point -> {
@@ -645,9 +660,23 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //HANDLERS
+    public void startTrackUser(@Nullable View view) {
+        //--testing tracking user code
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+        locationComponent.setCameraMode(CameraMode.TRACKING);
+        bool_trackingUser = true;
+    }
+
+    public void stopTrackUser(@Nullable View view) {
+        //--testing tracking user code
+        LocationComponent locationComponent = mapboxMap.getLocationComponent();
+        locationComponent.setCameraMode(CameraMode.NONE_COMPASS);
+        bool_trackingUser = false;
+    }
 
     public void onClickWhereAmI(View view) {
         zoomToCurrentLocation();
+        startTrackUser(null);
     }
 
     public void zoomToCurrentLocation() {

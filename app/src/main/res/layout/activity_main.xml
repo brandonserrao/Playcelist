@@ -40,6 +40,24 @@
                 android:onClick="onClickOpenHelpDialog"
                 android:src="@drawable/help" />
 
+<!--            <Button
+                android:id="@+id/Track_Location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="startTrackUser"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:text="Track Location"/>
+            <Button
+                android:id="@+id/Stop_Track_Location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="stopTrackUser"
+                android:layout_below="@id/Track_Location"
+                android:layout_alignParentRight="true"
+                android:text="Stop Tracking"/>-->
+
+
             <!--           <androidx.appcompat.widget.SearchView
                            android:id="@+id/sv_map"
                            android:layout_width="wrap_content"

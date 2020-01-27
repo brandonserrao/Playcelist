@@ -95,9 +95,12 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity implements
         OnMapReadyCallback, PermissionsListener {
 
+    //mapbox variables
     private PermissionsManager permissionsManager;
     private MapboxMap mapboxMap;
     private MapView mapView;
+
+    //location tracking variables
     public LocationManager locationManager;
     public LocationListener locationListener;
     public Location device_location;
@@ -114,19 +117,18 @@ public class MainActivity extends AppCompatActivity implements
     private static final String SONGS_ICON_ID = "songs";
     private static final String SONGS_LAYER_ID = "songs";
     //init feature list to be displayed
-    public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
-    FeatureCollection song_featureCollection;
-    GeoJsonSource song_source;
-    SymbolLayer song_symbolLayer;
-    Style.Builder song_styleBuilder;
-
+        public /*static*/ List<Feature> featurelist_songlayer = new ArrayList<>(); //for starting off markers
+        FeatureCollection song_featureCollection;
+        GeoJsonSource song_source;
+        SymbolLayer song_symbolLayer;
+        Style.Builder song_styleBuilder;
 
     //loggedIn flags for Spotify
     private boolean isUpicloaded = false;
     private boolean isAppLoggedIn = false;
     private boolean isWebLoggedIn = false;
 
-    // spotify vars ans objects
+    //Spotify vars and objects
     //public static final String CLIENT_ID = "fdcc6fcc754e42e3bc7f45f2524816f3"; //use from MAC
     public static final String CLIENT_ID = "cff5c927f91e4e9582f97c827f8632dd"; //- use from PC;
     private static final String REDIRECT_URI = "com.brandonserrao.playcelist://callback";
@@ -153,12 +155,15 @@ public class MainActivity extends AppCompatActivity implements
     public boolean bool_trackingUser;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
+
         Log.e("MAIN", "the are in the main");
+        //Spotify vars
         // restoring important variables state
 
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -190,6 +195,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("SHARED", "CUserID " + CUserID);
 
 
+        //Database
         //create db instance + interface for this activity
         AppDatabase database =
                 Room.databaseBuilder(this, AppDatabase.class, db_name)
@@ -200,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements
         song_list = recorddao.getAllSongs();
 
 
+        //Map
         //mapbox map creation + styling
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_main);
@@ -207,14 +214,16 @@ public class MainActivity extends AppCompatActivity implements
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
-        //---testing device locating code
+        //device locating code
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
-
+                //updating the user location on change
                 if (location != null) {
                     device_location = location;
-                    //--displaying gps location for debugging
+
+                    //--For Debugging: displaying gps location for debugging
+                    /*
                     //TextView textView = findViewById(R.id.debug_textview);
                     double lat = device_location.getLatitude(), lng = device_location.getLongitude();
                     String debug_text = String.valueOf(lat) + String.valueOf(lng);
@@ -226,32 +235,15 @@ public class MainActivity extends AppCompatActivity implements
                         int num_results = 1;
                         List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
                         address = address_list.get(0).getAddressLine(0);
-                        /*////--from my tutorial
-                        int num_results=4;
-                        List<Address> address_list = geocoder.getFromLocation(lat, lng, num_results);
-                        String address = address_list.get(0).getAddressLine(0); // just gets tested for existence by the following loop
-                        if (address!=null) {
-
-
-                            String multi_address = "";
-                            for(int i=0;i<num_results;i++){
-                                multi_address = multi_address
-                                        + "\u2794 " + address_list.get(i).getAddressLine(0)
-                                        + "\n" + "URL: " + ((address_list.get(i).getUrl()!=null)?address_list.get(i).getUrl():"none available")
-                                        + System.getProperty("line.separator");
-                            }
-//                            addressField.setText("\u2794 " + address);
-                            addressField.setText(multi_address);
-                        }*/
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 } else if (location == null) {
                     //Location lastKnownLocation = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
 
+                }*/
                 }
             }
-
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
@@ -313,9 +305,8 @@ public class MainActivity extends AppCompatActivity implements
                             LocationComponentActivationOptions.builder(this,
                                     loadedMapStyle).build());
             locationComponent.setLocationComponentEnabled(true);
-            //locationComponent.setRenderMode(RenderMode.NORMAL);
             locationComponent.setRenderMode(RenderMode.COMPASS);
-            //locationComponent.setRenderMode(RenderMode.GPS);
+            //attempt to set custom device location icon
             //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
         } else {
             permissionsManager = new PermissionsManager(this);
@@ -339,7 +330,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
         //Todo have the active state be represented in the style too
 
-        //check if this is the first creation after initial spotify log in
+        //check if this is the first creation after initial spotify login
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
         boolean isFirstTimeMap;
@@ -361,22 +352,21 @@ public class MainActivity extends AppCompatActivity implements
                 zoomToLatLng(intent.getDoubleExtra("Lat", 0), intent.getDoubleExtra("Lng", 0), intent.getDoubleExtra("ZoomLevel", 0));
             }
         } else {
-            // ??Todo activate device_location upon creation so != null... / unnecessary?
+            //refocus map to user location on creation
             if (device_location != null) {
                 double lat = device_location.getLatitude();
                 double lng = device_location.getLongitude();
                 zoomToLatLng(lat, lng, 12.);
             }
         }
-
+        // and reconstruct displayed features
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
             addSongToFeaturelist(song, featurelist_songlayer);
         }
-
         updateLayerSources();
 
-        //firsttime construction of symbollayer
+        //first time construction of symbollayer showing songs on map
         song_symbolLayer = new SymbolLayer(SONGS_LAYER_ID, SONGS_SOURCE_ID)
                 .withProperties(PropertyFactory.iconImage(SONGS_ICON_ID),
                         iconAllowOverlap(true)
@@ -404,16 +394,17 @@ public class MainActivity extends AppCompatActivity implements
                         //functionality to get device location enabled
                         enableLocationComponent(style);//will show device location on map
                         LocationComponent locationComponent = mapboxMap.getLocationComponent();
+
                         //customize icon
                         //locationComponent.getLocationComponentOptions().toBuilder().gpsDrawable(R.drawable.pin_current_location).build();
+
                         //focus to current location
                         device_location = locationComponent.getLastKnownLocation();
-/*                        mapboxMap.easeCamera(
-                                CameraUpdateFactory.newLatLng(
-                                        new LatLng(device_location.getLatitude(),device_location.getLongitude()))
-                        );*/
+
                     }
                 });
+
+
 
         //Map Listeners
 
@@ -466,12 +457,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         });*/
 
+
+        //to break user location tracking on map click
         mapboxMap.addOnMapClickListener(
                 new MapboxMap.OnMapClickListener() {
                     @Override
                     public boolean onMapClick(@NonNull LatLng point) {
                         stopTrackUser(null);
-
                         return false;
                     }
                 }
@@ -492,15 +484,8 @@ public class MainActivity extends AppCompatActivity implements
                     .show();
             return true;
         });
-/*
-        mapboxMap.addOnFlingListener(new MapboxMap.OnFlingListener() {
-            @Override
-            public void onFling() {
-                Toast.makeText(MainActivity.this, "onFling: Weeeeee", Toast.LENGTH_SHORT).show();
-            }
-        });
-*/
 
+        //--DISABLED: Search View to allow filtering and focusing on songs on map
         /*// Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(this.SEARCH_SERVICE);
         SearchView searchView = (SearchView) findViewById(R.id.sv_map);
@@ -530,6 +515,7 @@ public class MainActivity extends AppCompatActivity implements
         });*/
     }
 
+
     private void onClickChangeFirstTimeFlag() {
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
@@ -537,6 +523,7 @@ public class MainActivity extends AppCompatActivity implements
         editor.apply();
     }
 
+    //--Unused; For searching map songs
     private void svSearchMap(String query) {
         if (!query.isEmpty()) {
 
@@ -586,9 +573,6 @@ public class MainActivity extends AppCompatActivity implements
                     .withLayer(song_symbolLayer);
             mapboxMap.setStyle(song_styleBuilder);
 
-/*          //debug
-            Toast.makeText(this, String.valueOf(latNorth)+"\n"+String.valueOf(latSouth)+"\n"+String.valueOf(lonEast)+"\n"+String.valueOf(lonWest),
-                    Toast.LENGTH_LONG).show();*/
             //make bounds for search results view
             LatLngBounds bounds = LatLngBounds.from(latNorth, lonEast, latSouth, lonWest);
 
@@ -598,7 +582,7 @@ public class MainActivity extends AppCompatActivity implements
                 mapboxMap.easeCamera(CameraUpdateFactory.newLatLngBounds(bounds, 50), 2500);
             }
 
-        } else /*if (query == "")*/ {
+        } else  {
             //get all songs,rebuild layer source, reset style
             featurelist_songlayer.clear(); //empty the source and refill with all songs from database
             //clear source+markers then redraw to prevent cumulative rendering
@@ -614,11 +598,13 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    //--unused; for resetting displayed songs
     public void onClickShowAllSongs(View view) {
         svSearchMap("");
     }
 
 
+    //--Map Marker construction functions
     public void addSongToFeaturelist(@NonNull Record song, List<Feature> featurelist_songlayer) {
         Feature feature = Feature.fromGeometry(Point.fromLngLat(song.getLNG(), song.getLAT()));
         feature.addStringProperty("NAME", song.getNAME());
@@ -654,6 +640,7 @@ public class MainActivity extends AppCompatActivity implements
                 .withLayer(song_symbolLayer);
         mapboxMap.setStyle(song_styleBuilder);
     }
+    //END--Map Marker Construction functions
 
 
     //HANDLERS
@@ -665,7 +652,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void stopTrackUser(@Nullable View view) {
-        //--testing tracking user code
         LocationComponent locationComponent = mapboxMap.getLocationComponent();
         locationComponent.setCameraMode(CameraMode.NONE_COMPASS);
         bool_trackingUser = false;
@@ -697,12 +683,6 @@ public class MainActivity extends AppCompatActivity implements
                         .zoom(zoomlevel)
                         .build()),
                 1250);
-        /*
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                new CameraPosition.Builder()
-                        .target(focus)
-                        .zoom(zoomlevel)
-                        .build()));*/
     }
 
 
@@ -746,9 +726,6 @@ public class MainActivity extends AppCompatActivity implements
                 .setPositiveButton("playce", (dialog, which) -> onClickPlayceSong(lat, lng))
                 .show();
     }
-
-    //Todo make sure current location is not null in all methods using it
-
 
     //creates new song item in the DB using now playing info and lat and lng as input
     private void onClickPlayceSong(double dlat, double dlng) {
@@ -826,13 +803,15 @@ public class MainActivity extends AppCompatActivity implements
                 mapView.getBottom()
         );
         String songIDs = null;
-        //Todo Brandon: here, multitudes of each feature are returned - more pins get added each time the mapstyle is refreshed.. do you know why? / do we forget to clean the map at some point?
+        //??String list_items = null;
         List<Feature> features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
         if (features.size() > 0) {
             songIDs = features.get(0).getProperty("S_ID").getAsString();
+            //??list_items = features.get(0).getProperty("LIST_ITEMS").getAsString();
             if (features.size() > 1) {
                 for (int i = 1; i < features.size(); i++) {
                     songIDs = songIDs + "," + features.get(i).getProperty("S_ID").getAsString();
+                    //??list_items = list_items + "\n"
                 }
             }
         }
@@ -871,8 +850,6 @@ public class MainActivity extends AppCompatActivity implements
             editor.apply();
         }
     }
-
-    //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
 
 
     private void createPlaycelist(String name, String songIDs) {

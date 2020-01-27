@@ -38,8 +38,6 @@ public interface RecordDAO {
     public List<Record> searchListsByName(String search_term);
 
 
-
-
     @Query("DELETE FROM RECORDS WHERE (NAME LIKE '%' || :search_term || '%') AND (isLIST = 0)")
     public void deleteSongSearchResults(String search_term);
 
@@ -61,7 +59,6 @@ public interface RecordDAO {
     public String getSidByUid(String uid);
 
     @Query("SELECT ARTIST FROM RECORDS WHERE (UID = :uid)")
-    //Todo change to ... SELECT ZOOM FROM ... once double ZOOM is in db
     public String getZoomLevelByUid(String uid);
 
 }

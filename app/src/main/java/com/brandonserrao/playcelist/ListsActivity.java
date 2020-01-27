@@ -86,13 +86,12 @@ public class ListsActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.btn_toLists);
         bottomNavigationView.findViewById(R.id.btn_toLists).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toLists).setActivated(true);
-        //Todo have the active state be represented in the style too
+        //somehow always the same icon is highlighted - we could not figure out, why.
 
         //check if this is the first creation after initial spotify log in
         boolean isFirstTimeLists;
         isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
         if (isFirstTimeLists) {
-            //Todo open welcome dialog
             new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
                     .setTitle("Welcome!")
                     .setMessage(getString(R.string.welcomeLists))
@@ -324,7 +323,3 @@ public class ListsActivity extends AppCompatActivity {
         recyclerView.setAdapter(listsAdapter);
     }
 }
-
-
-
-//Todo add listart picture from Spotify?

@@ -74,7 +74,7 @@ public class SongsActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.btn_toSongs);
         bottomNavigationView.findViewById(R.id.btn_toSongs).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toSongs).setActivated(true);
-        //Todo have the active state be represented in the style too
+        //somehow always the same icon is highlighted - we could not figure out, why.
 
         //check if this is the first creation after initial spotify log in
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -180,20 +180,6 @@ public class SongsActivity extends AppCompatActivity {
         recyclerView.setAdapter(songsAdapter);
     }
 
-    //Todo-----obsolete db init function; from tutorials
-    private void copyDatabaseFile(String destinationPath) throws IOException {
-        InputStream assetsDB = this.getAssets().open(db_name);
-        OutputStream dbOut = new FileOutputStream(destinationPath);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = assetsDB.read(buffer)) > 0) {
-            dbOut.write(buffer, 0, length);
-        }
-        dbOut.flush();
-        dbOut.close();
-    }
-
-
     //Button Click Handlers
     public void onClickStartSongsActivity(MenuItem item) {
         //Intent intent = new Intent(this, SongsActivity.class);
@@ -269,5 +255,3 @@ public class SongsActivity extends AppCompatActivity {
         recyclerView.setAdapter(songsAdapter);
     }
 }
-
-//Todo add albumart from Spotify?

@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView.setSelectedItemId(R.id.btn_toMap);
         bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
-        //Todo have the active state be represented in the style too
+        //somehow always the same icon is highlighted - we could not figure out, why.
 
         //check if this is the first creation after initial spotify login
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -653,7 +653,7 @@ public class MainActivity extends AppCompatActivity implements
         if (device_location != null) {
             double lat = device_location.getLatitude();
             double lng = device_location.getLongitude();
-            zoomToLatLng(lat, lng, 16);
+            zoomToLatLng(lat, lng, 20.);
         } else {
             Toast.makeText(this, getString(R.string.noGPS), Toast.LENGTH_LONG).show();
         }
@@ -1053,12 +1053,11 @@ public class MainActivity extends AppCompatActivity implements
         editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
         editor.putBoolean("isWebLoggedIn", isAppLoggedIn);
         editor.commit();
-//cleaning upic and username
+        //cleaning upic and username
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);
         Username.setText(R.string.SAccountName);
-        //Todo make sure to go back to Launcher (not main) when going back to the app.
     }
 
 
@@ -1078,11 +1077,3 @@ public class MainActivity extends AppCompatActivity implements
                 .show();
     }
 }
-
-//Todo add onclick play song functionality in map
-
-//Todo clean up code: through out unnecessary stuff
-//Todo comment the code
-//Todo arrange code in a sensible order
-//Todo at some point we wanted to update lists when playcing new songs but I guess we dropped that...
-//Todo change where am I icon

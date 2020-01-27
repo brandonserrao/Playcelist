@@ -159,9 +159,6 @@ public class MainActivity extends AppCompatActivity implements
     private BottomNavigationView.OnNavigationItemSelectedListener myNavigationItemListener;
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -176,15 +173,15 @@ public class MainActivity extends AppCompatActivity implements
         mAccessToken = pref.getString("mAccessToken", "");
         Log.e("SHARED", "tk+" + mAccessToken);
 
-          isUpicloaded=pref.getBoolean("isUpicloaded",false);
+        isUpicloaded = pref.getBoolean("isUpicloaded", false);
         if (isUpicloaded) Log.e("SHARED", "isUpicloaded1");
         else Log.e("SHARED", "isUpicloaded0");
 
-        isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
+        isAppLoggedIn = pref.getBoolean("isAppLoggedIn", false);
         if (isAppLoggedIn) Log.e("SHARED", "isAppLoggedIn1");
         else Log.e("SHARED", "isAppLoggedIn0");
 
-        isWebLoggedIn=pref.getBoolean("isWebLoggedIn",false);
+        isWebLoggedIn = pref.getBoolean("isWebLoggedIn", false);
         if (isWebLoggedIn) Log.e("SHARED", "isWebLoggedIn1");
         else Log.e("SHARED", "isWebLoggedIn0");
 
@@ -298,6 +295,23 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(true);
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
         //Todo have the active state be represented in the style too
+
+        //check if this is the first creation after initial spotify log in
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        Editor editor = pref.edit();
+        boolean isFirstTimeMap;
+        isFirstTimeMap = pref.getBoolean("isFirstTimeMap", true);
+        if (isFirstTimeMap) {
+            //Todo open welcome dialog
+            new MaterialAlertDialogBuilder(this, R.style.AppTheme_Dialog)
+                    .setTitle("Welcome!")
+                    .setMessage(getString(R.string.welcomeMap))
+                    .setPositiveButton("got it!", null)
+                    .show();
+            //Todo needs to be changed at a later point because of multiple main creations at first use.
+            editor.putBoolean("isFirstTimeMap", false);
+            editor.apply();
+        }
 
         //checks where to zoom to
         //for viewOnMap intents, zoom to the clicked list or song
@@ -536,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements
         featurelist_songlayer.add(feature);
     }
 
+    //Todo maybe the multiple feature problem is somewhere here...?
     public void updateLayerSources() {
 /*        // "proper" method from stackoverflow response
         GeoJsonSource song_source = mapboxMap.getSourceAs(SONGS_SOURCE_ID); //Todo mapboxMap.getSourceAs() doesn't exist
@@ -648,8 +663,9 @@ public class MainActivity extends AppCompatActivity implements
     //refreshes the map (cleans searchbar)
     public void onClickStartMainActivity(MenuItem item) {
         //get all songs,rebuild layer source, reset style
-        if(isAppLoggedIn==false || isWebLoggedIn==false){
-        redirectToLauncher();}
+        if (isAppLoggedIn == false || isWebLoggedIn == false) {
+            redirectToLauncher();
+        }
         song_list = recorddao.getAllSongs();
         for (int i = 0; i < song_list.size(); i++) {
             Record song = song_list.get(i);
@@ -670,7 +686,7 @@ public class MainActivity extends AppCompatActivity implements
     //redirects to the launcher Activity in case of log out etc
     public void redirectToLauncher() {
         Intent intent = new Intent(this, LauncherActivity.class);
-       startActivity(intent);
+        startActivity(intent);
     }
 
     //zooms to current GPS posittion on the map and
@@ -707,6 +723,16 @@ public class MainActivity extends AppCompatActivity implements
         song.setIsLIST(false);
         song.setARTIST(songArtist);
         recorddao.insert(song);
+
+        //change flag to indicate that a song has been playced and the welcome dialog doesn't have to show again
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeSongs;
+        isFirstTimeSongs = pref.getBoolean("isFirstTimeSongs", true);
+        if (isFirstTimeSongs) {
+            editor.putBoolean("isFirstTimeSongs", false);
+            editor.apply();
+        }
 
         //adding to featurelist to be placed as a marker on map
         addSongToFeaturelist(song, featurelist_songlayer);
@@ -752,6 +778,7 @@ public class MainActivity extends AppCompatActivity implements
                 mapView.getBottom()
         );
         String songIDs = null;
+        //Todo Brandon: here, multitudes of each feature are returned - more pins get added each time the mapstyle is refreshed.. do you know why? / do we forget to clean the map at some point?
         List<Feature> features = mapboxMap.queryRenderedFeatures(rectF, SONGS_LAYER_ID); //returns List<Feature> of marker features
         if (features.size() > 0) {
             songIDs = features.get(0).getProperty("S_ID").getAsString();
@@ -761,6 +788,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         }
+        Log.e("sSpotify", "Songlist" + songIDs);
         return songIDs;
     }
 
@@ -783,16 +811,25 @@ public class MainActivity extends AppCompatActivity implements
         list.setIsLIST(true);
         list.setARTIST(zoom);
         recorddao.insert(list);
-        Log.e("DB","Playlist created "+listName+"# "+listID);
+        Log.e("DB", "Playlist created " + listName + "# " + listID);
 
+        //change flag to indicate that a first playcelist has been created and the welcome dialog doesn't have to show again
+        SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        boolean isFirstTimeLists;
+        isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
+        if (isFirstTimeLists) {
+            editor.putBoolean("isFirstTimeLists", false);
+            editor.apply();
+        }
     }
 
     //Todo make listID local (might not have to be necessary) and return it not null (very necessary!)
 
 
-    private void  createPlaycelist(String name, String songIDs) {
+    private void createPlaycelist(String name, String songIDs) {
         if (mAccessToken != null) {
-            Log.e("Spotify","creation of playlist attemt "+ name+"___"+songIDs);
+            Log.e("Spotify", "creation of playlist attemt " + name + "___" + songIDs);
 
             //creation of playlist request
             final Request request = new Request.Builder()
@@ -844,6 +881,7 @@ public class MainActivity extends AppCompatActivity implements
                             public void onFailure(Call call, IOException e) {
                                 Log.e("Response", "Request fail");//Fail
                             }
+
                             @Override
                             public void onResponse(Call call, Response response) throws IOException {
                                 try {
@@ -853,7 +891,7 @@ public class MainActivity extends AppCompatActivity implements
                                     Log.e("Spotify", "Songs added");
                                     Log.e("Spotify", JsonResponse);
                                     // adding database entty
-                                    createListItem("spotify:playlist:"+PlaylistID, name);
+                                    createListItem("spotify:playlist:" + PlaylistID, name);
 
 
                                 } catch (JSONException e) {
@@ -868,16 +906,15 @@ public class MainActivity extends AppCompatActivity implements
             });
         } else {
 
-    //        Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
+            //        Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
             redirectToLauncher();
 
         }
 
 
-
     }
 
-// cancel http call
+    // cancel http call
     private void cancelCall() {
         if (mCall != null) {
             mCall.cancel();
@@ -902,7 +939,6 @@ public class MainActivity extends AppCompatActivity implements
         dbOut.flush();
         dbOut.close();
     }
-
 
 
     @Override
@@ -933,13 +969,11 @@ public class MainActivity extends AppCompatActivity implements
                             Log.e("MyActivity", throwable.getMessage(), throwable);
                         }
                     });
-        }
-        else {
-
+        } else {
 
 
             Toast.makeText(this, R.string.SAccountName, Toast.LENGTH_LONG).show();
-           //
+            //
         }
 
     }
@@ -948,11 +982,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         SpotifyAppRemote.disconnect(mSpotifyAppRemote);
-      // cleaning xml
+        // cleaning xml
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
         Editor editor = pref.edit();
         editor.clear();
-
 
 
     }
@@ -980,7 +1013,7 @@ public class MainActivity extends AppCompatActivity implements
                     if (track != null) {
                         Log.e("MainActivity", track.name + " by " + track.artist.name);
 
-                    //saving current song data
+                        //saving current song data
                         Current_song.setText(track.name);
                         Current_artist.setText(track.artist.name);
                         CurrentTrackID = track.uri;

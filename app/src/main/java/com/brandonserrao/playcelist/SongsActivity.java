@@ -86,9 +86,6 @@ public class SongsActivity extends AppCompatActivity {
                     .setMessage(getString(R.string.welcomeSongs))
                     .setPositiveButton("got it!", null)
                     .show();
-
-            //editor.putBoolean("isFirstTimeSongs", false);
-            //editor.apply();
         }
 
         isAppLoggedIn=pref.getBoolean("isAppLoggedIn",false);
@@ -220,14 +217,7 @@ public class SongsActivity extends AppCompatActivity {
         TextView uidTv = itemView.findViewById(R.id.tv1);
         String uid = (String) uidTv.getText();
         String songID = recorddao.getSidByUid(uid);
-
-        View contextView = itemView.findViewById(R.id.btn_playSong);
-        Snackbar.make(contextView, songID, Snackbar.LENGTH_SHORT)
-                .show();
-
-
         mSpotifyAppRemote.getPlayerApi().play(songID);
-
     }
 
     //opens a dialog to confirm deleting the Song

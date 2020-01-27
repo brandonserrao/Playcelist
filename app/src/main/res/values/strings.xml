@@ -38,7 +38,8 @@
     <string name="newPL">New Playcelist</string>
     <string name="noGPS">GPS not found</string>
 
-    <string name="welcomeLists">To create a playcelist, zoom and pan the to an area of your choice. Then click the plus-button on the bottom left corner. \n\nAll Songs visible on the map at that point will be added to a playlist on your Spotify Account and will then appear here. \n\nYou will be able to view the extent of the playcelists on the map or start playing it on Spotify.</string>
-    <string name="welcomeSongs">To playce the song currently playing on Spotify at your current GPS location, tap the plus-button on the bottom right corner of the map. \n\nIf you want to playce the song somewhere else, find the place on the map and longclick. \n\nAll playced songs will appear on the map and here. \n\nYou will be able to zoom to the location of a song on the map or start playing it on Spotify.</string>
+    <string name="welcomeLists">All your playcelists will be listed here. \n\nYou will be able to view the extent of the playcelists on the map or start playing it on Spotify.</string>
+    <string name="welcomeMap">To playce the song currently playing on Spotify at your current GPS location, tap the blue button on the bottom right corner of the map. \n\nIf you want to playce the song somewhere else, find the place on the map and longclick. \n\nTo create a playcelist, zoom and pan the to an area of your choice. Then click the blue button on the bottom left corner. \n\nAll Songs visible on the map at that point will be added to a new playlist on your Spotify Account.</string>
+    <string name="welcomeSongs">All playced songs will be listed here. \n\nYou will be able to zoom to the location of a song on the map or start playing it on Spotify.</string>
 
 </resources>

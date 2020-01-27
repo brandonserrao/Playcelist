@@ -89,8 +89,6 @@ public class ListsActivity extends AppCompatActivity {
         //Todo have the active state be represented in the style too
 
         //check if this is the first creation after initial spotify log in
-
-
         boolean isFirstTimeLists;
         isFirstTimeLists = pref.getBoolean("isFirstTimeLists", true);
         if (isFirstTimeLists) {
@@ -100,8 +98,6 @@ public class ListsActivity extends AppCompatActivity {
                     .setMessage(getString(R.string.welcomeLists))
                     .setPositiveButton("got it!", null)
                     .show();
-            //editor.putBoolean("isFirstTimeLists", false);
-            //editor.apply();
         }
 
         //create db instance for this activity
@@ -235,15 +231,7 @@ public class ListsActivity extends AppCompatActivity {
         TextView uidTv = itemView.findViewById(R.id.tv1);
         String uid = (String) uidTv.getText();
         String listID = recorddao.getSidByUid(uid);
-
-        View contextView = itemView.findViewById(R.id.btn_playList);
-        Snackbar.make(contextView, listID, Snackbar.LENGTH_SHORT)
-                .show();
-
-        // Play a playlist
-
         mSpotifyAppRemote.getPlayerApi().play(listID);
-
     }
 
     //opens a dialog to confirm deleting the list

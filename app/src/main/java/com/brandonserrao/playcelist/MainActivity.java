@@ -252,11 +252,12 @@ public class MainActivity extends AppCompatActivity implements
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else if (location == null) {/*
-                    textview_lat.setText(R.string.label_lat+R.string.unknown_location);
-                    textview_long.setText(R.string.label_long+R.string.unknown_location);*/
+                } else if (location == null) {
+                    //Location lastKnownLocation = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+
                 }
             }
+
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
@@ -564,10 +565,9 @@ public class MainActivity extends AppCompatActivity implements
         featurelist_songlayer.add(feature);
     }
 
-    //Todo maybe the multiple feature problem is somewhere here...?
     public void updateLayerSources() {
 /*        // "proper" method from stackoverflow response
-        GeoJsonSource song_source = mapboxMap.getSourceAs(SONGS_SOURCE_ID); //Todo mapboxMap.getSourceAs() doesn't exist
+        GeoJsonSource song_source = mapboxMap.getSourceAs(SONGS_SOURCE_ID); //mapboxMap.getSourceAs() doesn't exist
         song_source.setGeoJson(song_featureCollection);*/
 
         //my method
@@ -659,11 +659,18 @@ public class MainActivity extends AppCompatActivity implements
     private void zoomToLatLng(Double lat, Double lng, double zoomlevel) {
         LatLng focus;
         focus = new LatLng(lat, lng);
+        mapboxMap.easeCamera(CameraUpdateFactory.newCameraPosition(
+                new CameraPosition.Builder()
+                        .target(focus)
+                        .zoom(zoomlevel)
+                        .build()),
+                1250);
+        /*
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder()
                         .target(focus)
                         .zoom(zoomlevel)
-                        .build()));
+                        .build()));*/
     }
 
 
@@ -718,6 +725,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     //Todo make sure current location is not null in all methods using it
+
 
     //creates new song item in the DB using now playing info and lat and lng as input
     private void onClickPlayceSong(double dlat, double dlng) {

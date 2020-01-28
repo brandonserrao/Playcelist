@@ -23,23 +23,6 @@
         android:onClick="onClickClearSearch"
         android:src="@drawable/refresh" />
 
-    <!-- <EditText
-        android:id="@+id/edittext_searchbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/sv_songs"
-        android:layout_toStartOf="@+id/search_button"
-        android:hint="@string/s_name" />
-
-    <Button
-        android:id="@+id/search_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/sv_songs"
-        android:layout_alignParentEnd="true"
-        android:onClick="searchSongsByName"
-        android:text="Search" /> -->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_songs"
         android:layout_width="match_parent"

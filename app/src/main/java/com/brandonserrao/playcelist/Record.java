@@ -25,8 +25,6 @@ public class Record {
     float LNG;
 
     String ARTIST;
-    //Todo extra double field for zoomlevels of lists
-    // double ZOOM
 
     String NAME;
 
@@ -71,10 +69,6 @@ public class Record {
     }
 
     public void setARTIST(String ARTIST) { this.ARTIST = ARTIST; }
-
-    //Todo once ZOOM is established in db
-    // public double getZOOM() { return ZOOM; }
-    // public void setZOOM(double ZOOM) { this.ZOOM = ZOOM; }
 
     public String getNAME() { return NAME; }
 

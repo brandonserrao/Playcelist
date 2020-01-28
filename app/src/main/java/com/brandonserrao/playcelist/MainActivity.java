@@ -222,8 +222,8 @@ public class MainActivity extends AppCompatActivity implements
                 if (location != null) {
                     LocationComponent locationComponent = mapboxMap.getLocationComponent();
                     device_location = locationComponent.getLastKnownLocation();
-                    ImageView imageView = findViewById(R.id.gps_indicator);
-                    imageView.setImageResource(R.drawable.red_marker);
+                    /*ImageView imageView = findViewById(R.id.gps_indicator);
+                    imageView.setImageResource(R.drawable.red_marker);*/
                     //device_location = location;
 
                     //--For Debugging: displaying gps location for debugging
@@ -248,9 +248,9 @@ public class MainActivity extends AppCompatActivity implements
                 }*/
                 }
                 else {
-                    ImageView imageView = findViewById(R.id.gps_indicator);
+                    /*ImageView imageView = findViewById(R.id.gps_indicator);
                     imageView.setImageResource(R.drawable.pin_current_location);
-                }
+                */}
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements
         bottomNavigationView.setSelectedItemId(R.id.btn_toMap);
         bottomNavigationView.findViewById(R.id.btn_toMap).setClickable(false);
         bottomNavigationView.findViewById(R.id.btn_toMap).setActivated(true);
-        //Todo have the active state be represented in the style too
+        //somehow always the same icon is highlighted - we could not figure out, why.
 
         //check if this is the first creation after initial spotify login
         SharedPreferences pref = getSharedPreferences("MySharedPref", MODE_PRIVATE);
@@ -1072,12 +1072,11 @@ public class MainActivity extends AppCompatActivity implements
         editor.putBoolean("isAppLoggedIn", isAppLoggedIn);
         editor.putBoolean("isWebLoggedIn", isAppLoggedIn);
         editor.commit();
-//cleaning upic and username
+        //cleaning upic and username
         ImageView Upic = findViewById(R.id.nav_header_SProfilePicture);
         Upic.setImageDrawable(null);
         TextView Username = findViewById(R.id.nav_header_SUserName);
         Username.setText(R.string.SAccountName);
-        //Todo make sure to go back to Launcher (not main) when going back to the app.
     }
 
 
@@ -1097,11 +1096,3 @@ public class MainActivity extends AppCompatActivity implements
                 .show();
     }
 }
-
-//Todo add onclick play song functionality in map
-
-//Todo clean up code: through out unnecessary stuff
-//Todo comment the code
-//Todo arrange code in a sensible order
-//Todo at some point we wanted to update lists when playcing new songs but I guess we dropped that...
-//Todo change where am I icon
